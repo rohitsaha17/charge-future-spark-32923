@@ -127,24 +127,22 @@ const About = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       {/* Full-Width Hero Section */}
-      <section id="hero" className="text-center mb-24 relative overflow-hidden -mx-4 md:-mx-8 lg:-mx-[50vw] lg:ml-[calc(-50vw+50%)] lg:mr-[calc(-50vw+50%)]">
-        {/* Background Image with Blue Overlay */}
+      <section id="hero" className="text-center mb-24 relative overflow-hidden">
+        {/* Background Image with Gradient Blue to White Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
             src={heroBackground} 
             alt="A Plus Charge Station Launch" 
             className="w-full h-full object-cover object-center"
           />
-          {/* Blue overlay for brand consistency */}
-          <div className="absolute inset-0 bg-primary/70" />
-          {/* Gradient overlay for text visibility */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/40 via-primary/50 to-primary/70" />
+          {/* Blue to white gradient overlay for smooth merging */}
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-background" />
         </div>
         
         {/* Content */}
-        <div className="relative z-10 py-20 md:py-28 px-4">
+        <div className="relative z-10 py-32 md:py-40 px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
             From Vision to Reality:<br />
             <span className="text-white/95 drop-shadow-2xl">
