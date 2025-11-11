@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -38,20 +39,38 @@ const AdminLogin = () => {
       // Validate input
       loginSchema.parse({ email, password });
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/admin/dashboard`
+          }
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+        
+        toast.success('Account created! Please log in.');
+        setIsSignUp(false);
+        setPassword('');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      navigate('/admin/dashboard');
-      toast.success('Logged in successfully!');
+        if (error) throw error;
+
+        navigate('/admin/dashboard');
+        toast.success('Logged in successfully!');
+      }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else if (error.message.includes('Invalid login credentials')) {
         toast.error('Invalid email or password');
+      } else if (error.message.includes('User already registered')) {
+        toast.error('This email is already registered. Please log in.');
       } else {
         toast.error(error.message || 'An error occurred');
       }
@@ -64,9 +83,11 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Admin Login</CardTitle>
+          <CardTitle>{isSignUp ? 'Create Admin Account' : 'Admin Login'}</CardTitle>
           <CardDescription>
-            Sign in to access the admin dashboard
+            {isSignUp
+              ? 'Create your admin account to manage charging stations and blogs'
+              : 'Sign in to access the admin dashboard'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,13 +115,16 @@ const AdminLogin = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : 'Sign In'}
+              {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
             </Button>
-            <Link to="/admin/forgot-password" className="block text-center">
-              <Button type="button" variant="link" className="w-full text-sm">
-                Forgot password?
-              </Button>
-            </Link>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={() => setIsSignUp(!isSignUp)}
+            >
+              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+            </Button>
           </form>
         </CardContent>
       </Card>
