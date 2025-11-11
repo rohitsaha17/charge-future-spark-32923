@@ -23,6 +23,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminChargingStations from "./pages/AdminChargingStations";
 import AdminBlogs from "./pages/AdminBlogs";
 import NotFound from "./pages/NotFound";
+import { ThemeProviderWrapper } from "./components/ThemeProvider";
 
 const queryClient = new QueryClient();
 
@@ -104,15 +105,17 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProviderWrapper>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProviderWrapper>
   );
 };
 
