@@ -258,7 +258,7 @@ const Home = () => {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tl from-blue-500/5 to-primary/5 rounded-full blur-3xl z-0"></div>
 
         <div className="container mx-auto px-4 relative z-20">
-          <div className="flex flex-col lg:flex-row items-start gap-8 md:gap-12 max-w-2xl">
+          <div className="flex flex-col lg:flex-row items-start gap-8 md:gap-12 max-w-2xl md:max-w-xl lg:max-w-2xl md:ml-0">
             {/* Left Side - Heading and Stats */}
             <div className="w-full space-y-6 md:space-y-8">
               {/* Heading */}
@@ -274,7 +274,7 @@ const Home = () => {
               </div>
 
               {/* Compact Stats Grid - Responsive sizing */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-6 min-w-0">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6 min-w-0 md:scale-90 lg:scale-100 md:origin-left">
                 <div
                   ref={chargers.ref}
                   className="group bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg min-w-0"
@@ -317,11 +317,11 @@ const Home = () => {
             </div>
 
             {/* Mobile Image - Appears below stats on mobile */}
-            <div className="w-full lg:hidden md:hidden flex justify-center relative">
+            <div className="w-full lg:hidden md:hidden flex justify-center relative mt-6">
               <img
                 src={chargingStationIllustration}
                 alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-                className="w-[110%] max-w-none object-contain scale-110"
+                className="w-full max-w-none object-contain scale-[1.7]"
               />
             </div>
           </div>
