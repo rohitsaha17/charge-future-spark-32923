@@ -238,25 +238,29 @@ const Home = () => {
       {/* Live Stats Section - Redesigned with Full-Width Illustration */}
       <section
         ref={statsSection.ref}
-        className={`py-20 md:py-32 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-12 md:py-20 lg:py-24 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Full-Width Illustration - Pinned to Right with Responsive Scaling */}
-        <div className="absolute inset-0 flex items-center justify-end overflow-hidden">
+        {/* White gradient overlay at top to merge smoothly */}
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
+        
+        {/* Full-Width Illustration - Pinned to Right (Hidden on mobile) */}
+        <div className="absolute inset-0 lg:flex md:flex hidden items-center justify-end overflow-hidden">
           <img
             src={chargingStationIllustration}
             alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-            className="relative w-[120%] md:w-[110%] lg:w-[100%] max-w-none object-contain object-right lg:translate-x-0 md:translate-x-[5%] translate-x-[10%] lg:translate-y-16 md:translate-y-16 translate-y-0 lg:scale-100 md:scale-100 scale-[0.5] lg:mt-0 md:mt-0 mt-[50%]"
+            className="relative w-[120%] md:w-[110%] lg:w-[100%] max-w-none object-contain object-right lg:translate-x-0 md:translate-x-[5%] lg:translate-y-8 md:translate-y-8"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent pointer-events-none"></div>
         </div>
+        
         {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tl from-blue-500/5 to-primary/5 rounded-full blur-3xl z-0"></div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row items-start gap-12 max-w-2xl">
+        <div className="container mx-auto px-4 relative z-20">
+          <div className="flex flex-col lg:flex-row items-start gap-8 md:gap-12 max-w-2xl">
             {/* Left Side - Heading and Stats */}
-            <div className="w-full space-y-8">
+            <div className="w-full space-y-6 md:space-y-8">
               {/* Heading */}
               <div className="space-y-4">
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -310,6 +314,15 @@ const Home = () => {
                   <div className="text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1">Customers</div>
                 </div>
               </div>
+            </div>
+
+            {/* Mobile Image - Appears below stats on mobile */}
+            <div className="w-full lg:hidden md:hidden flex justify-center relative">
+              <img
+                src={chargingStationIllustration}
+                alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
+                className="w-[110%] max-w-none object-contain scale-110"
+              />
             </div>
           </div>
         </div>
