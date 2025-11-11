@@ -317,7 +317,7 @@ const Home = () => {
             </div>
 
             {/* Mobile Image - Appears below stats on mobile */}
-            <div className="w-full lg:hidden md:hidden flex justify-end relative mt-6 overflow-hidden">
+            <div className="w-full lg:hidden md:hidden flex justify-end relative mt-12 mb-8 overflow-visible min-h-[300px] sm:min-h-[400px]">
               <img
                 src={chargingStationIllustration}
                 alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
