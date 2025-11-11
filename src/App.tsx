@@ -17,6 +17,8 @@ import Invest from "./pages/Invest";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import AdminLogin from "./pages/AdminLogin";
+import AdminForgotPassword from "./pages/AdminForgotPassword";
+import AdminResetPassword from "./pages/AdminResetPassword";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminChargingStations from "./pages/AdminChargingStations";
 import AdminBlogs from "./pages/AdminBlogs";
@@ -87,6 +89,8 @@ const AppContent = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
+          <Route path="/admin/reset-password" element={<AdminResetPassword />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/charging-stations" element={<AdminChargingStations />} />
           <Route path="/admin/blogs" element={<AdminBlogs />} />

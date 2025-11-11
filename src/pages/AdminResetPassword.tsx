@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,26 +8,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+const passwordSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
-const AdminLogin = () => {
+const AdminResetPassword = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isValidSession, setIsValidSession] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkAuth = async () => {
+    // Check if user came from a valid reset link
+    const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/admin/dashboard');
+        setIsValidSession(true);
+      } else {
+        toast.error('Invalid or expired reset link');
+        navigate('/admin/login');
       }
     };
-    checkAuth();
+    checkSession();
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,22 +43,19 @@ const AdminLogin = () => {
 
     try {
       // Validate input
-      loginSchema.parse({ email, password });
+      passwordSchema.parse({ password, confirmPassword });
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { error } = await supabase.auth.updateUser({
+        password: password,
       });
 
       if (error) throw error;
 
-      navigate('/admin/dashboard');
-      toast.success('Logged in successfully!');
+      toast.success('Password updated successfully!');
+      navigate('/admin/login');
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
-      } else if (error.message.includes('Invalid login credentials')) {
-        toast.error('Invalid email or password');
       } else {
         toast.error(error.message || 'An error occurred');
       }
@@ -60,30 +64,23 @@ const AdminLogin = () => {
     }
   };
 
+  if (!isValidSession) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Admin Login</CardTitle>
+          <CardTitle>Set New Password</CardTitle>
           <CardDescription>
-            Sign in to access the admin dashboard
+            Enter your new password below
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">New Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -93,14 +90,20 @@ const AdminLogin = () => {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : 'Sign In'}
+              {loading ? 'Updating...' : 'Update Password'}
             </Button>
-            <Link to="/admin/forgot-password" className="block text-center">
-              <Button type="button" variant="link" className="w-full text-sm">
-                Forgot password?
-              </Button>
-            </Link>
           </form>
         </CardContent>
       </Card>
@@ -108,4 +111,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default AdminResetPassword;
