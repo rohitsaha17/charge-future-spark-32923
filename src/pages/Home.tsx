@@ -240,12 +240,12 @@ const Home = () => {
         ref={statsSection.ref}
         className={`py-20 md:py-32 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Full-Width Illustration - Positioned Absolutely Edge-to-Edge */}
+        {/* Full-Width Illustration - Pinned to Right with Responsive Scaling */}
         <div className="absolute inset-0 flex items-center justify-end overflow-hidden">
           <img
             src={chargingStationIllustration}
             alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-            className="relative w-[120%] max-w-none object-contain object-right translate-x-[10%] translate-y-16"
+            className="relative w-[120%] md:w-[110%] lg:w-[100%] max-w-none object-contain object-right lg:translate-x-0 md:translate-x-[5%] translate-x-[10%] lg:translate-y-16 md:translate-y-16 translate-y-0 lg:scale-100 md:scale-100 scale-[0.5] lg:mt-0 md:mt-0 mt-[50%]"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent pointer-events-none"></div>
         </div>
@@ -269,45 +269,45 @@ const Home = () => {
                 <div className="w-20 h-1.5 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Compact Stats Grid */}
-              <div className="grid grid-cols-3 gap-6">
+              {/* Compact Stats Grid - Responsive sizing */}
+              <div className="grid grid-cols-3 gap-3 md:gap-6">
                 <div
                   ref={chargers.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="bg-primary/10 rounded-lg w-10 h-10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Zap className="w-5 h-5 text-primary" />
+                  <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
+                    <div className="bg-primary/10 rounded-lg w-7 h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground">{chargers.count}+</div>
-                  <div className="text-xs text-muted-foreground font-medium mt-1">Live Chargers</div>
+                  <div className="text-xl md:text-3xl font-bold text-foreground">{chargers.count}+</div>
+                  <div className="text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1">Live Chargers</div>
                 </div>
 
                 <div
                   ref={stations.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-cyan-500/10 hover:border-cyan-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-cyan-500/10 hover:border-cyan-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="bg-cyan-500/10 rounded-lg w-10 h-10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
-                      <MapPin className="w-5 h-5 text-cyan-600" />
+                  <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
+                    <div className="bg-cyan-500/10 rounded-lg w-7 h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
+                      <MapPin className="w-4 h-4 md:w-5 md:h-5 text-cyan-600" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground">{stations.count}+</div>
-                  <div className="text-xs text-muted-foreground font-medium mt-1">Stations</div>
+                  <div className="text-xl md:text-3xl font-bold text-foreground">{stations.count}+</div>
+                  <div className="text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1">Stations</div>
                 </div>
 
                 <div
                   ref={customers.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-green-500/10 hover:border-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-green-500/10 hover:border-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="bg-green-500/10 rounded-lg w-10 h-10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
-                      <Users className="w-5 h-5 text-green-600" />
+                  <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
+                    <div className="bg-green-500/10 rounded-lg w-7 h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
+                      <Users className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground">{customers.count}+</div>
-                  <div className="text-xs text-muted-foreground font-medium mt-1">Customers</div>
+                  <div className="text-xl md:text-3xl font-bold text-foreground">{customers.count}+</div>
+                  <div className="text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1">Customers</div>
                 </div>
               </div>
             </div>
