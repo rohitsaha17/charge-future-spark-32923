@@ -29,15 +29,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 const Home = () => {
   const chargers = useCountUp({
     end: 50,
-    duration: 2500,
+    duration: 2500
   });
   const stations = useCountUp({
     end: 25,
-    duration: 2500,
+    duration: 2500
   });
   const customers = useCountUp({
     end: 1000,
-    duration: 2500,
+    duration: 2500
   });
   const mapSection = useScrollReveal();
   const statsSection = useScrollReveal();
@@ -47,65 +47,44 @@ const Home = () => {
   const appSection = useScrollReveal();
   const testimonialsSection = useScrollReveal();
   const faqSection = useScrollReveal();
-  const faqs = [
-    {
-      question: "What types of EV chargers do you offer?",
-      answer:
-        "We offer Residential chargers, AC Public chargers, and DC Fast chargers (30kW and 60kW) to meet various charging needs.",
-    },
-    {
-      question: "How can I become a charging station partner?",
-      answer:
-        "Visit our 'Become Our Partner' page to explore partnership opportunities. We offer both CAPEX and OPEX models with attractive ROI.",
-    },
-    {
-      question: "Where are your charging stations located?",
-      answer:
-        "We have a strong presence in Northeast India, particularly in Guwahati, with expansion plans across major highways and urban centers.",
-    },
-    {
-      question: "What is the typical ROI for charging station partners?",
-      answer:
-        "ROI varies based on location, charger type, and utilization. Use our ROI Calculator on the partner page to get customized projections.",
-    },
-    {
-      question: "Do you offer maintenance and support?",
-      answer:
-        "Yes, we provide comprehensive O&M services, 24/7 monitoring, and technical support to ensure maximum uptime.",
-    },
-  ];
-  return (
-    <div className="min-h-screen bg-background">
+  const faqs = [{
+    question: "What types of EV chargers do you offer?",
+    answer: "We offer Residential chargers, AC Public chargers, and DC Fast chargers (30kW and 60kW) to meet various charging needs."
+  }, {
+    question: "How can I become a charging station partner?",
+    answer: "Visit our 'Become Our Partner' page to explore partnership opportunities. We offer both CAPEX and OPEX models with attractive ROI."
+  }, {
+    question: "Where are your charging stations located?",
+    answer: "We have a strong presence in Northeast India, particularly in Guwahati, with expansion plans across major highways and urban centers."
+  }, {
+    question: "What is the typical ROI for charging station partners?",
+    answer: "ROI varies based on location, charger type, and utilization. Use our ROI Calculator on the partner page to get customized projections."
+  }, {
+    question: "Do you offer maintenance and support?",
+    answer: "Yes, we provide comprehensive O&M services, 24/7 monitoring, and technical support to ensure maximum uptime."
+  }];
+  return <div className="min-h-screen bg-background">
       {/* Hero Section - Enhanced Design */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Multi-layered Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
           {/* Animated Gradient Orbs */}
-          <div
-            className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"
-            style={{
-              animationDuration: "4s",
-            }}
-          ></div>
-          <div
-            className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 to-blue-300/10 rounded-full blur-3xl animate-pulse"
-            style={{
-              animationDuration: "6s",
-              animationDelay: "1s",
-            }}
-          ></div>
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse" style={{
+          animationDuration: "4s"
+        }}></div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 to-blue-300/10 rounded-full blur-3xl animate-pulse" style={{
+          animationDuration: "6s",
+          animationDelay: "1s"
+        }}></div>
 
           {/* Subtle Grid Pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `
                 linear-gradient(to right, hsl(216 83% 56%) 1px, transparent 1px),
                 linear-gradient(to bottom, hsl(216 83% 56%) 1px, transparent 1px)
               `,
-              backgroundSize: "80px 80px",
-            }}
-          />
+          backgroundSize: "80px 80px"
+        }} />
 
           {/* Radial Gradient Overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(38,116,236,0.08),transparent_50%)]"></div>
@@ -138,32 +117,26 @@ const Home = () => {
                 {/* CTAs */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2 items-center md:items-start">
                   {/* Primary Button */}
-                  <Link
-                    to="/find-charger"
-                    className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
+                  <Link to="/find-charger" className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
                       text-white bg-gradient-to-r from-[#2674EC] to-[#00C6FF]
                       shadow-[0_6px_24px_rgba(38,116,236,0.35)] 
                       transition-all duration-300 ease-out
                       hover:shadow-[0_10px_36px_rgba(0,198,255,0.5)] hover:scale-[1.05] hover:-translate-y-0.5
-                      active:scale-95 w-full sm:w-auto whitespace-nowrap"
-                  >
+                      active:scale-95 w-full sm:w-auto whitespace-nowrap">
                     <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
                     <span>Find a Charger</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
 
                   {/* Secondary Button */}
-                  <Link
-                    to="/partner"
-                    className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
+                  <Link to="/partner" className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
                       text-primary border-2 border-primary/30 bg-white/80 backdrop-blur-sm
                       shadow-[0_4px_16px_rgba(38,116,236,0.1)]
                       transition-all duration-300 ease-out
                       hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50
                       hover:border-primary/50 hover:shadow-[0_6px_24px_rgba(38,116,236,0.2)] 
                       hover:scale-[1.05] hover:-translate-y-0.5
-                      active:scale-95 w-full sm:w-auto whitespace-nowrap"
-                  >
+                      active:scale-95 w-full sm:w-auto whitespace-nowrap">
                     <span>Become a Partner</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
@@ -171,33 +144,17 @@ const Home = () => {
               </div>
 
               {/* Right - Illustration - Sticks to right edge */}
-              <div
-                className="absolute right-0 top-1/2 -translate-y-1/2 w-[90%] md:w-[65%] lg:w-[68%] xl:w-[70%] hidden md:block animate-fade-in"
-                style={{
-                  animationDelay: "0.2s",
-                }}
-              >
-                <img
-                  src={heroIllustration}
-                  alt="A Plus Charge EV charging station—white electric car charging at branded A Plus charger"
-                  className="w-full h-auto object-contain object-right drop-shadow-2xl"
-                  loading="eager"
-                />
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[90%] md:w-[65%] lg:w-[68%] xl:w-[70%] hidden md:block animate-fade-in" style={{
+              animationDelay: "0.2s"
+            }}>
+                <img src={heroIllustration} alt="A Plus Charge EV charging station—white electric car charging at branded A Plus charger" className="w-full h-auto object-contain object-right drop-shadow-2xl" loading="eager" />
               </div>
 
               {/* Mobile Illustration */}
-              <div
-                className="relative w-full flex items-center justify-center md:hidden mt-8 animate-fade-in"
-                style={{
-                  animationDelay: "0.2s",
-                }}
-              >
-                <img
-                  src={heroIllustration}
-                  alt="A Plus Charge EV charging station—white electric car charging at branded A Plus charger"
-                  className="w-full max-w-lg h-auto object-contain drop-shadow-2xl"
-                  loading="eager"
-                />
+              <div className="relative w-full flex items-center justify-center md:hidden mt-8 animate-fade-in" style={{
+              animationDelay: "0.2s"
+            }}>
+                <img src={heroIllustration} alt="A Plus Charge EV charging station—white electric car charging at branded A Plus charger" className="w-full max-w-lg h-auto object-contain drop-shadow-2xl" loading="eager" />
               </div>
             </div>
           </div>
@@ -205,10 +162,7 @@ const Home = () => {
       </section>
 
       {/* Charging Stations Map */}
-      <section
-        ref={mapSection.ref}
-        className={`pt-24 pb-0 relative overflow-hidden bg-white transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-      >
+      <section ref={mapSection.ref} className={`pt-24 pb-0 relative overflow-hidden bg-white transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
         {/* Radial Gradient Background */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[radial-gradient(circle,_rgba(38,116,236,0.05)_0%,_transparent_70%)] pointer-events-none"></div>
 
@@ -223,33 +177,26 @@ const Home = () => {
               details.
             </p>
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          <div className="animate-fade-in" style={{
+          animationDelay: "0.2s"
+        }}>
             <ChargingStationsMap />
           </div>
         </div>
       </section>
 
       {/* Gradient Section Breaker (pulled up to touch the map) */}
-      <div
-        style={{ backgroundImage: `url(${gradientBreak})` }}
-        aria-hidden="true"
-        className="w-full h-32 bg-cover bg-center bg-no-repeat -mt-15 md:-mt-25 mx-0"
-      />
+      <div style={{
+      backgroundImage: `url(${gradientBreak})`
+    }} aria-hidden="true" className="w-full h-32 bg-cover bg-center bg-no-repeat -mt-15 md:-mt-25 mx-0" />
       {/* Live Stats Section - Redesigned with Full-Width Illustration */}
-      <section
-        ref={statsSection.ref}
-        className={`py-12 md:py-20 lg:py-24 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-      >
+      <section ref={statsSection.ref} className={`py-12 md:py-20 lg:py-24 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
         {/* White gradient overlay at top to merge smoothly */}
         <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
         
         {/* Full-Width Illustration - Pinned to Right (Hidden on mobile) */}
         <div className="absolute inset-0 lg:flex md:flex hidden items-center justify-end overflow-hidden">
-          <img
-            src={chargingStationIllustration}
-            alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-            className="relative w-[120%] md:w-[110%] lg:w-[100%] max-w-none object-contain object-right lg:translate-x-0 md:translate-x-[5%] lg:translate-y-8 md:translate-y-8"
-          />
+          <img src={chargingStationIllustration} alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle" className="relative w-[120%] md:w-[110%] lg:w-[100%] max-w-none object-contain object-right lg:translate-x-0 md:translate-x-[5%] lg:translate-y-8 md:translate-y-8" />
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent pointer-events-none"></div>
         </div>
         
@@ -274,11 +221,8 @@ const Home = () => {
               </div>
 
               {/* Compact Stats Grid - Responsive sizing */}
-              <div className="grid grid-cols-3 gap-3 md:gap-6">
-                <div
-                  ref={chargers.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                >
+              <div className="grid grid-cols-3 gap-3 md:gap-6 mx-[121px] my-0 py-0 px-0">
+                <div ref={chargers.ref} className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                   <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
                     <div className="bg-primary/10 rounded-lg w-7 h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" />
@@ -288,10 +232,7 @@ const Home = () => {
                   <div className="text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1">Live Chargers</div>
                 </div>
 
-                <div
-                  ref={stations.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-cyan-500/10 hover:border-cyan-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                >
+                <div ref={stations.ref} className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-cyan-500/10 hover:border-cyan-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                   <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
                     <div className="bg-cyan-500/10 rounded-lg w-7 h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
                       <MapPin className="w-4 h-4 md:w-5 md:h-5 text-cyan-600" />
@@ -301,10 +242,7 @@ const Home = () => {
                   <div className="text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1">Stations</div>
                 </div>
 
-                <div
-                  ref={customers.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-green-500/10 hover:border-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                >
+                <div ref={customers.ref} className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-green-500/10 hover:border-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                   <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
                     <div className="bg-green-500/10 rounded-lg w-7 h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
                       <Users className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
@@ -318,35 +256,24 @@ const Home = () => {
 
             {/* Mobile Image - Appears below stats on mobile */}
             <div className="w-full lg:hidden md:hidden flex justify-center relative">
-              <img
-                src={chargingStationIllustration}
-                alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-                className="w-[110%] max-w-none object-contain scale-110"
-              />
+              <img src={chargingStationIllustration} alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle" className="w-[110%] max-w-none object-contain scale-110" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Benefits Section */}
-      <div
-        ref={benefitsSection.ref}
-        className={`transition-all duration-1000 ${benefitsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-      >
+      <div ref={benefitsSection.ref} className={`transition-all duration-1000 ${benefitsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
         <BenefitsSection />
       </div>
 
       {/* Trust Section - Brahmaputra River */}
-      <section
-        ref={trustSection.ref}
-        className={`relative py-24 overflow-hidden transition-all duration-1000 ${trustSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-        style={{
-          backgroundImage: `url(${brahmaputraSunset})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
-      >
+      <section ref={trustSection.ref} className={`relative py-24 overflow-hidden transition-all duration-1000 ${trustSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`} style={{
+      backgroundImage: `url(${brahmaputraSunset})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed"
+    }}>
         <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/75 to-background/85"></div>
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 drop-shadow-lg">
@@ -365,130 +292,91 @@ const Home = () => {
       <USPCarousel />
 
       {/* Client Logos - Scrolling */}
-      <section
-        ref={partnersSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-      >
+      <section ref={partnersSection.ref} className={`py-20 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-card via-background to-card"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl font-bold text-center mb-12">Trusted Partners</h2>
           <div className="relative overflow-hidden mask-gradient">
             <div className="flex animate-scroll-left items-center">
               {/* First set of logos */}
-              {[
-                {
-                  src: atherLogo,
-                  alt: "Ather Energy",
-                },
-                {
-                  src: mgLogo,
-                  alt: "MG Motors",
-                },
-                {
-                  src: tataLogo,
-                  alt: "Tata Motors",
-                },
-                {
-                  src: gmdaLogo,
-                  alt: "GMDA",
-                },
-                {
-                  src: aaiLogo,
-                  alt: "Airports Authority of India",
-                },
-                {
-                  src: imperiaVistaLogo,
-                  alt: "Imperia Vista",
-                },
-                {
-                  src: osmLogo,
-                  alt: "Omega Seiki Mobility",
-                },
-              ]
-                .concat([
-                  {
-                    src: atherLogo,
-                    alt: "Ather Energy",
-                  },
-                  {
-                    src: mgLogo,
-                    alt: "MG Motors",
-                  },
-                  {
-                    src: tataLogo,
-                    alt: "Tata Motors",
-                  },
-                  {
-                    src: gmdaLogo,
-                    alt: "GMDA",
-                  },
-                  {
-                    src: aaiLogo,
-                    alt: "Airports Authority of India",
-                  },
-                  {
-                    src: imperiaVistaLogo,
-                    alt: "Imperia Vista",
-                  },
-                  {
-                    src: osmLogo,
-                    alt: "Omega Seiki Mobility",
-                  },
-                ])
-                .concat([
-                  {
-                    src: atherLogo,
-                    alt: "Ather Energy",
-                  },
-                  {
-                    src: mgLogo,
-                    alt: "MG Motors",
-                  },
-                  {
-                    src: tataLogo,
-                    alt: "Tata Motors",
-                  },
-                  {
-                    src: gmdaLogo,
-                    alt: "GMDA",
-                  },
-                  {
-                    src: aaiLogo,
-                    alt: "Airports Authority of India",
-                  },
-                  {
-                    src: imperiaVistaLogo,
-                    alt: "Imperia Vista",
-                  },
-                  {
-                    src: osmLogo,
-                    alt: "Omega Seiki Mobility",
-                  },
-                ])
-                .map((partner, index) => (
-                  <div
-                    key={index}
-                    className="flex-shrink-0 mx-12 grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
-                  >
+              {[{
+              src: atherLogo,
+              alt: "Ather Energy"
+            }, {
+              src: mgLogo,
+              alt: "MG Motors"
+            }, {
+              src: tataLogo,
+              alt: "Tata Motors"
+            }, {
+              src: gmdaLogo,
+              alt: "GMDA"
+            }, {
+              src: aaiLogo,
+              alt: "Airports Authority of India"
+            }, {
+              src: imperiaVistaLogo,
+              alt: "Imperia Vista"
+            }, {
+              src: osmLogo,
+              alt: "Omega Seiki Mobility"
+            }].concat([{
+              src: atherLogo,
+              alt: "Ather Energy"
+            }, {
+              src: mgLogo,
+              alt: "MG Motors"
+            }, {
+              src: tataLogo,
+              alt: "Tata Motors"
+            }, {
+              src: gmdaLogo,
+              alt: "GMDA"
+            }, {
+              src: aaiLogo,
+              alt: "Airports Authority of India"
+            }, {
+              src: imperiaVistaLogo,
+              alt: "Imperia Vista"
+            }, {
+              src: osmLogo,
+              alt: "Omega Seiki Mobility"
+            }]).concat([{
+              src: atherLogo,
+              alt: "Ather Energy"
+            }, {
+              src: mgLogo,
+              alt: "MG Motors"
+            }, {
+              src: tataLogo,
+              alt: "Tata Motors"
+            }, {
+              src: gmdaLogo,
+              alt: "GMDA"
+            }, {
+              src: aaiLogo,
+              alt: "Airports Authority of India"
+            }, {
+              src: imperiaVistaLogo,
+              alt: "Imperia Vista"
+            }, {
+              src: osmLogo,
+              alt: "Omega Seiki Mobility"
+            }]).map((partner, index) => <div key={index} className="flex-shrink-0 mx-12 grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                     <img src={partner.src} alt={partner.alt} className="h-16 w-auto object-contain" />
-                  </div>
-                ))}
+                  </div>)}
             </div>
           </div>
         </div>
       </section>
 
       {/* App Download Section */}
-      <section
-        ref={appSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-        style={{
-          backgroundImage: `url(${appSectionBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
-      >
+      <section ref={appSection.ref} className={`py-20 relative overflow-hidden transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`} style={{
+      backgroundImage: `url(${appSectionBg})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed"
+    }}>
         {/* Gradient Overlay for blending */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
 
@@ -498,11 +386,7 @@ const Home = () => {
               {/* Left side - Phone Mockup */}
               <div className="flex justify-center md:justify-end">
                 <div className="relative w-64 md:w-80 animate-fade-in transition-all duration-500 group-hover/google:scale-105 group-hover/google:rotate-2 group-hover/apple:scale-105 group-hover/apple:-rotate-2">
-                  <img
-                    src={phoneMockup}
-                    alt="A Plus Charge Mobile App Interface"
-                    className="w-full h-auto drop-shadow-2xl"
-                  />
+                  <img src={phoneMockup} alt="A Plus Charge Mobile App Interface" className="w-full h-auto drop-shadow-2xl" />
                   {/* Ambient glow effect */}
                   <div className="absolute inset-0 bg-primary/20 opacity-50 blur-3xl -z-10 animate-pulse"></div>
                   {/* Interactive glow on badge hover */}
@@ -544,25 +428,11 @@ const Home = () => {
 
                 {/* Store Badges */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-                  <a
-                    href="#"
-                    className="group/google transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95"
-                  >
-                    <img
-                      src={googlePlayBadge}
-                      alt="Get it on Google Play"
-                      className="h-14 md:h-16 w-auto drop-shadow-lg group-hover/google:drop-shadow-2xl transition-all duration-300"
-                    />
+                  <a href="#" className="group/google transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95">
+                    <img src={googlePlayBadge} alt="Get it on Google Play" className="h-14 md:h-16 w-auto drop-shadow-lg group-hover/google:drop-shadow-2xl transition-all duration-300" />
                   </a>
-                  <a
-                    href="#"
-                    className="group/apple transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95"
-                  >
-                    <img
-                      src={appStoreBadge}
-                      alt="Download on the App Store"
-                      className="h-14 md:h-16 w-auto drop-shadow-lg group-hover/apple:drop-shadow-2xl transition-all duration-300"
-                    />
+                  <a href="#" className="group/apple transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95">
+                    <img src={appStoreBadge} alt="Download on the App Store" className="h-14 md:h-16 w-auto drop-shadow-lg group-hover/apple:drop-shadow-2xl transition-all duration-300" />
                   </a>
                 </div>
               </div>
@@ -572,22 +442,12 @@ const Home = () => {
       </section>
 
       {/* Testimonials Carousel */}
-      <section
-        ref={testimonialsSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${testimonialsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-      >
+      <section ref={testimonialsSection.ref} className={`py-20 relative overflow-hidden transition-all duration-1000 ${testimonialsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
         {/* Video background with parallax */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-5"
-          style={{
-            transform: "translateZ(0)",
-            willChange: "transform",
-          }}
-        >
+        <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-5" style={{
+        transform: "translateZ(0)",
+        willChange: "transform"
+      }}>
           <source src="/intro-video.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-background via-card/30 to-background"></div>
@@ -603,26 +463,20 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section
-        ref={faqSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${faqSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-      >
+      <section ref={faqSection.ref} className={`py-20 relative overflow-hidden transition-all duration-1000 ${faqSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/10 to-background"></div>
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <h2 className="text-4xl font-bold text-center mb-4">Frequently Asked Questions</h2>
           <p className="text-center text-muted-foreground mb-12">Everything you need to know about A Plus Charge</p>
 
           <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`} className="glass-card rounded-lg px-6">
+            {faqs.map((faq, index) => <AccordionItem key={index} value={`item-${index}`} className="glass-card rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:text-primary">{faq.question}</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
-              </AccordionItem>
-            ))}
+              </AccordionItem>)}
           </Accordion>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
 export default Home;
