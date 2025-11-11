@@ -18,7 +18,6 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -39,38 +38,20 @@ const AdminLogin = () => {
       // Validate input
       loginSchema.parse({ email, password });
 
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin/dashboard`
-          }
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
-        
-        toast.success('Account created! Please log in.');
-        setIsSignUp(false);
-        setPassword('');
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      if (error) throw error;
 
-        if (error) throw error;
-
-        navigate('/admin/dashboard');
-        toast.success('Logged in successfully!');
-      }
+      navigate('/admin/dashboard');
+      toast.success('Logged in successfully!');
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else if (error.message.includes('Invalid login credentials')) {
         toast.error('Invalid email or password');
-      } else if (error.message.includes('User already registered')) {
-        toast.error('This email is already registered. Please log in.');
       } else {
         toast.error(error.message || 'An error occurred');
       }
@@ -83,11 +64,9 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{isSignUp ? 'Create Admin Account' : 'Admin Login'}</CardTitle>
+          <CardTitle>Admin Login</CardTitle>
           <CardDescription>
-            {isSignUp
-              ? 'Create your admin account to manage charging stations and blogs'
-              : 'Sign in to access the admin dashboard'}
+            Sign in to access the admin dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -115,15 +94,7 @@ const AdminLogin = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+              {loading ? 'Loading...' : 'Sign In'}
             </Button>
           </form>
         </CardContent>
