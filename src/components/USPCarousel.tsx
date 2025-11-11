@@ -125,10 +125,10 @@ const USPCarousel = () => {
           {viewMode === "carousel" ? (
             <>
               {/* Carousel View - Responsive */}
-              <div className="relative rounded-2xl overflow-visible animate-fade-in">
+              <div className="relative rounded-2xl overflow-visible">
                 <div className="relative">
                   <div 
-                    className="flex transition-transform duration-700 ease-in-out"
+                    className="flex transition-transform duration-500 ease-out"
                     style={{
                       transform: `translateX(-${currentSlide * 100}%)`
                     }}
@@ -138,7 +138,7 @@ const USPCarousel = () => {
                         key={index}
                         className="min-w-full"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2">
                           {/* Show 1 on mobile, 2 on tablet, 3 on desktop */}
                           {[0, 1, 2].map((offset) => {
                             const slideIndex = (index + offset) % slides.length;
@@ -146,32 +146,42 @@ const USPCarousel = () => {
                             return (
                               <div
                                 key={slideIndex}
-                                className={`group relative rounded-xl overflow-hidden shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:scale-105 transition-all duration-500 ${
+                                className={`group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 ease-out ${
                                   offset === 2 ? 'hidden lg:block' : offset === 1 ? 'hidden md:block' : ''
                                 }`}
+                                style={{
+                                  transform: 'scale(1)',
+                                  transition: 'transform 0.3s ease-out, box-shadow 0.3s ease-out'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.transform = 'scale(1.03) translateY(-4px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                                }}
                               >
                                 {/* Image Background */}
-                                <div className="relative h-80">
+                                <div className="relative h-64 md:h-80">
                                   <img
                                     src={slideData.image}
                                     alt={slideData.title}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                                   />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/50 to-transparent" />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent" />
                                 </div>
 
                                 {/* Content */}
-                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background/90 to-transparent">
-                                  <h3 className="text-xl md:text-2xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors drop-shadow-lg">
+                                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent">
+                                  <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2 md:mb-3 text-foreground group-hover:text-primary transition-colors duration-300 drop-shadow-lg">
                                     {slideData.title}
                                   </h3>
-                                  <p className="text-sm text-muted-foreground leading-relaxed drop-shadow-md">
+                                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed drop-shadow-md">
                                     {slideData.description}
                                   </p>
                                 </div>
 
                                 {/* Hover Accent */}
-                                <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 rounded-xl transition-colors duration-500 pointer-events-none" />
+                                <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/40 rounded-xl transition-all duration-300 pointer-events-none" />
                               </div>
                             );
                           })}

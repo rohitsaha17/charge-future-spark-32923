@@ -79,8 +79,8 @@ export const JourneyTimeline = () => {
           });
         },
         {
-          threshold: 0.6,
-          rootMargin: "-20% 0px -20% 0px"
+          threshold: 0.5,
+          rootMargin: "-15% 0px -15% 0px"
         }
       );
 
@@ -143,9 +143,13 @@ export const JourneyTimeline = () => {
             <div
               key={index}
               ref={(el) => (itemRefs.current[index] = el)}
-              className={`relative flex items-center mb-24 transition-all duration-700 ${
-                isActive ? 'scale-105' : 'scale-100'
+              className={`relative flex items-center mb-16 md:mb-24 transition-all duration-500 ease-out ${
+                isActive ? 'opacity-100 translate-y-0' : 'opacity-60 translate-y-4'
               }`}
+              style={{
+                transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
             >
               {/* Timeline connector */}
               <div className="absolute left-1/2 top-0 -translate-x-1/2 w-0.5 h-full">
@@ -160,18 +164,22 @@ export const JourneyTimeline = () => {
                 />
               </div>
 
-              {/* Content card - alternating sides */}
-              <div className={`w-full md:w-5/12 ${index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:ml-auto md:pl-12'}`}>
+              {/* Content card - stacked on mobile, alternating sides on desktop */}
+              <div className={`w-full ${index % 2 === 0 ? 'md:w-5/12 md:pr-8 md:text-right' : 'md:w-5/12 md:ml-auto md:pl-8'}`}>
                 <Card 
-                  className={`p-6 transition-all duration-700 ${
+                  className={`p-4 md:p-6 transition-all duration-500 ease-out ${
                     isActive 
-                      ? 'shadow-xl border-primary/50 bg-primary/5' 
+                      ? 'shadow-2xl border-primary/60 bg-primary/10 scale-100' 
                       : isPast 
-                        ? 'shadow-md border-primary/20' 
-                        : 'shadow-sm border-muted'
+                        ? 'shadow-lg border-primary/30 bg-primary/5' 
+                        : 'shadow-md border-border bg-card'
                   }`}
+                  style={{
+                    transform: isActive ? 'translateY(0)' : 'translateY(8px)',
+                    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
                 >
-                  <div className={`flex items-center gap-3 mb-3 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+                  <div className={`flex items-center gap-3 mb-3 ${index % 2 === 0 ? 'md:flex-row-reverse' : 'flex-row'}`}>
                     <div 
                       className={`w-12 h-12 rounded-full bg-gradient-to-br ${event.color} flex items-center justify-center transition-transform duration-500 ${
                         isActive ? 'scale-110 shadow-lg' : 'scale-100'
@@ -194,21 +202,24 @@ export const JourneyTimeline = () => {
                 </Card>
               </div>
 
-              {/* Center node with electrical effect */}
-              <div className="absolute left-1/2 top-8 -translate-x-1/2 z-10">
+              {/* Center node with electrical effect - hidden on mobile, shown on md+ */}
+              <div className="hidden md:block absolute left-1/2 top-8 -translate-x-1/2 z-10">
                 <div 
-                  className={`relative w-6 h-6 rounded-full transition-all duration-700 ${
+                  className={`relative w-5 h-5 md:w-6 md:h-6 rounded-full transition-all duration-500 ease-out ${
                     isActive 
-                      ? 'bg-primary shadow-lg shadow-primary/50 scale-150' 
+                      ? 'bg-primary shadow-2xl shadow-primary/60 scale-125 md:scale-150' 
                       : isPast
-                        ? 'bg-primary/70 scale-110'
-                        : 'bg-muted scale-100'
+                        ? 'bg-primary/70 scale-100 md:scale-110'
+                        : 'bg-border scale-90 md:scale-100'
                   }`}
+                  style={{
+                    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
                 >
                   {isActive && (
                     <>
                       <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75" />
-                      <div className="absolute inset-0 rounded-full bg-primary-glow blur-md" />
+                      <div className="absolute inset-0 rounded-full bg-primary-glow blur-sm md:blur-md" />
                     </>
                   )}
                 </div>
