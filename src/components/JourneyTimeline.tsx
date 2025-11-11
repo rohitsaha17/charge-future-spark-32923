@@ -122,16 +122,18 @@ export const JourneyTimeline = () => {
         </svg>
       </div>
 
-      {/* Animated energy pulse along the timeline */}
-      <div 
-        className="absolute left-1/2 w-1 h-full -translate-x-1/2 bg-gradient-to-b from-primary/20 via-primary/40 to-primary/20"
-        style={{
-          background: `linear-gradient(to bottom, 
-            hsl(var(--primary) / 0.1) 0%, 
-            hsl(var(--primary-glow) / 0.4) ${(activeIndex / (timelineEvents.length - 1)) * 100}%, 
-            hsl(var(--primary) / 0.1) 100%)`
-        }}
-      />
+      {/* Animated progress line along the timeline */}
+      <div className="hidden md:block absolute left-1/2 w-0.5 h-full -translate-x-1/2">
+        {/* Background line */}
+        <div className="absolute inset-0 bg-border" />
+        {/* Animated progress */}
+        <div 
+          className="absolute top-0 left-0 w-full bg-gradient-to-b from-primary via-primary-glow to-primary transition-all duration-700 ease-out"
+          style={{
+            height: `${(activeIndex / (timelineEvents.length - 1)) * 100}%`
+          }}
+        />
+      </div>
 
       <div ref={timelineRef} className="relative max-w-5xl mx-auto px-4">
         {timelineEvents.map((event, index) => {
