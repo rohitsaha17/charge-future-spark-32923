@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Twitter } from "lucide-react";
-import founderPortrait from "@/assets/team/founder-samyak.jpg";
+import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/northeast-landscape.jpg";
 import ctoPortrait from "@/assets/team/cto-portrait.jpg";
 import operationsPortrait from "@/assets/team/operations-portrait.jpg";
@@ -69,11 +69,11 @@ const About = () => {
 
   const team = [
     {
-      name: "Samyak Jain",
+      name: "Samyak Jain (EV Boy)",
       role: "Founder & CEO",
       image: founderPortrait,
-      story: "From witnessing range anxiety in Guwahati's streets to building Northeast's first EV charging network. Samyak combines deep local knowledge with a vision for sustainable mobility.",
-      highlight: "IIT Guwahati alumnus, 10+ years in energy sector",
+      story: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge — Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
+      highlight: "PG in Entrepreneurship, Amity University | 10+ years in clean energy",
       linkedin: "#",
       twitter: "#"
     },
