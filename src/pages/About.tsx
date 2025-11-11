@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Twitter } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
-import heroBackground from "@/assets/northeast-landscape.jpg";
+import heroBackground from "@/assets/charging-station-launch.jpg";
 import ctoPortrait from "@/assets/team/cto-portrait.jpg";
 import operationsPortrait from "@/assets/team/operations-portrait.jpg";
 import bdPortrait from "@/assets/team/bd-portrait.jpg";
@@ -145,13 +145,13 @@ const About = () => {
           {/* Content */}
           <div className="relative z-10 py-16 px-4">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
-              Powering Northeast India's<br />
+              From Vision to Reality:<br />
               <span className="bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
-                Electric Future
+                Electrifying Northeast India
               </span>
             </h1>
             <p className="text-lg text-foreground/90 font-medium max-w-2xl mx-auto mb-8 drop-shadow-md">
-              We're building the region's most reliable EV charging network, one station at a time.
+              Born in Assam, built for the Northeast. We're not just installing chargers — we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
             </p>
           </div>
         </section>
