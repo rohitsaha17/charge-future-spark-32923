@@ -274,7 +274,7 @@ const Home = () => {
               </div>
 
               {/* Compact Stats Grid - Responsive sizing */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6 min-w-0 md:scale-90 lg:scale-100 md:origin-left">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6 min-w-0 md:scale-[0.85] lg:scale-100 md:origin-left">
                 <div
                   ref={chargers.ref}
                   className="group bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg min-w-0"
@@ -317,11 +317,11 @@ const Home = () => {
             </div>
 
             {/* Mobile Image - Appears below stats on mobile */}
-            <div className="w-full lg:hidden md:hidden flex justify-center relative mt-6">
+            <div className="w-full lg:hidden md:hidden flex justify-end relative mt-6 overflow-hidden">
               <img
                 src={chargingStationIllustration}
                 alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-                className="w-full max-w-none object-contain scale-[1.7]"
+                className="w-full max-w-none object-contain object-right scale-[2.125] origin-right"
               />
             </div>
           </div>
