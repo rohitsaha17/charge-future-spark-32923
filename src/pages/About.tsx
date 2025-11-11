@@ -128,33 +128,36 @@ const About = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-20">
-      <div className="container mx-auto px-4 max-w-6xl">
+      {/* Full-Width Hero Section */}
+      <section id="hero" className="text-center mb-24 relative overflow-hidden -mx-4 md:-mx-8 lg:-mx-[50vw] lg:ml-[calc(-50vw+50%)] lg:mr-[calc(-50vw+50%)]">
+        {/* Background Image with Blue Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={heroBackground} 
+            alt="A Plus Charge Station Launch" 
+            className="w-full h-full object-cover object-center"
+          />
+          {/* Blue overlay for brand consistency */}
+          <div className="absolute inset-0 bg-primary/70" />
+          {/* Gradient overlay for text visibility */}
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/40 via-primary/50 to-primary/70" />
+        </div>
         
-        {/* Hero Section */}
-        <section id="hero" className="text-center mb-24 pt-8 relative overflow-hidden rounded-2xl">
-          {/* Background Image with Overlay */}
-          <div className="absolute inset-0 z-0">
-            <img 
-              src={heroBackground} 
-              alt="Northeast India Landscape" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/70" />
-          </div>
-          
-          {/* Content */}
-          <div className="relative z-10 py-16 px-4">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
-              From Vision to Reality:<br />
-              <span className="bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
-                Electrifying Northeast India
-              </span>
-            </h1>
-            <p className="text-lg text-foreground/90 font-medium max-w-2xl mx-auto mb-8 drop-shadow-md">
-              Born in Assam, built for the Northeast. We're not just installing chargers — we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
-            </p>
-          </div>
-        </section>
+        {/* Content */}
+        <div className="relative z-10 py-20 md:py-28 px-4">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
+            From Vision to Reality:<br />
+            <span className="text-white/95 drop-shadow-2xl">
+              Electrifying Northeast India
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-white/95 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
+            Born in Assam, built for the Northeast. We're not just installing chargers — we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
+          </p>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 max-w-6xl">
 
         {/* Stats Section */}
         <section id="stats" className="mb-24 scroll-mt-24">
