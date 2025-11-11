@@ -221,7 +221,7 @@ const Home = () => {
               </div>
 
               {/* Compact Stats Grid - Responsive sizing */}
-              <div className="grid grid-cols-3 gap-3 md:gap-6 mx-[121px] my-0 py-0 px-0">
+              <div className="grid grid-cols-3 gap-3 md:gap-6 mx-0 lg:mx-[121px] my-0 py-0 px-0">
                 <div ref={chargers.ref} className="group bg-white/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                   <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
                     <div className="bg-primary/10 rounded-lg w-7 h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
