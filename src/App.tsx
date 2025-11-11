@@ -21,6 +21,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminChargingStations from "./pages/AdminChargingStations";
 import AdminBlogs from "./pages/AdminBlogs";
 import NotFound from "./pages/NotFound";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -103,9 +104,11 @@ const AppContent = () => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 };
