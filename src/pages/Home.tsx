@@ -19,6 +19,8 @@ import phoneMockup from "@/assets/phone-realistic-blue.png";
 import googlePlayBadge from "@/assets/google-play-official.png";
 import appStoreBadge from "@/assets/app-store-official.png";
 import gradientBreak from "@/assets/gradient-section-break.png";
+import GradientDivider from "@/components/GradientDivider";
+import StorytellingSection from "@/components/StorytellingSection";
 import chargingStationIllustration from "@/assets/charging-station-illustration.png";
 import ChargingStationsMap from "@/components/ChargingStationsMap";
 import BenefitsSection from "@/components/BenefitsSection";
@@ -132,7 +134,7 @@ const Home = () => {
                 {/* Description */}
                 <p className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-4">
                   India's fastest-growing EV Charge Point Operator, delivering smart, reliable, and sustainable charging
-                  infrastructure across the Northeast — for drivers, developers, and partners.
+                  infrastructure across the Northeast - for drivers, developers, and partners.
                 </p>
 
                 {/* CTAs */}
@@ -179,7 +181,7 @@ const Home = () => {
               >
                 <img
                   src={heroIllustration}
-                  alt="A Plus Charge EV charging station—white electric car charging at branded A Plus charger"
+                  alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
                   className="w-full h-auto object-contain object-right drop-shadow-2xl"
                   loading="eager"
                 />
@@ -194,7 +196,7 @@ const Home = () => {
               >
                 <img
                   src={heroIllustration}
-                  alt="A Plus Charge EV charging station—white electric car charging at branded A Plus charger"
+                  alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
                   className="w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
                 />
@@ -328,6 +330,8 @@ const Home = () => {
         </div>
       </section>
 
+      <GradientDivider />
+
       {/* Benefits Section */}
       <div
         ref={benefitsSection.ref}
@@ -335,6 +339,8 @@ const Home = () => {
       >
         <BenefitsSection />
       </div>
+
+      <GradientDivider />
 
       {/* Trust Section - Brahmaputra River */}
       <section
@@ -360,6 +366,15 @@ const Home = () => {
           </p>
         </div>
       </section>
+
+      <GradientDivider />
+
+      <StorytellingSection 
+        title="Where Innovation Meets Tradition"
+        description="We're not just another tech company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
+      />
+
+      <GradientDivider />
 
       {/* USP Section */}
       <USPCarousel />
@@ -478,6 +493,15 @@ const Home = () => {
         </div>
       </section>
 
+      <GradientDivider />
+
+      <StorytellingSection 
+        title="Charging Made Simple, Everywhere You Go"
+        description="From bustling cities to remote hill stations, we're bringing reliable EV charging to every corner of the Northeast. Because your journey shouldn't be limited by where you can charge."
+      />
+
+      <GradientDivider />
+
       {/* App Download Section */}
       <section
         ref={appSection.ref}
@@ -571,6 +595,8 @@ const Home = () => {
         </div>
       </section>
 
+      <GradientDivider />
+
       {/* Testimonials Carousel */}
       <section
         ref={testimonialsSection.ref}
@@ -601,6 +627,16 @@ const Home = () => {
           <TestimonialsCarousel />
         </div>
       </section>
+
+      <GradientDivider />
+
+      <StorytellingSection 
+        title="Join the Electric Revolution"
+        description="Every kilowatt charged, every mile driven electric, every partner who joins us - together we're creating a cleaner, greener Northeast India. The future isn't coming, it's already here."
+        backgroundImage={northeastLandscape}
+      />
+
+      <GradientDivider />
 
       {/* FAQ Section */}
       <section

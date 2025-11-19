@@ -1,4 +1,6 @@
 import { useState } from "react";
+import GradientDivider from "@/components/GradientDivider";
+import StorytellingSection from "@/components/StorytellingSection";
 import { Play, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -323,6 +325,14 @@ const Partner = () => {
           </div>
         </div>
 
+        <GradientDivider />
+
+        <StorytellingSection 
+          title="Your Success Is Our Mission"
+          description="Join Northeast India's fastest-growing charging network. Together, we'll power the future of clean mobility while creating sustainable income for you. Let's build something extraordinary."
+        />
+
+        <GradientDivider />
 
         {/* Enquiry Form */}
         <div className="max-w-4xl mx-auto">

@@ -1,4 +1,6 @@
 import { Card } from "@/components/ui/card";
+import GradientDivider from "@/components/GradientDivider";
+import StorytellingSection from "@/components/StorytellingSection";
 import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Twitter } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
@@ -72,7 +74,7 @@ const About = () => {
       name: "Samyak Jain (EV Boy)",
       role: "Founder & CEO",
       image: founderPortrait,
-      story: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge — Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
+      story: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge - Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
       highlight: "PG in Entrepreneurship, Amity University | 10+ years in clean energy",
       linkedin: "#",
       twitter: "#"
@@ -150,7 +152,7 @@ const About = () => {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/95 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
-            Born in Assam, built for the Northeast. We're not just installing chargers — we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
+            Born in Assam, built for the Northeast. We're not just installing chargers - we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
           </p>
         </div>
       </section>
@@ -180,6 +182,8 @@ const About = () => {
           </div>
         </section>
 
+        <GradientDivider />
+
         {/* Story Section */}
         <section id="story" className="mb-24 scroll-mt-24">
           <div className="max-w-3xl mx-auto">
@@ -207,6 +211,15 @@ const About = () => {
           </div>
         </section>
 
+        <GradientDivider />
+
+        <StorytellingSection 
+          title="Building Trust Through Reliability"
+          description="Every station we install is a promise kept. Every kilowatt delivered is trust earned. We don't just power vehicles - we power the dreams of a cleaner, brighter Northeast India."
+        />
+
+        <GradientDivider />
+
         {/* What We Believe In */}
         <section id="values" className="mb-24 scroll-mt-24">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What We Believe In</h2>
@@ -225,6 +238,8 @@ const About = () => {
             })}
           </div>
         </section>
+
+        <GradientDivider />
 
         {/* Founder Section */}
         <section id="team" className="mb-24 scroll-mt-24">
@@ -304,6 +319,8 @@ const About = () => {
           </div>
         </section>
 
+        <GradientDivider />
+
         {/* Journey Timeline Section */}
         <section id="journey" className="mb-24 scroll-mt-24">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
@@ -315,6 +332,8 @@ const About = () => {
           <JourneyTimeline />
         </section>
 
+        <GradientDivider />
+
         {/* Testimonials Section */}
         <section id="testimonials" className="mb-24 scroll-mt-24">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
@@ -325,6 +344,8 @@ const About = () => {
           </p>
           <TestimonialsCarousel />
         </section>
+
+        <GradientDivider />
 
         {/* FAQ Section */}
         <section id="faq" className="mb-24 scroll-mt-24">
