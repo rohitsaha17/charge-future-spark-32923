@@ -54,31 +54,35 @@ const BenefitsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {benefits.map((benefit, index) => {
           const Icon = benefit.icon;
-          return <div key={index} className="group relative bg-card border border-border rounded-2xl p-8 hover:shadow-elegant transition-all duration-500 hover:-translate-y-2 animate-scale-in" style={{
+          return <div key={index} className="group relative rounded-2xl p-8 transition-all duration-500 hover:-translate-y-2 animate-scale-in overflow-hidden" style={{
             animationDelay: `${index * 0.1}s`
           }}>
-                {/* Gradient background on hover */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {/* Gradient background */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${benefit.color} opacity-[0.08] group-hover:opacity-[0.15] transition-opacity duration-500`}></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-background/60 via-background/40 to-transparent"></div>
+                
+                {/* Glow effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
                 
                 {/* Icon with gradient background */}
                 <div className="relative mb-6">
-                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${benefit.color} p-0.5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <div className="w-full h-full bg-card rounded-xl flex items-center justify-center">
-                      <Icon className="w-8 h-8 text-primary" />
+                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${benefit.color} p-0.5 shadow-lg group-hover:scale-110 group-hover:shadow-glow transition-all duration-300`}>
+                    <div className="w-full h-full bg-background/95 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                      <Icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-colors duration-300">
+                <h3 className="relative text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-colors duration-300">
                   {benefit.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="relative text-muted-foreground leading-relaxed">
                   {benefit.description}
                 </p>
 
                 {/* Decorative corner accent */}
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md"></div>
               </div>;
         })}
         </div>

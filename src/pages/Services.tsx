@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import GradientDivider from "@/components/GradientDivider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Home, Building2, Zap, Rocket, Shield, TrendingUp } from "lucide-react";
@@ -108,6 +109,8 @@ const Services = () => {
           </div>
         </div>
 
+        <GradientDivider />
+
         {/* Deployment Models */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-center mb-12">Deployment Models</h2>
@@ -145,6 +148,8 @@ const Services = () => {
             })}
           </div>
         </div>
+
+        <GradientDivider />
 
         {/* CTA */}
         <div className="text-center">

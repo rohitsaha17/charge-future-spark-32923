@@ -48,7 +48,7 @@ const Invest = () => {
             Invest in the Future of Energy
           </h1>
           <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            At A Plus Charge, we're not just scaling EV charging infrastructure — we're building the backbone 
+            At A Plus Charge, we're not just scaling EV charging infrastructure - we're building the backbone 
             of India's clean mobility revolution. With proven traction, government recognition, and strong 
             partnerships, we offer investors a unique opportunity to power growth in one of the fastest-growing 
             markets of the decade.
