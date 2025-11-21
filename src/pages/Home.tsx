@@ -196,7 +196,7 @@ const Home = () => {
                 }}
               >
                 <img
-                  src={Gemini_Generated_Image_d3n5j7d3n5j7d3n5}
+                  src={Gemini_Generated_Image_d3n5j7d3n5j7d3n5.jpeg}
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
                   className="w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
