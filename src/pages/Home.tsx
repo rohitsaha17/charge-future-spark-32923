@@ -195,7 +195,7 @@ const Home = () => {
                 }}
               >
                 <img
-                  src={heroIllustration}
+                  src={Gemini_Generated_Image_d3n5j7d3n5j7d3n5}
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
                   className="w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
@@ -391,7 +391,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_15%_97%)] via-[hsl(216_83%_98%)] to-[hsl(220_15%_97%)]"></div>
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-        
+
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-cyan-600 bg-clip-text text-transparent">
