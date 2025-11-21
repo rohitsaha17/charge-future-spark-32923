@@ -21,7 +21,7 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
     // Initialize map
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      style: 'https://demotiles.maplibre.org/style.json',
       center: [initialLng, initialLat],
       zoom: 12,
     });
