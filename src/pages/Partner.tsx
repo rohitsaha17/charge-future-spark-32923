@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
+import LocationPickerMap from "@/components/LocationPickerMap";
 import { Play, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -94,6 +95,7 @@ const Partner = () => {
   };
 
   const [result, setResult] = useState<any>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; address?: string } | null>(null);
 
   const handleCalculate = () => {
     const calc = calculateROI();
@@ -103,9 +105,20 @@ const Partner = () => {
     }
   };
 
+  const handleLocationSelect = (lat: number, lng: number, address?: string) => {
+    setSelectedLocation({ lat, lng, address });
+    toast.success("Location marked on map!");
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Enquiry submitted! We'll contact you soon.");
+    
+    if (!selectedLocation) {
+      toast.error("Please mark your location on the map");
+      return;
+    }
+    
+    toast.success(`Enquiry submitted! Location: ${selectedLocation.lat.toFixed(6)}, ${selectedLocation.lng.toFixed(6)}`);
   };
 
   return (
@@ -459,15 +472,30 @@ const Partner = () => {
                   </div>
                 </div>
                 
-                {/* Map Placeholder */}
-                <div className="border border-border rounded-lg p-6 bg-muted/30 text-center">
-                  <MapPin className="w-8 h-8 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Click on map to mark your exact location
-                  </p>
-                  <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
-                    <p className="text-muted-foreground">Interactive map will be integrated here</p>
-                  </div>
+                {/* Interactive Location Map */}
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    Mark Your Exact Location on Map *
+                  </Label>
+                  <LocationPickerMap 
+                    onLocationSelect={handleLocationSelect}
+                    initialLat={26.1445}
+                    initialLng={91.7362}
+                  />
+                  {selectedLocation && (
+                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                      <p className="text-sm font-medium text-foreground mb-1">Selected Location:</p>
+                      <p className="text-xs text-foreground/70">
+                        Latitude: {selectedLocation.lat.toFixed(6)}, Longitude: {selectedLocation.lng.toFixed(6)}
+                      </p>
+                      {selectedLocation.address && (
+                        <p className="text-xs text-foreground/60 mt-1">
+                          {selectedLocation.address}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
