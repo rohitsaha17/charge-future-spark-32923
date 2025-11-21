@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { MapPin, Zap, Navigation } from 'lucide-react';
 
@@ -17,22 +17,21 @@ const center = {
   lng: 91.7362
 };
 
+// Use a constant API key to prevent loader reinitialization errors
+const GOOGLE_MAPS_API_KEY = 'AIzaSyBFw0Qbyq9zTFTd-tUqqo6yBiXWefBnwB4';
+
 const GoogleMapsCharging = () => {
   const [stations, setStations] = useState<any[]>([]);
   const [selectedStation, setSelectedStation] = useState<any | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [apiKey, setApiKey] = useState('');
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: apiKey || ''
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY
   });
 
   useEffect(() => {
     fetchStations();
-    // For now, use a public API key or prompt user
-    // You can add this to secrets later
-    setApiKey('AIzaSyBFw0Qbyq9zTFTd-tUqqo6yBiXWefBnwB4'); // Replace with actual key
   }, []);
 
   const fetchStations = async () => {
