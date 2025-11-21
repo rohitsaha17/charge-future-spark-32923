@@ -75,13 +75,16 @@ export type Database = {
           connector_type: string
           created_at: string
           created_by: string | null
+          district: string | null
           id: string
           latitude: number
           longitude: number
           name: string
+          pin_code: string | null
           power_output: string
           price_per_unit: number | null
           state: string
+          station_type: string | null
           status: string
           total_chargers: number
           updated_at: string
@@ -95,13 +98,16 @@ export type Database = {
           connector_type: string
           created_at?: string
           created_by?: string | null
+          district?: string | null
           id?: string
           latitude: number
           longitude: number
           name: string
+          pin_code?: string | null
           power_output: string
           price_per_unit?: number | null
           state: string
+          station_type?: string | null
           status?: string
           total_chargers?: number
           updated_at?: string
@@ -115,13 +121,16 @@ export type Database = {
           connector_type?: string
           created_at?: string
           created_by?: string | null
+          district?: string | null
           id?: string
           latitude?: number
           longitude?: number
           name?: string
+          pin_code?: string | null
           power_output?: string
           price_per_unit?: number | null
           state?: string
+          station_type?: string | null
           status?: string
           total_chargers?: number
           updated_at?: string
