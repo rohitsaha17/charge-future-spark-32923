@@ -2,141 +2,391 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabase } from '@/integrations/supabase/client';
+import { Zap, MapPin, BatteryCharging } from 'lucide-react';
 
-// Minimal, token-free MapLibre map that renders markers from the database
 const ChargingStationsMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
-  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const markers = useRef<maplibregl.Marker[]>([]);
   const [stations, setStations] = useState<any[]>([]);
 
-  // 1) Load stations
   useEffect(() => {
-    const fetchStations = async () => {
-      const { data, error } = await supabase
-        .from('charging_stations')
-        .select('*')
-        .eq('status', 'active');
-
-      if (!error && data) setStations(data);
-    };
-
     fetchStations();
   }, []);
 
-  // 2) Init map ONCE
   useEffect(() => {
-    if (!mapContainer.current || map.current) return;
+    if (!mapContainer.current) return;
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://demotiles.maplibre.org/style.json',
-      center: [92.5, 26.0],
-      zoom: 6.5,
+      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      center: [91.7362, 26.1445],
+      zoom: 7,
       pitch: 45,
     });
 
     map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
     return () => {
-      // Cleanup markers first
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current = [];
-
-      // Safely remove the map (avoid destroy error if map isn't fully initialized)
-      if (map.current) {
-        try {
-          map.current.remove();
-        } catch (err) {
-          console.warn('Map remove failed:', err);
-        } finally {
-          map.current = null;
-        }
-      }
+      markers.current.forEach(marker => marker.remove());
+      markers.current = [];
+      map.current?.remove();
     };
   }, []);
 
-  // 3) Render/refresh markers when stations change
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current || stations.length === 0) return;
 
-    const addMarkers = () => {
-      // Clear previous markers
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current = [];
+    markers.current.forEach(marker => marker.remove());
+    markers.current = [];
 
-      if (stations.length === 0) return;
+    const bounds = new maplibregl.LngLatBounds();
 
-      // Fit bounds
-      const bounds = new maplibregl.LngLatBounds();
+    stations.forEach((station) => {
+      const markerElement = createCustomMarker(station);
+      
+      const marker = new maplibregl.Marker({ element: markerElement })
+        .setLngLat([station.longitude, station.latitude])
+        .setPopup(
+          new maplibregl.Popup({ 
+            offset: 25,
+            className: 'custom-popup',
+            maxWidth: '320px'
+          }).setHTML(createPopupContent(station))
+        )
+        .addTo(map.current!);
 
-      stations.forEach((station) => {
-        const el = document.createElement('div');
-        el.className = 'charging-station-marker';
-        el.style.width = '24px';
-        el.style.height = '24px';
-        el.style.borderRadius = '50%';
-        el.style.backgroundColor = 'hsl(var(--primary))';
-        el.style.border = '3px solid white';
-        el.style.boxShadow = '0 0 20px hsl(var(--primary) / 0.6)';
-        el.style.cursor = 'pointer';
-        el.style.animation = 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
+      markers.current.push(marker);
+      bounds.extend([station.longitude, station.latitude]);
+    });
 
-        const popup = new maplibregl.Popup({ offset: 25 }).setHTML(
-          `<div style="padding: 8px;">
-            <h3 style="font-weight: 600; margin-bottom: 4px; color: hsl(var(--foreground));">${station.name}</h3>
-            <p style="font-size: 14px; color: hsl(var(--muted-foreground));">${station.city}, ${station.state}</p>
-            <p style="font-size: 12px; color: hsl(var(--muted-foreground));">${station.charger_type} • ${station.power_output}</p>
-            <p style="font-size: 12px; color: hsl(var(--muted-foreground));">Available: ${station.available_chargers}/${station.total_chargers}</p>
-          </div>`
-        );
-
-        const lng = Number(station.longitude);
-        const lat = Number(station.latitude);
-
-        const marker = new maplibregl.Marker(el)
-          .setLngLat([lng, lat])
-          .setPopup(popup)
-          .addTo(map.current!);
-
-        markersRef.current.push(marker);
-        bounds.extend([lng, lat]);
-      });
-
-      // Adjust view to markers
-      if (!bounds.isEmpty()) {
-        try {
-          map.current!.fitBounds(bounds, { padding: 40, maxZoom: 12, duration: 600 });
-        } catch (_) {
-          /* ignore fit errors */
-        }
-      }
-    };
-
-    if (map.current.loaded()) {
-      addMarkers();
-    } else {
-      map.current.once('load', addMarkers);
+    if (stations.length > 0) {
+      map.current.fitBounds(bounds, { padding: 80, maxZoom: 12 });
     }
   }, [stations]);
 
+  const createCustomMarker = (station: any) => {
+    const el = document.createElement('div');
+    const isDC = station.charger_type === 'DC';
+    const isResidential = station.station_type === 'Residential';
+    
+    el.className = 'custom-marker';
+    el.innerHTML = `
+      <div class="marker-container ${isDC ? 'dc-charger' : 'ac-charger'} ${isResidential ? 'residential' : ''}">
+        <div class="marker-pulse"></div>
+        <div class="marker-icon">
+          ${isDC 
+            ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>'
+            : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>'
+          }
+        </div>
+        <div class="marker-badge">${station.total_chargers}</div>
+      </div>
+    `;
+    
+    return el;
+  };
+
+  const createPopupContent = (station: any) => {
+    const isDC = station.charger_type === 'DC';
+    const isResidential = station.station_type === 'Residential';
+    
+    return `
+      <div class="station-popup">
+        <div class="popup-header ${isDC ? 'dc-header' : 'ac-header'}">
+          <div class="popup-icon">
+            ${isDC 
+              ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>'
+              : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>'
+            }
+          </div>
+          <h3 class="popup-title">${station.name}</h3>
+          <span class="popup-type-badge ${isResidential ? 'residential-badge' : 'public-badge'}">
+            ${isResidential ? 'Residential' : 'Public'}
+          </span>
+        </div>
+        <div class="popup-content">
+          <div class="popup-row">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>${station.address}</span>
+          </div>
+          <div class="popup-row">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>${station.city}, ${station.state}</span>
+          </div>
+          <div class="popup-divider"></div>
+          <div class="popup-charger-info">
+            <div class="charger-type-label">${isDC ? 'DC Fast Charging' : 'AC Charging'}</div>
+            <div class="charger-power">${station.power_output}</div>
+            <div class="charger-connector">${station.connector_type} Connector</div>
+          </div>
+          <div class="popup-availability">
+            <div class="availability-indicator ${station.status === 'active' ? 'active' : 'inactive'}"></div>
+            <span>${station.available_chargers}/${station.total_chargers} Available</span>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const fetchStations = async () => {
+    const { data, error } = await supabase
+      .from('charging_stations')
+      .select('*')
+      .eq('status', 'active')
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching stations:', error);
+      return;
+    }
+
+    setStations(data || []);
+  };
+
   return (
-    <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-border shadow-elegant">
-      <div ref={mapContainer} className="w-full h-full" />
+    <>
+      <div ref={mapContainer} className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant overflow-hidden" />
+      
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.8; transform: scale(1.1); }
+        .custom-marker {
+          cursor: pointer;
+          transition: transform 0.3s ease;
         }
-        .maplibregl-popup-content {
-          background-color: hsl(var(--card));
-          border: 1px solid hsl(var(--border));
-          border-radius: 8px;
-          box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+        
+        .custom-marker:hover {
+          transform: scale(1.15);
+          z-index: 10;
         }
-        .maplibregl-popup-tip { border-top-color: hsl(var(--card)); }
+        
+        .marker-container {
+          position: relative;
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .marker-pulse {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .ac-charger .marker-pulse {
+          background: radial-gradient(circle, rgba(38, 116, 236, 0.4), transparent);
+        }
+        
+        .dc-charger .marker-pulse {
+          background: radial-gradient(circle, rgba(147, 51, 234, 0.4), transparent);
+        }
+        
+        @keyframes pulse-ring {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.3);
+            opacity: 0;
+          }
+        }
+        
+        .marker-icon {
+          position: relative;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+        }
+        
+        .ac-charger .marker-icon {
+          background: linear-gradient(135deg, #2674EC, #00E5FF);
+          color: white;
+        }
+        
+        .dc-charger .marker-icon {
+          background: linear-gradient(135deg, #9333EA, #C026D3);
+          color: white;
+        }
+        
+        .residential .marker-icon {
+          border: 3px solid #F59E0B;
+        }
+        
+        .marker-badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          background: white;
+          color: #2674EC;
+          font-size: 10px;
+          font-weight: 700;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dc-charger .marker-badge {
+          color: #9333EA;
+        }
+        
+        .custom-popup .maplibregl-popup-content {
+          padding: 0;
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+          overflow: hidden;
+        }
+        
+        .custom-popup .maplibregl-popup-tip {
+          border-top-color: #2674EC;
+        }
+        
+        .station-popup {
+          min-width: 280px;
+        }
+        
+        .popup-header {
+          padding: 16px;
+          color: white;
+          position: relative;
+        }
+        
+        .ac-header {
+          background: linear-gradient(135deg, #2674EC, #00E5FF);
+        }
+        
+        .dc-header {
+          background: linear-gradient(135deg, #9333EA, #C026D3);
+        }
+        
+        .popup-icon {
+          margin-bottom: 8px;
+        }
+        
+        .popup-title {
+          font-size: 16px;
+          font-weight: 700;
+          margin: 0 0 8px 0;
+          line-height: 1.3;
+        }
+        
+        .popup-type-badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .public-badge {
+          background: rgba(255, 255, 255, 0.25);
+          color: white;
+        }
+        
+        .residential-badge {
+          background: #F59E0B;
+          color: white;
+        }
+        
+        .popup-content {
+          padding: 16px;
+          background: white;
+        }
+        
+        .popup-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          margin-bottom: 10px;
+          font-size: 13px;
+          color: #475569;
+        }
+        
+        .popup-row svg {
+          flex-shrink: 0;
+          margin-top: 2px;
+          color: #2674EC;
+        }
+        
+        .popup-divider {
+          height: 1px;
+          background: linear-gradient(to right, transparent, #E2E8F0, transparent);
+          margin: 12px 0;
+        }
+        
+        .popup-charger-info {
+          background: linear-gradient(135deg, #F0F9FF, #DBEAFE);
+          padding: 12px;
+          border-radius: 12px;
+          margin-bottom: 12px;
+        }
+        
+        .charger-type-label {
+          font-size: 11px;
+          font-weight: 600;
+          color: #2674EC;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 4px;
+        }
+        
+        .charger-power {
+          font-size: 16px;
+          font-weight: 700;
+          color: #1E293B;
+          margin-bottom: 4px;
+        }
+        
+        .charger-connector {
+          font-size: 12px;
+          color: #64748B;
+        }
+        
+        .popup-availability {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #10B981;
+        }
+        
+        .availability-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #10B981;
+          animation: pulse-dot 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-dot {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
+        
+        .availability-indicator.inactive {
+          background: #EF4444;
+        }
       `}</style>
-    </div>
+    </>
   );
 };
 
