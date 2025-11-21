@@ -244,7 +244,7 @@ const Home = () => {
       >
         {/* White gradient overlay at top to merge smoothly */}
         <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
-        
+
         {/* Full-Width Illustration - Pinned to Right (Hidden on mobile) */}
         <div className="absolute inset-0 lg:flex md:flex hidden items-center justify-end overflow-hidden">
           <img
@@ -254,7 +254,7 @@ const Home = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent pointer-events-none"></div>
         </div>
-        
+
         {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tl from-blue-500/5 to-primary/5 rounded-full blur-3xl z-0"></div>
@@ -286,8 +286,12 @@ const Home = () => {
                       <Zap className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary" />
                     </div>
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">{chargers.count}+</div>
-                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">Live Chargers</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">
+                    {chargers.count}+
+                  </div>
+                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">
+                    Live Chargers
+                  </div>
                 </div>
 
                 <div
@@ -299,8 +303,12 @@ const Home = () => {
                       <MapPin className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-cyan-600" />
                     </div>
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">{stations.count}+</div>
-                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">Stations</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">
+                    {stations.count}+
+                  </div>
+                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">
+                    Stations
+                  </div>
                 </div>
 
                 <div
@@ -312,8 +320,12 @@ const Home = () => {
                       <Users className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-green-600" />
                     </div>
                   </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">{customers.count}+</div>
-                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">Customers</div>
+                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">
+                    {customers.count}+
+                  </div>
+                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">
+                    Customers
+                  </div>
                 </div>
               </div>
             </div>
@@ -331,9 +343,9 @@ const Home = () => {
       </section>
 
       {/* Storytelling Section - Where Innovation Meets Tradition */}
-      <StorytellingSection 
+      <StorytellingSection
         title="Where Innovation Meets Tradition"
-        description="We're not just another tech company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
+        description="We're not just another charging provider company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
         backgroundImage={appSectionBg}
       />
 
@@ -350,7 +362,7 @@ const Home = () => {
       <GradientDivider />
 
       {/* Trust Section - Northeast Hills */}
-      <StorytellingSection 
+      <StorytellingSection
         title="Rooted in Northeast India, Powering the Future"
         description="Like the mighty Brahmaputra that connects our lands, we're building a charging network that flows across Assam, Meghalaya, Arunachal Pradesh, and beyond. From the hills of Shillong to the plains of Guwahati, we understand our region's unique terrain and deliver charging solutions that work in every season, every landscape."
         backgroundImage={northeastHillsLandscape}
@@ -364,12 +376,11 @@ const Home = () => {
       <GradientDivider />
 
       {/* Storytelling Section - Charging Made Simple */}
-      <StorytellingSection 
+      <StorytellingSection
         title="Charging Made Simple, Everywhere You Go"
         description="From bustling cities to remote hill stations, we're bringing reliable EV charging to every corner of the Northeast. Because your journey shouldn't be limited by where you can charge."
         backgroundImage={brahmaputraSunset}
       />
-
 
       {/* Client Logos - Scrolling */}
       <section
@@ -615,7 +626,7 @@ const Home = () => {
 
       <GradientDivider />
 
-      <StorytellingSection 
+      <StorytellingSection
         title="Join the Electric Revolution"
         description="Every kilowatt charged, every mile driven electric, every partner who joins us - together we're creating a cleaner, greener Northeast India. The future isn't coming, it's already here."
         backgroundImage={trustBg}
