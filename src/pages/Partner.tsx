@@ -12,16 +12,54 @@ import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, Tre
 import { toast } from "sonner";
 
 const Partner = () => {
-  const [chargerType, setChargerType] = useState("ac-public");
+  const [chargerType, setChargerType] = useState("residential-3.3kw");
   const [utilization, setUtilization] = useState("base");
-  const [tariff, setTariff] = useState([15]);
+  const [tariff, setTariff] = useState([10]);
   const [electricityCost, setElectricityCost] = useState("");
 
   const chargerData: Record<string, any> = {
-    "residential": { investment: 50000, units: { low: 200, base: 400, aggressive: 600 }, platformFee: 1.5 },
-    "ac-public": { investment: 150000, units: { low: 800, base: 1600, aggressive: 2400 }, platformFee: 1.5 },
-    "dc-30kw": { investment: 800000, units: { low: 3000, base: 6000, aggressive: 9000 }, platformFee: 3.0 },
-    "dc-60kw": { investment: 1500000, units: { low: 6000, base: 12000, aggressive: 18000 }, platformFee: 3.0 }
+    "residential-3.3kw": { 
+      investment: 40000, 
+      units: { low: 150, base: 300, aggressive: 500 }, 
+      platformFee: 1.5,
+      defaultTariff: 10,
+      type: "AC"
+    },
+    "residential-7.4kw": { 
+      investment: 65000, 
+      units: { low: 250, base: 500, aggressive: 800 }, 
+      platformFee: 1.5,
+      defaultTariff: 10,
+      type: "AC"
+    },
+    "ac-public": { 
+      investment: 150000, 
+      units: { low: 800, base: 1600, aggressive: 2400 }, 
+      platformFee: 1.5,
+      defaultTariff: 10,
+      type: "AC"
+    },
+    "dc-30kw": { 
+      investment: 800000, 
+      units: { low: 3000, base: 6000, aggressive: 9000 }, 
+      platformFee: 3.0,
+      defaultTariff: 22,
+      type: "DC"
+    },
+    "dc-60kw": { 
+      investment: 1500000, 
+      units: { low: 6000, base: 12000, aggressive: 18000 }, 
+      platformFee: 3.0,
+      defaultTariff: 22,
+      type: "DC"
+    },
+    "dc-120kw": { 
+      investment: 2500000, 
+      units: { low: 10000, base: 20000, aggressive: 30000 }, 
+      platformFee: 3.0,
+      defaultTariff: 22,
+      type: "DC"
+    }
   };
 
   const calculateROI = () => {
@@ -143,17 +181,32 @@ const Partner = () => {
               <div className="space-y-6">
                 <div>
                   <Label>Type of Charger</Label>
-                  <Select value={chargerType} onValueChange={setChargerType}>
+                  <Select 
+                    value={chargerType} 
+                    onValueChange={(value) => {
+                      setChargerType(value);
+                      // Automatically set tariff based on charger type
+                      const selectedCharger = chargerData[value];
+                      setTariff([selectedCharger.defaultTariff]);
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="residential">Residential (3.3-7.4 kW)</SelectItem>
+                      <SelectItem value="residential-3.3kw">Residential 3.3 kW</SelectItem>
+                      <SelectItem value="residential-7.4kw">Residential 7.4 kW</SelectItem>
                       <SelectItem value="ac-public">AC Public (7.4-22 kW)</SelectItem>
-                      <SelectItem value="dc-30kw">DC Fast 30kW</SelectItem>
-                      <SelectItem value="dc-60kw">DC Fast 60kW</SelectItem>
+                      <SelectItem value="dc-30kw">DC Fast 30 kW</SelectItem>
+                      <SelectItem value="dc-60kw">DC Fast 60 kW</SelectItem>
+                      <SelectItem value="dc-120kw">DC Fast 120 kW</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {chargerData[chargerType].type === "DC" 
+                      ? "DC chargers automatically use ₹22/kWh tariff" 
+                      : "AC chargers automatically use ₹10/kWh tariff"}
+                  </p>
                 </div>
 
                 <div>
@@ -171,15 +224,27 @@ const Partner = () => {
                 </div>
 
                 <div>
-                  <Label>Charging Tariff (₹ per kWh): ₹{tariff[0]}</Label>
+                  <Label>
+                    Charging Tariff (₹ per kWh): ₹{tariff[0]}
+                    {chargerData[chargerType].type === "DC" && (
+                      <span className="ml-2 text-xs font-normal text-primary">(Auto-set for DC chargers)</span>
+                    )}
+                    {chargerData[chargerType].type === "AC" && (
+                      <span className="ml-2 text-xs font-normal text-primary">(Auto-set for AC chargers)</span>
+                    )}
+                  </Label>
                   <Slider
                     value={tariff}
                     onValueChange={setTariff}
-                    min={10}
-                    max={25}
+                    min={chargerData[chargerType].type === "DC" ? 18 : 8}
+                    max={chargerData[chargerType].type === "DC" ? 26 : 15}
                     step={1}
                     className="mt-2"
+                    disabled={false}
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Default: ₹{chargerData[chargerType].defaultTariff}/kWh (Adjustable based on market conditions)
+                  </p>
                 </div>
 
                 <div>
