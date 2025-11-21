@@ -19,7 +19,7 @@ const ChargingStationsMap = () => {
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      style: 'https://demotiles.maplibre.org/style.json',
       center: [91.7362, 26.1445],
       zoom: 7,
       pitch: 45,
