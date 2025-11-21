@@ -4,7 +4,7 @@ import { MapPin, Users, Zap, ChevronDown, ArrowRight } from "lucide-react";
 import heroIllustration from "@/assets/hero-illustration.png";
 import logomark from "@/assets/a-plus-logomark.png";
 import trustBg from "@/assets/trust-bg.jpg";
-import northeastLandscape from "@/assets/northeast-landscape.jpg";
+import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import brahmaputraSunset from "@/assets/brahmaputra-sunset.jpg";
 import USPCarousel from "@/components/USPCarousel";
 import atherLogo from "@/assets/partners/ather-logo-new.png";
@@ -330,6 +330,13 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Storytelling Section - Where Innovation Meets Tradition */}
+      <StorytellingSection 
+        title="Where Innovation Meets Tradition"
+        description="We're not just another tech company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
+        backgroundImage={appSectionBg}
+      />
+
       <GradientDivider />
 
       {/* Benefits Section */}
@@ -342,42 +349,27 @@ const Home = () => {
 
       <GradientDivider />
 
-      {/* Trust Section - Brahmaputra River */}
-      <section
-        ref={trustSection.ref}
-        className={`relative py-24 overflow-hidden transition-all duration-1000 ${trustSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-        style={{
-          backgroundImage: `url(${brahmaputraSunset})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/75 to-background/85"></div>
-        <div className="relative z-10 container mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-4xl font-bold mb-6 drop-shadow-lg">
-            Rooted in Northeast India, Powering the Future
-          </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-            Like the mighty Brahmaputra that connects our lands, we're building a charging network that flows across
-            Assam, Meghalaya, Arunachal Pradesh, and beyond. From the hills of Shillong to the plains of Guwahati, we
-            understand our region's unique terrain and deliver charging solutions that work in every season, every
-            landscape.
-          </p>
-        </div>
-      </section>
-
-      <GradientDivider />
-
+      {/* Trust Section - Northeast Hills */}
       <StorytellingSection 
-        title="Where Innovation Meets Tradition"
-        description="We're not just another tech company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
+        title="Rooted in Northeast India, Powering the Future"
+        description="Like the mighty Brahmaputra that connects our lands, we're building a charging network that flows across Assam, Meghalaya, Arunachal Pradesh, and beyond. From the hills of Shillong to the plains of Guwahati, we understand our region's unique terrain and deliver charging solutions that work in every season, every landscape."
+        backgroundImage={northeastHillsLandscape}
       />
 
       <GradientDivider />
 
       {/* USP Section */}
       <USPCarousel />
+
+      <GradientDivider />
+
+      {/* Storytelling Section - Charging Made Simple */}
+      <StorytellingSection 
+        title="Charging Made Simple, Everywhere You Go"
+        description="From bustling cities to remote hill stations, we're bringing reliable EV charging to every corner of the Northeast. Because your journey shouldn't be limited by where you can charge."
+        backgroundImage={brahmaputraSunset}
+      />
+
 
       {/* Client Logos - Scrolling */}
       <section
@@ -492,13 +484,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      <GradientDivider />
-
-      <StorytellingSection 
-        title="Charging Made Simple, Everywhere You Go"
-        description="From bustling cities to remote hill stations, we're bringing reliable EV charging to every corner of the Northeast. Because your journey shouldn't be limited by where you can charge."
-      />
 
       <GradientDivider />
 
@@ -633,7 +618,7 @@ const Home = () => {
       <StorytellingSection 
         title="Join the Electric Revolution"
         description="Every kilowatt charged, every mile driven electric, every partner who joins us - together we're creating a cleaner, greener Northeast India. The future isn't coming, it's already here."
-        backgroundImage={northeastLandscape}
+        backgroundImage={trustBg}
       />
 
       <GradientDivider />
