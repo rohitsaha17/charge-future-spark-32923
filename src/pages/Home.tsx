@@ -23,7 +23,7 @@ import gradientBreak from "@/assets/gradient-section-break.png";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import chargingStationIllustration from "@/assets/charging-station-illustration.png";
-import ChargingStationsMap from "@/components/ChargingStationsMap";
+import GoogleMapsCharging from "@/components/GoogleMapsCharging";
 import BenefitsSection from "@/components/BenefitsSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { useCountUp } from "@/hooks/useCountUp";
@@ -227,7 +227,7 @@ const Home = () => {
             </p>
           </div>
           <div className="animate-fade-in max-w-7xl mx-auto" style={{ animationDelay: "0.2s" }}>
-            <ChargingStationsMap />
+            <GoogleMapsCharging />
           </div>
         </div>
       </section>

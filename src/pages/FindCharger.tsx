@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { MapPin, Zap, Clock, Battery, Filter, Search } from "lucide-react";
-import ChargingStationsMap from "@/components/ChargingStationsMap";
+import GoogleMapsCharging from "@/components/GoogleMapsCharging";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -230,7 +230,7 @@ const FindCharger = () => {
           {/* Map */}
           <div className="lg:col-span-2">
             <Card className="p-2 border-content-highlight-border bg-content-highlight/30 shadow-elegant">
-              <ChargingStationsMap />
+              <GoogleMapsCharging />
             </Card>
           </div>
         </div>
