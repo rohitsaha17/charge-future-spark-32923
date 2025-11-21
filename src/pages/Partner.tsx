@@ -224,15 +224,7 @@ const Partner = () => {
                 </div>
 
                 <div>
-                  <Label>
-                    Charging Tariff (₹ per kWh): ₹{tariff[0]}
-                    {chargerData[chargerType].type === "DC" && (
-                      <span className="ml-2 text-xs font-normal text-primary">(Auto-set for DC chargers)</span>
-                    )}
-                    {chargerData[chargerType].type === "AC" && (
-                      <span className="ml-2 text-xs font-normal text-primary">(Auto-set for AC chargers)</span>
-                    )}
-                  </Label>
+                  <Label>Charging Tariff (₹ per kWh): ₹{tariff[0]}</Label>
                   <Slider
                     value={tariff}
                     onValueChange={setTariff}
@@ -240,7 +232,6 @@ const Partner = () => {
                     max={chargerData[chargerType].type === "DC" ? 26 : 15}
                     step={1}
                     className="mt-2"
-                    disabled={false}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Default: ₹{chargerData[chargerType].defaultTariff}/kWh (Adjustable based on market conditions)
