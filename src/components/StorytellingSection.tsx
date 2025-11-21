@@ -15,7 +15,7 @@ const StorytellingSection = ({
     <section 
       className="relative py-16 md:py-20 overflow-hidden"
       style={backgroundImage ? {
-        backgroundImage: `linear-gradient(to bottom, rgba(255,255,255,0.92), rgba(255,255,255,0.88), rgba(255,255,255,0.92)), url(${backgroundImage})`,
+        backgroundImage: `linear-gradient(to bottom, rgba(240,245,255,0.75), rgba(230,240,255,0.85), rgba(245,250,255,0.80)), url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -25,7 +25,7 @@ const StorytellingSection = ({
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent drop-shadow-lg">
           {title}
         </h2>
-        <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed drop-shadow-md">
+        <p className="text-base md:text-lg lg:text-xl text-foreground/80 max-w-4xl mx-auto leading-relaxed drop-shadow-sm">
           {description}
         </p>
       </div>
