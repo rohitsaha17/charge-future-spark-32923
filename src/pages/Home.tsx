@@ -209,10 +209,11 @@ const Home = () => {
       {/* Charging Stations Map */}
       <section
         ref={mapSection.ref}
-        className={`pt-24 pb-0 relative overflow-hidden bg-white transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`pt-24 pb-0 relative overflow-hidden transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Radial Gradient Background */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[radial-gradient(circle,_rgba(38,116,236,0.05)_0%,_transparent_70%)] pointer-events-none"></div>
+        {/* Enhanced Radial Gradient Depth Layer */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.15),_transparent_70%)]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(220_15%_97%)] to-background"></div>
 
         <div className="container mx-auto px-4 relative z-10 mb-0">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
@@ -220,7 +221,7 @@ const Home = () => {
               <span className="text-primary font-semibold">Live Network</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Our Charging Network</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            <p className="text-foreground/70 max-w-2xl mx-auto text-lg">
               Strategically located across Northeast India to power your journey. Click on any marker to view station
               details.
             </p>
@@ -382,17 +383,27 @@ const Home = () => {
         backgroundImage={brahmaputraSunset}
       />
 
-      {/* Client Logos - Scrolling */}
+      {/* Client Logos - Scrolling with Gradient Separator */}
       <section
         ref={partnersSection.ref}
         className={`py-20 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-card via-background to-card"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <h2 className="text-3xl font-bold text-center mb-12">Trusted Partners</h2>
-          <div className="relative overflow-hidden mask-gradient">
-            <div className="flex animate-scroll-left items-center">
-              {/* First set of logos */}
+        {/* Gradient separator layer */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_15%_97%)] via-[hsl(216_83%_98%)] to-[hsl(220_15%_97%)]"></div>
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+        
+        <div className="relative z-10 container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-cyan-600 bg-clip-text text-transparent">
+              Trusted Partners
+            </h2>
+            <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
+              Collaborating with industry leaders to build India's most reliable EV charging network
+            </p>
+          </div>
+          <div className="relative overflow-hidden mask-gradient py-8">
+            <div className="flex gap-0 animate-scroll-left">
               {[
                 {
                   src: atherLogo,
