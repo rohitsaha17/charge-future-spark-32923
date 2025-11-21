@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Users, Zap, ChevronDown, ArrowRight } from "lucide-react";
 import heroIllustration from "@/assets/hero-illustration.png";
 import logomark from "@/assets/a-plus-logomark.png";
-import heroEvCharging from "@/assets/hero-ev-charging-branded.jpeg";
+import heroEvCharging from "@/assets/hero-ev-charging-v2.png";
 import trustBg from "@/assets/trust-bg.jpg";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import brahmaputraSunset from "@/assets/brahmaputra-sunset.jpg";
