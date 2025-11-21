@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Users, Zap, ChevronDown, ArrowRight } from "lucide-react";
 import heroIllustration from "@/assets/hero-illustration.png";
 import logomark from "@/assets/a-plus-logomark.png";
-import Gemini_Generated_Image_d3n5j7d3n5j7d3n5 from "@/assets/Gemini_Generated_Image_d3n5j7d3n5j7d3n5.jpeg";
+import heroEvCharging from "@/assets/hero-ev-charging-branded.jpeg";
 import trustBg from "@/assets/trust-bg.jpg";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import brahmaputraSunset from "@/assets/brahmaputra-sunset.jpg";
@@ -196,7 +196,7 @@ const Home = () => {
                 }}
               >
                 <img
-                  src={Gemini_Generated_Image_d3n5j7d3n5j7d3n5}
+                  src={heroEvCharging}
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
                   className="w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
