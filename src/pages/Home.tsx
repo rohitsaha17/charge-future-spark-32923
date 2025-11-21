@@ -209,24 +209,23 @@ const Home = () => {
       {/* Charging Stations Map */}
       <section
         ref={mapSection.ref}
-        className={`pt-24 pb-0 relative overflow-hidden transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Enhanced Radial Gradient Depth Layer */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.15),_transparent_70%)]"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(220_15%_97%)] to-background"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.15),_transparent_70%)] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(220_15%_97%)] to-background pointer-events-none"></div>
 
-        <div className="container mx-auto px-4 relative z-10 mb-0">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
             <div className="inline-block px-4 py-2 bg-primary/10 rounded-full mb-2">
               <span className="text-primary font-semibold">Live Network</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Our Charging Network</h2>
             <p className="text-foreground/70 max-w-2xl mx-auto text-lg">
-              Strategically located across Northeast India to power your journey. Click on any marker to view station
-              details.
+              Strategically located across Northeast India to power your journey. Click on markers to navigate.
             </p>
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          <div className="animate-fade-in max-w-7xl mx-auto" style={{ animationDelay: "0.2s" }}>
             <ChargingStationsMap />
           </div>
         </div>

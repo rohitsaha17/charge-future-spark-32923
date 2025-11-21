@@ -45,6 +45,11 @@ const ChargingStationsMap = () => {
     stations.forEach((station) => {
       const markerElement = createCustomMarker(station);
       
+      // Add click event to open Google Maps
+      markerElement.addEventListener('click', () => {
+        openInGoogleMaps(station.latitude, station.longitude, station.name);
+      });
+      
       const marker = new maplibregl.Marker({ element: markerElement })
         .setLngLat([station.longitude, station.latitude])
         .setPopup(
@@ -65,12 +70,29 @@ const ChargingStationsMap = () => {
     }
   }, [stations]);
 
+  const openInGoogleMaps = (lat: number, lng: number, name: string) => {
+    // Detect if user is on mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // On mobile, try to open native maps app first, fallback to Google Maps web
+      const mapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
+      window.open(mapsUrl, '_blank');
+    } else {
+      // On desktop, open Google Maps in new tab
+      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(name)}`;
+      window.open(googleMapsUrl, '_blank');
+    }
+  };
+
   const createCustomMarker = (station: any) => {
     const el = document.createElement('div');
     const isDC = station.charger_type === 'DC';
     const isResidential = station.station_type === 'Residential';
     
     el.className = 'custom-marker';
+    el.style.cursor = 'pointer';
+    el.title = `Click to open ${station.name} in Google Maps`;
     el.innerHTML = `
       <div class="marker-container ${isDC ? 'dc-charger' : 'ac-charger'} ${isResidential ? 'residential' : ''}">
         <div class="marker-pulse"></div>
@@ -124,6 +146,13 @@ const ChargingStationsMap = () => {
             <div class="availability-indicator ${station.status === 'active' ? 'active' : 'inactive'}"></div>
             <span>${station.available_chargers}/${station.total_chargers} Available</span>
           </div>
+          <button 
+            onclick="window.open('https://www.google.com/maps/search/?api=1&query=${station.latitude},${station.longitude}', '_blank')"
+            class="navigate-button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"></path></svg>
+            Navigate with Google Maps
+          </button>
         </div>
       </div>
     `;
@@ -146,9 +175,18 @@ const ChargingStationsMap = () => {
 
   return (
     <>
-      <div ref={mapContainer} className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant overflow-hidden" />
+      <div ref={mapContainer} className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant overflow-hidden relative" style={{ minHeight: '500px' }} />
       
       <style>{`
+        /* Ensure MapLibre CSS is loaded properly */
+        .maplibregl-map {
+          width: 100%;
+          height: 100%;
+        }
+        
+        .maplibregl-canvas {
+          outline: none;
+        }
         .custom-marker {
           cursor: pointer;
           transition: transform 0.3s ease;
@@ -384,6 +422,33 @@ const ChargingStationsMap = () => {
         
         .availability-indicator.inactive {
           background: #EF4444;
+        }
+        
+        .navigate-button {
+          width: 100%;
+          margin-top: 12px;
+          padding: 10px 16px;
+          background: linear-gradient(135deg, #2674EC, #00E5FF);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transition: all 0.3s ease;
+        }
+        
+        .navigate-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(38, 116, 236, 0.4);
+        }
+        
+        .navigate-button:active {
+          transform: translateY(0);
         }
       `}</style>
     </>
