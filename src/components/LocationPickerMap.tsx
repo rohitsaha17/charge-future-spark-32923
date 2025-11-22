@@ -18,10 +18,28 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Initialize map
+    // Initialize map with proper OSM tiles
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://demotiles.maplibre.org/style.json',
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '&copy; OpenStreetMap Contributors',
+            maxzoom: 19
+          }
+        },
+        layers: [
+          {
+            id: 'osm',
+            type: 'raster',
+            source: 'osm'
+          }
+        ]
+      },
       center: [initialLng, initialLat],
       zoom: 12,
     });
@@ -53,24 +71,69 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
         </div>
       `;
 
-      // Add new marker
-      marker.current = new maplibregl.Marker({ element: el })
-        .setLngLat([lng, lat])
-        .addTo(map.current!);
-
       setSelectedLocation({ lat, lng });
       
-      // Try to get address from reverse geocoding (optional - using Nominatim)
+      // Try to get address from reverse geocoding
+      let address = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
         );
         const data = await response.json();
+        address = data.display_name || address;
         onLocationSelect(lat, lng, data.display_name);
       } catch (error) {
-        // If reverse geocoding fails, just send coordinates
         onLocationSelect(lat, lng);
       }
+
+      // Create popup with location details and directions button
+      const popupContent = `
+        <div style="padding: 12px; min-width: 200px;">
+          <h3 style="font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 14px;">Location Details</h3>
+          <p style="font-size: 12px; color: #666; margin-bottom: 4px; line-height: 1.4;">${address}</p>
+          <p style="font-size: 11px; color: #888; margin-bottom: 12px;">Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</p>
+          <button 
+            onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')"
+            style="
+              width: 100%;
+              background: linear-gradient(135deg, #2674EC, #00E5FF);
+              color: white;
+              border: none;
+              padding: 8px 16px;
+              border-radius: 6px;
+              font-size: 12px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: transform 0.2s;
+            "
+            onmouseover="this.style.transform='scale(1.02)'"
+            onmouseout="this.style.transform='scale(1)'"
+          >
+            Get Directions
+          </button>
+        </div>
+      `;
+
+      const popup = new maplibregl.Popup({
+        offset: 25,
+        closeButton: true,
+        closeOnClick: false,
+        maxWidth: '300px'
+      })
+        .setHTML(popupContent);
+
+      // Add new marker with popup
+      marker.current = new maplibregl.Marker({ element: el })
+        .setLngLat([lng, lat])
+        .setPopup(popup)
+        .addTo(map.current!);
+
+      // Open popup on hover and click
+      el.addEventListener('mouseenter', () => {
+        popup.addTo(map.current!);
+      });
+      
+      marker.current.togglePopup();
     });
 
     // Cleanup
