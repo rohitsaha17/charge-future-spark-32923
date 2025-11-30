@@ -1,24 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { MapPin, Zap, Navigation } from 'lucide-react';
 
-const containerStyle: React.CSSProperties = {
-  width: '100%',
-  height: '100%',
-  minHeight: '500px',
-  borderRadius: '16px',
-};
-
 const center = {
   lat: 26.1445,
   lng: 91.7362,
 };
-
-// Use a constant API key so we never reinitialize the loader with different options
-// NOTE: For production, consider moving this to a configuration/secrets system.
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBFw0Qbyq9zTFTd-tUqqo6yBiXWefBnwB4';
 
 type Station = {
   id: string;
@@ -41,11 +32,10 @@ const GoogleMapsCharging = () => {
   const [stations, setStations] = useState<Station[]>([]);
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [isMapInitialized, setIsMapInitialized] = useState(false);
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
 
   // Fetch stations once
   useEffect(() => {
@@ -67,100 +57,84 @@ const GoogleMapsCharging = () => {
     fetchStations();
   }, []);
 
-  // Load Google Maps script once and initialize map + markers whenever stations change
+  // Initialize map and add markers
   useEffect(() => {
-    if (typeof window === 'undefined') return;
     if (!mapContainerRef.current) return;
 
-    let isCancelled = false;
+    // Initialize map with OSM tiles
+    mapRef.current = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '&copy; OpenStreetMap Contributors',
+            maxzoom: 19
+          }
+        },
+        layers: [
+          {
+            id: 'osm',
+            type: 'raster',
+            source: 'osm'
+          }
+        ]
+      },
+      center: [center.lng, center.lat],
+      zoom: 8,
+    });
 
-    const loadGoogleMapsScript = () => {
-      const w = window as any;
+    // Add navigation controls
+    mapRef.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-      // If already loaded, reuse it
-      if (w.google && w.google.maps) {
-        return Promise.resolve();
-      }
-
-      // If loading is already in progress, reuse the same promise
-      if (w.googleMapsScriptLoadingPromise) {
-        return w.googleMapsScriptLoadingPromise as Promise<void>;
-      }
-
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=maps`; // libraries kept stable
-      script.async = true;
-      script.defer = true;
-
-      w.googleMapsScriptLoadingPromise = new Promise<void>((resolve, reject) => {
-        script.onload = () => resolve();
-        script.onerror = (err: any) => {
-          console.error('Error loading Google Maps script', err);
-          reject(err);
-        };
-      });
-
-      document.head.appendChild(script);
-
-      return w.googleMapsScriptLoadingPromise as Promise<void>;
-    };
-
-    loadGoogleMapsScript()
-      .then(() => {
-        if (isCancelled || !mapContainerRef.current) return;
-
-        const g = (window as any).google as typeof google;
-        if (!g || !g.maps) return;
-
-        // Initialize map once
-        if (!mapRef.current) {
-          mapRef.current = new g.maps.Map(mapContainerRef.current, {
-            center,
-            zoom: 8,
-            disableDefaultUI: false,
-            zoomControl: true,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: true,
-          });
-          setIsMapInitialized(true);
-        }
-
-        // Clear existing markers
-        markersRef.current.forEach((marker) => marker.setMap(null));
-        markersRef.current = [];
-
-        // Add markers for all stations
-        stations.forEach((station) => {
-          if (!mapRef.current) return;
-
-          const isDC = station.charger_type === 'DC';
-
-          const marker = new g.maps.Marker({
-            position: { lat: station.latitude, lng: station.longitude },
-            map: mapRef.current,
-            title: station.name,
-            icon: {
-              path: g.maps.SymbolPath.CIRCLE,
-              fillColor: isDC ? '#9333EA' : '#2674EC',
-              fillOpacity: 1,
-              strokeColor: '#ffffff',
-              strokeWeight: 3,
-              scale: 12,
-            },
-          });
-
-          marker.addListener('click', () => handleMarkerClick(station));
-          markersRef.current.push(marker);
-        });
-      })
-      .catch((err) => {
-        console.error('Error initializing Google Maps:', err);
-      });
-
+    // Cleanup
     return () => {
-      isCancelled = true;
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current = [];
+      mapRef.current?.remove();
     };
+  }, []);
+
+  // Add markers when stations change
+  useEffect(() => {
+    if (!mapRef.current || stations.length === 0) return;
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+
+    // Add markers for all stations
+    stations.forEach((station) => {
+      if (!mapRef.current) return;
+
+      const isDC = station.charger_type === 'DC';
+
+      // Create custom marker element
+      const el = document.createElement('div');
+      el.className = 'charging-station-marker';
+      el.innerHTML = `
+        <div class="marker-container ${isDC ? 'dc-charger' : 'ac-charger'}">
+          <div class="marker-pulse"></div>
+          <div class="marker-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+        </div>
+      `;
+
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => handleMarkerClick(station));
+
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat([station.longitude, station.latitude])
+        .addTo(mapRef.current!);
+
+      markersRef.current.push(marker);
+    });
   }, [stations]);
 
   const handleMarkerClick = (station: Station) => {
@@ -178,17 +152,81 @@ const GoogleMapsCharging = () => {
     window.open(url, '_blank');
   };
 
-  if (!isMapInitialized && stations.length === 0) {
-    return (
-      <div className="w-full h-[500px] md:h-[600px] rounded-2xl bg-muted animate-pulse flex items-center justify-center">
-        <p className="text-muted-foreground">Loading map...</p>
-      </div>
-    );
-  }
-
   return (
     <>
-      <div style={containerStyle} ref={mapContainerRef} className="shadow-elegant border border-border" />
+      <div 
+        ref={mapContainerRef} 
+        className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant border border-border overflow-hidden"
+      />
+
+      {/* Custom marker styles */}
+      <style>{`
+        .charging-station-marker {
+          position: relative;
+        }
+        
+        .marker-container {
+          position: relative;
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .marker-pulse {
+          position: absolute;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        
+        .ac-charger .marker-pulse {
+          background: rgba(38, 116, 236, 0.3);
+        }
+        
+        .dc-charger .marker-pulse {
+          background: rgba(147, 51, 234, 0.3);
+        }
+        
+        @keyframes pulse-ring {
+          0% {
+            transform: scale(0.5);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1.5);
+            opacity: 0;
+          }
+        }
+        
+        .marker-icon {
+          position: relative;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          transition: transform 0.2s ease;
+          z-index: 1;
+        }
+        
+        .ac-charger .marker-icon {
+          background: linear-gradient(135deg, #2674EC, #00C6FF);
+        }
+        
+        .dc-charger .marker-icon {
+          background: linear-gradient(135deg, #9333EA, #EC4899);
+        }
+        
+        .charging-station-marker:hover .marker-icon {
+          transform: scale(1.15);
+        }
+      `}</style>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
