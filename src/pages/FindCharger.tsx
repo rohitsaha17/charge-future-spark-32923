@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { MapPin, Zap, Clock, Battery, Filter, Search } from "lucide-react";
+import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation } from "lucide-react";
 import GoogleMapsCharging from "@/components/GoogleMapsCharging";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const FindCharger = () => {
   const [selectedStation, setSelectedStation] = useState<string | null>(null);
@@ -12,6 +13,7 @@ const FindCharger = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<"all" | "AC" | "DC">("all");
   const [filterStationType, setFilterStationType] = useState<"all" | "Public" | "Residential">("all");
+  const stationRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
     fetchStations();
@@ -50,6 +52,26 @@ const FindCharger = () => {
     { icon: Battery, label: "Available Now", value: String(availableNow), color: "from-emerald-400 to-teal-500" },
     { icon: Clock, label: "In Use", value: String(inUse), color: "from-orange-400 to-red-500" }
   ];
+
+  // Handle station selection from map
+  const handleMapStationSelect = (stationId: string) => {
+    setSelectedStation(stationId);
+    // Scroll to the selected station card
+    const element = stationRefs.current[stationId];
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const handleNavigate = (lat: number, lng: number) => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+    const url = isMobile
+      ? `https://maps.google.com/?q=${lat},${lng}`
+      : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(url, '_blank');
+  };
 
   return (
     <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
@@ -176,17 +198,23 @@ const FindCharger = () => {
               filteredStations.map((station) => {
                 const isDC = station.charger_type === 'DC';
                 const isResidential = station.station_type === 'Residential';
+                const isSelected = selectedStation === station.id;
                 
                 return (
                   <Card 
                     key={station.id}
+                    ref={(el) => { stationRefs.current[station.id] = el; }}
                     className={`group p-5 cursor-pointer transition-all duration-300 hover:scale-[1.02] border-content-highlight-border bg-gradient-to-br from-content-highlight via-background to-content-highlight/50 ${
-                      selectedStation === station.id ? 'ring-2 ring-primary shadow-glow' : 'hover:shadow-elegant'
+                      isSelected 
+                        ? 'ring-2 ring-primary shadow-glow scale-[1.02] bg-gradient-to-br from-primary/10 via-background to-primary/5' 
+                        : 'hover:shadow-elegant'
                     }`}
                     onClick={() => setSelectedStation(station.id)}
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{station.name}</h3>
+                      <h3 className={`font-bold text-lg transition-colors ${isSelected ? 'text-primary' : 'text-foreground group-hover:text-primary'}`}>
+                        {station.name}
+                      </h3>
                       <Badge 
                         variant={isDC ? "default" : "secondary"}
                         className={`${isDC ? 'bg-gradient-to-r from-violet-500 to-purple-600' : 'bg-primary'} text-white`}
@@ -221,6 +249,21 @@ const FindCharger = () => {
                         </span>
                       </div>
                     </div>
+
+                    {/* Get Directions Button - Show when selected */}
+                    {isSelected && (
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNavigate(station.latitude, station.longitude);
+                        }}
+                        className="w-full mt-4"
+                        size="sm"
+                      >
+                        <Navigation className="w-4 h-4 mr-2" />
+                        Get Directions
+                      </Button>
+                    )}
                   </Card>
                 );
               })
@@ -230,7 +273,10 @@ const FindCharger = () => {
           {/* Map */}
           <div className="lg:col-span-2">
             <Card className="p-2 border-content-highlight-border bg-content-highlight/30 shadow-elegant">
-              <GoogleMapsCharging />
+              <GoogleMapsCharging 
+                onStationSelect={handleMapStationSelect}
+                selectedStationId={selectedStation}
+              />
             </Card>
           </div>
         </div>

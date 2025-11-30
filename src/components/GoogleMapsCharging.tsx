@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,14 +28,19 @@ type Station = {
   total_chargers: number;
 };
 
-const GoogleMapsCharging = () => {
+interface GoogleMapsChargingProps {
+  onStationSelect?: (stationId: string) => void;
+  selectedStationId?: string | null;
+}
+
+const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsChargingProps) => {
   const [stations, setStations] = useState<Station[]>([]);
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const markersRef = useRef<{ marker: maplibregl.Marker; popup: maplibregl.Popup; stationId: string }[]>([]);
 
   // Fetch stations once
   useEffect(() => {
@@ -57,11 +62,10 @@ const GoogleMapsCharging = () => {
     fetchStations();
   }, []);
 
-  // Initialize map and add markers
+  // Initialize map
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Initialize map with OSM tiles
     mapRef.current = new maplibregl.Map({
       container: mapContainerRef.current,
       style: {
@@ -87,60 +91,23 @@ const GoogleMapsCharging = () => {
       zoom: 8,
     });
 
-    // Add navigation controls
     mapRef.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-    // Cleanup
     return () => {
-      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current.forEach(({ marker, popup }) => {
+        popup.remove();
+        marker.remove();
+      });
       markersRef.current = [];
       mapRef.current?.remove();
     };
   }, []);
 
-  // Add markers when stations change
-  useEffect(() => {
-    if (!mapRef.current || stations.length === 0) return;
-
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = [];
-
-    // Add markers for all stations
-    stations.forEach((station) => {
-      if (!mapRef.current) return;
-
-      const isDC = station.charger_type === 'DC';
-
-      // Create custom marker element
-      const el = document.createElement('div');
-      el.className = 'charging-station-marker';
-      el.innerHTML = `
-        <div class="marker-container ${isDC ? 'dc-charger' : 'ac-charger'}">
-          <div class="marker-pulse"></div>
-          <div class="marker-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-            </svg>
-          </div>
-        </div>
-      `;
-
-      el.style.cursor = 'pointer';
-      el.addEventListener('click', () => handleMarkerClick(station));
-
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat([station.longitude, station.latitude])
-        .addTo(mapRef.current!);
-
-      markersRef.current.push(marker);
-    });
-  }, [stations]);
-
-  const handleMarkerClick = (station: Station) => {
+  const handleMarkerClick = useCallback((station: Station) => {
     setSelectedStation(station);
     setDialogOpen(true);
-  };
+    onStationSelect?.(station.id);
+  }, [onStationSelect]);
 
   const handleNavigate = (lat: number, lng: number) => {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -152,6 +119,110 @@ const GoogleMapsCharging = () => {
     window.open(url, '_blank');
   };
 
+  // Add markers when stations change
+  useEffect(() => {
+    if (!mapRef.current || stations.length === 0) return;
+
+    // Clear existing markers
+    markersRef.current.forEach(({ marker, popup }) => {
+      popup.remove();
+      marker.remove();
+    });
+    markersRef.current = [];
+
+    // Add markers for all stations
+    stations.forEach((station) => {
+      if (!mapRef.current) return;
+
+      const isDC = station.charger_type === 'DC';
+      const isResidential = station.station_type === 'Residential';
+
+      // Create custom marker element with proper anchor
+      const el = document.createElement('div');
+      el.className = 'charging-station-marker';
+      el.innerHTML = `
+        <div class="marker-wrapper">
+          <div class="marker-container ${isDC ? 'dc-charger' : 'ac-charger'}">
+            <div class="marker-pulse"></div>
+            <div class="marker-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+
+      el.style.cursor = 'pointer';
+
+      // Create hover popup with station details
+      const popupContent = `
+        <div class="station-popup">
+          <div class="popup-header ${isDC ? 'dc' : 'ac'}">
+            <span class="popup-badge">${isDC ? 'DC Fast' : 'AC'}</span>
+            <span class="popup-type">${isResidential ? '🏠 Residential' : '🌐 Public'}</span>
+          </div>
+          <h3 class="popup-title">${station.name}</h3>
+          <p class="popup-address">${station.city}, ${station.state}</p>
+          <div class="popup-details">
+            <span class="popup-power">${station.power_output}</span>
+            <span class="popup-availability">
+              <span class="availability-dot"></span>
+              ${station.available_chargers}/${station.total_chargers} Available
+            </span>
+          </div>
+          <p class="popup-hint">Click for directions</p>
+        </div>
+      `;
+
+      const popup = new maplibregl.Popup({
+        offset: [0, -20],
+        closeButton: false,
+        closeOnClick: false,
+        maxWidth: '280px',
+        className: 'station-hover-popup'
+      }).setHTML(popupContent);
+
+      // Create marker with proper anchor (center-bottom)
+      const marker = new maplibregl.Marker({ 
+        element: el,
+        anchor: 'bottom'
+      })
+        .setLngLat([station.longitude, station.latitude])
+        .addTo(mapRef.current!);
+
+      // Show popup on hover
+      el.addEventListener('mouseenter', () => {
+        if (mapRef.current) {
+          popup.setLngLat([station.longitude, station.latitude]).addTo(mapRef.current);
+        }
+      });
+
+      el.addEventListener('mouseleave', () => {
+        popup.remove();
+      });
+
+      // Handle click
+      el.addEventListener('click', () => handleMarkerClick(station));
+
+      markersRef.current.push({ marker, popup, stationId: station.id });
+    });
+  }, [stations, handleMarkerClick]);
+
+  // Pan to selected station from external selection
+  useEffect(() => {
+    if (!selectedStationId || !mapRef.current) return;
+    
+    const station = stations.find(s => s.id === selectedStationId);
+    if (station) {
+      mapRef.current.flyTo({
+        center: [station.longitude, station.latitude],
+        zoom: 14,
+        duration: 1000
+      });
+    }
+  }, [selectedStationId, stations]);
+
   return (
     <>
       <div 
@@ -159,16 +230,25 @@ const GoogleMapsCharging = () => {
         className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant border border-border overflow-hidden"
       />
 
-      {/* Custom marker styles */}
+      {/* Custom marker and popup styles */}
       <style>{`
         .charging-station-marker {
           position: relative;
         }
         
-        .marker-container {
+        .marker-wrapper {
           position: relative;
-          width: 44px;
-          height: 44px;
+          width: 40px;
+          height: 48px;
+        }
+        
+        .marker-container {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 40px;
+          height: 40px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -176,8 +256,8 @@ const GoogleMapsCharging = () => {
         
         .marker-pulse {
           position: absolute;
-          width: 44px;
-          height: 44px;
+          width: 40px;
+          height: 40px;
           border-radius: 50%;
           animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
         }
@@ -203,8 +283,8 @@ const GoogleMapsCharging = () => {
         
         .marker-icon {
           position: relative;
-          width: 36px;
-          height: 36px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -224,7 +304,114 @@ const GoogleMapsCharging = () => {
         }
         
         .charging-station-marker:hover .marker-icon {
-          transform: scale(1.15);
+          transform: scale(1.2);
+        }
+        
+        /* Popup Styles */
+        .station-hover-popup .maplibregl-popup-content {
+          padding: 0;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+          border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        .station-popup {
+          min-width: 200px;
+        }
+        
+        .popup-header {
+          padding: 8px 12px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 11px;
+          font-weight: 600;
+        }
+        
+        .popup-header.ac {
+          background: linear-gradient(135deg, #2674EC, #00C6FF);
+          color: white;
+        }
+        
+        .popup-header.dc {
+          background: linear-gradient(135deg, #9333EA, #EC4899);
+          color: white;
+        }
+        
+        .popup-badge {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 2px 8px;
+          border-radius: 4px;
+        }
+        
+        .popup-type {
+          opacity: 0.9;
+        }
+        
+        .popup-title {
+          font-weight: 700;
+          font-size: 14px;
+          padding: 10px 12px 4px;
+          color: #1a1a1a;
+          margin: 0;
+        }
+        
+        .popup-address {
+          font-size: 12px;
+          color: #666;
+          padding: 0 12px;
+          margin: 0;
+        }
+        
+        .popup-details {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 12px;
+          margin-top: 8px;
+          background: #f8f9fa;
+          border-top: 1px solid #eee;
+        }
+        
+        .popup-power {
+          font-weight: 600;
+          font-size: 12px;
+          color: #333;
+        }
+        
+        .popup-availability {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+          color: #10b981;
+          font-weight: 600;
+        }
+        
+        .availability-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #10b981;
+          animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        
+        .popup-hint {
+          font-size: 10px;
+          color: #999;
+          text-align: center;
+          padding: 6px 12px 10px;
+          margin: 0;
+        }
+        
+        .maplibregl-popup-tip {
+          border-top-color: #f8f9fa !important;
         }
       `}</style>
 
