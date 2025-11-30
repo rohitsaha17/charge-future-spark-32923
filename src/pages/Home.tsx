@@ -16,7 +16,7 @@ import aaiLogo from "@/assets/partners/aai-logo.png";
 import imperiaVistaLogo from "@/assets/partners/imperia-vista-logo.png";
 import osmLogo from "@/assets/partners/osm-logo.png";
 import appSectionBg from "@/assets/app-section-bg.jpg";
-import phoneMockup from "@/assets/phone-realistic-blue.png";
+import phoneMockup from "@/assets/phone-mockup-dynamic.png";
 import googlePlayBadge from "@/assets/google-play-official.png";
 import appStoreBadge from "@/assets/app-store-official.png";
 import gradientBreak from "@/assets/gradient-section-break.png";
@@ -509,92 +509,102 @@ const Home = () => {
 
       <GradientDivider />
 
-      {/* App Download Section */}
+      {/* App Download Section - Creative Design */}
       <section
         ref={appSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-        style={{
-          backgroundImage: `url(${appSectionBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
+        className={`py-16 md:py-24 relative overflow-hidden transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Gradient Overlay for blending */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-primary/10 to-cyan-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/10 to-primary/10 rounded-full blur-3xl"></div>
 
         <div className="relative z-10 container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Left side - Phone Mockup */}
-              <div className="flex justify-center md:justify-end">
-                <div className="relative w-64 md:w-80 animate-fade-in transition-all duration-500 group-hover/google:scale-105 group-hover/google:rotate-2 group-hover/apple:scale-105 group-hover/apple:-rotate-2">
-                  <img
-                    src={phoneMockup}
-                    alt="A Plus Charge Mobile App Interface"
-                    className="w-full h-auto drop-shadow-2xl"
-                  />
-                  {/* Ambient glow effect */}
-                  <div className="absolute inset-0 bg-primary/20 opacity-50 blur-3xl -z-10 animate-pulse"></div>
-                  {/* Interactive glow on badge hover */}
-                  <div className="absolute inset-0 bg-primary/30 opacity-0 group-hover/google:opacity-100 group-hover/apple:opacity-100 transition-opacity duration-500 blur-3xl -z-10"></div>
-                </div>
-              </div>
+            {/* Blue Themed Box Container */}
+            <div className="relative bg-gradient-to-br from-[#1a3a6e] via-[#2674EC] to-[#00C6FF] rounded-3xl md:rounded-[2.5rem] p-8 md:p-12 lg:p-16 overflow-visible shadow-[0_20px_60px_-15px_rgba(38,116,236,0.4)]">
+              {/* Decorative Elements Inside Box */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-400/10 rounded-full blur-2xl"></div>
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
 
-              {/* Right side - Content */}
-              <div className="text-center md:text-left space-y-8">
-                <div className="space-y-4">
-                  <h2 className="text-4xl md:text-5xl font-bold text-foreground">Download Our Mobile App</h2>
-                  <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                    Experience seamless EV charging at your fingertips. Find nearby stations, start charging sessions,
-                    track your usage, and manage payments - all in one app.
-                  </p>
-                </div>
-
-                {/* Features List */}
-                <div className="space-y-3 text-left">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1">
-                      <div className="w-2 h-2 rounded-full bg-primary"></div>
-                    </div>
-                    <p className="text-foreground/90">Real-time charger availability and navigation</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1">
-                      <div className="w-2 h-2 rounded-full bg-primary"></div>
-                    </div>
-                    <p className="text-foreground/90">One-tap charging session control</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1">
-                      <div className="w-2 h-2 rounded-full bg-primary"></div>
-                    </div>
-                    <p className="text-foreground/90">Track charging history and costs</p>
-                  </div>
-                </div>
-
-                {/* Store Badges */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-                  <a
-                    href="#"
-                    className="group/google transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95"
-                  >
+              <div className="relative grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                {/* Left side - Phone Mockup with Dynamic Overflow */}
+                <div className="flex justify-center md:justify-center order-2 md:order-1">
+                  <div className="relative md:-mt-32 lg:-mt-40 animate-fade-in">
+                    {/* Phone Image - Top Part Coming Out */}
                     <img
-                      src={googlePlayBadge}
-                      alt="Get it on Google Play"
-                      className="h-14 md:h-16 w-auto drop-shadow-lg group-hover/google:drop-shadow-2xl transition-all duration-300"
+                      src={phoneMockup}
+                      alt="A Plus Charge Mobile App Interface"
+                      className="w-72 md:w-80 lg:w-96 h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.4)] transform hover:scale-105 transition-transform duration-500"
                     />
-                  </a>
-                  <a
-                    href="#"
-                    className="group/apple transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95"
-                  >
-                    <img
-                      src={appStoreBadge}
-                      alt="Download on the App Store"
-                      className="h-14 md:h-16 w-auto drop-shadow-lg group-hover/apple:drop-shadow-2xl transition-all duration-300"
-                    />
-                  </a>
+                    {/* Glow Effect Behind Phone */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent blur-3xl -z-10 scale-110"></div>
+                  </div>
+                </div>
+
+                {/* Right side - Content */}
+                <div className="text-center md:text-left space-y-6 order-1 md:order-2">
+                  <div className="space-y-4">
+                    <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium border border-white/20">
+                      📱 Available Now
+                    </span>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+                      Download the <br className="hidden md:block" />
+                      <span className="text-cyan-300">A Plus Charge</span> App
+                    </h2>
+                    <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-md">
+                      Find chargers, start sessions, track usage, and pay - all from your pocket. Your complete EV charging companion.
+                    </p>
+                  </div>
+
+                  {/* Features */}
+                  <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                    <span className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs font-medium border border-white/10">
+                      ⚡ Real-time Availability
+                    </span>
+                    <span className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs font-medium border border-white/10">
+                      📍 Navigation
+                    </span>
+                    <span className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs font-medium border border-white/10">
+                      💳 Easy Payments
+                    </span>
+                  </div>
+
+                  {/* Store Buttons - Aesthetic Design */}
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.bpm.aplus&hl=en_IN&pli=1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative inline-flex items-center gap-3 px-6 py-3.5 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#3DDC84]" fill="currentColor">
+                        <path d="M3.609 1.814L13.792 12 3.61 22.186a2.5 2.5 0 0 1-.442-1.422V3.236a2.5 2.5 0 0 1 .441-1.422zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a2.5 2.5 0 0 1 0 4.33l-2.807 1.626L14.5 12l3.198-3.491zM5.864 2.658L16.8 9.99l-2.302 2.302-8.634-8.634z"/>
+                      </svg>
+                      <div className="text-left">
+                        <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">Get it on</div>
+                        <div className="text-base font-bold text-gray-900 -mt-0.5">Google Play</div>
+                      </div>
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#3DDC84]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </a>
+
+                    <a
+                      href="https://apps.apple.com/us/app/a-plus-charge/id6502430979?l=es-MX"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative inline-flex items-center gap-3 px-6 py-3.5 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-7 h-7 text-gray-900" fill="currentColor">
+                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                      </svg>
+                      <div className="text-left">
+                        <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">Download on the</div>
+                        <div className="text-base font-bold text-gray-900 -mt-0.5">App Store</div>
+                      </div>
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-gray-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
