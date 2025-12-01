@@ -53,26 +53,35 @@ const BenefitsSection = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {benefits.map((benefit, index) => {
           const Icon = benefit.icon;
-          return <div key={index} className="group relative p-8 rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border border-content-highlight-border bg-gradient-to-br from-content-highlight via-background to-content-highlight/50 hover:shadow-glow" style={{
+          // Alternate between different blue-themed gradients
+          const cardGradients = [
+            "from-[#e8f4ff] via-white to-[#f0f9ff] border-[#2674EC]/20 hover:border-[#2674EC]/50",
+            "from-[#f0f9ff] via-[#e8f4ff] to-white border-[#00C6FF]/20 hover:border-[#00C6FF]/50",
+            "from-white via-[#e8f4ff] to-[#f0f9ff] border-primary/20 hover:border-primary/50",
+            "from-[#f0f9ff] via-white to-[#e8f4ff] border-cyan-400/20 hover:border-cyan-400/50",
+            "from-[#e8f4ff] via-[#f0f9ff] to-white border-blue-400/20 hover:border-blue-400/50",
+            "from-white via-[#f0f9ff] to-[#e8f4ff] border-sky-400/20 hover:border-sky-400/50",
+          ];
+          return <div key={index} className={`group relative p-8 rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border-2 bg-gradient-to-br ${cardGradients[index]} shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(38,116,236,0.3)]`} style={{
             animationDelay: `${index * 0.1}s`
           }}>
-                {/* Icon Container - Enhanced */}
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${benefit.color} p-0.5 flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-soft`}>
-                  <div className="w-full h-full bg-content-highlight rounded-2xl flex items-center justify-center">
-                    <Icon className="w-8 h-8 text-primary" />
+                {/* Icon Container - Enhanced with blue theme */}
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2674EC] to-[#00C6FF] p-0.5 flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-[0_8px_20px_-5px_rgba(38,116,236,0.4)]`}>
+                  <div className="w-full h-full bg-white rounded-2xl flex items-center justify-center">
+                    <Icon className="w-8 h-8 text-[#2674EC]" />
                   </div>
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-[#2674EC] transition-colors duration-300">
                   {benefit.title}
                 </h3>
                 <p className="text-foreground/70 leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
                   {benefit.description}
                 </p>
 
-                {/* Decorative Glow Effect */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:via-transparent group-hover:to-primary/5 transition-all duration-500 pointer-events-none"></div>
+                {/* Decorative Glow Effect - Blue themed */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#2674EC]/0 via-[#00C6FF]/0 to-[#2674EC]/0 group-hover:from-[#2674EC]/5 group-hover:via-transparent group-hover:to-[#00C6FF]/5 transition-all duration-500 pointer-events-none"></div>
               </div>;
         })}
         </div>
