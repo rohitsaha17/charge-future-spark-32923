@@ -519,31 +519,31 @@ const Home = () => {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-primary/10 to-cyan-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/10 to-primary/10 rounded-full blur-3xl"></div>
 
-        <div className="relative z-10 container mx-auto px-4 pt-20 md:pt-32 lg:pt-40">
+        <div className="relative z-10 container mx-auto px-4 pt-32 md:pt-44 lg:pt-56">
           <div className="max-w-6xl mx-auto">
-            {/* Blue Themed Box Container - Smaller Height */}
-            <div className="relative bg-gradient-to-br from-[#1a3a6e] via-[#2674EC] to-[#00C6FF] rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 lg:p-10 overflow-visible shadow-[0_20px_60px_-15px_rgba(38,116,236,0.4)]">
+            {/* Blue Themed Box Container - Compact Height */}
+            <div className="relative bg-gradient-to-br from-[#1a3a6e] via-[#2674EC] to-[#00C6FF] rounded-3xl md:rounded-[2.5rem] p-5 md:p-6 lg:p-8 overflow-visible shadow-[0_20px_60px_-15px_rgba(38,116,236,0.4)]">
               {/* Decorative Elements Inside Box */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-400/10 rounded-full blur-2xl"></div>
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50 rounded-3xl md:rounded-[2.5rem]"></div>
 
-              <div className="relative grid md:grid-cols-2 gap-6 md:gap-8 items-end">
-                {/* Left side - Phone Mockup with Dynamic Overflow - BIGGER */}
+              <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-end">
+                {/* Left side - Phone Mockup with Dynamic Overflow - MUCH BIGGER */}
                 <div className="flex justify-center md:justify-center order-2 md:order-1 relative">
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 animate-fade-in">
-                    {/* Phone Image - Top Part Coming Out More */}
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 animate-fade-in">
+                    {/* Phone Image - Top Part Coming Out Significantly */}
                     <img
                       src={phoneMockup}
                       alt="A Plus Charge Mobile App Interface"
-                      className="w-[340px] md:w-[420px] lg:w-[500px] h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.4)] transform hover:scale-[1.02] transition-transform duration-500 -mb-6 md:-mb-8"
-                      style={{ marginTop: '-180px' }}
+                      className="w-[320px] md:w-[480px] lg:w-[580px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500"
+                      style={{ marginTop: '-280px' }}
                     />
                     {/* Glow Effect Behind Phone */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent blur-3xl -z-10 scale-110"></div>
                   </div>
-                  {/* Spacer for phone height */}
-                  <div className="h-[280px] md:h-[320px] lg:h-[380px]"></div>
+                  {/* Spacer for phone height - reduced for smaller box */}
+                  <div className="h-[200px] md:h-[240px] lg:h-[280px]"></div>
                 </div>
 
                 {/* Right side - Content */}

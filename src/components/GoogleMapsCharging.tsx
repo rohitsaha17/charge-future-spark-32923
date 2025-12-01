@@ -137,19 +137,17 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
       const isDC = station.charger_type === 'DC';
       const isResidential = station.station_type === 'Residential';
 
-      // Create custom marker element with proper anchor
+      // Create custom marker element - simple fixed-size element
       const el = document.createElement('div');
       el.className = 'charging-station-marker';
+      el.style.width = '32px';
+      el.style.height = '32px';
+      el.style.position = 'relative';
       el.innerHTML = `
-        <div class="marker-wrapper">
-          <div class="marker-container ${isDC ? 'dc-charger' : 'ac-charger'}">
-            <div class="marker-pulse"></div>
-            <div class="marker-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-            </div>
-          </div>
+        <div class="marker-icon-fixed ${isDC ? 'dc-charger' : 'ac-charger'}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
         </div>
       `;
 
@@ -183,10 +181,10 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
         className: 'station-hover-popup'
       }).setHTML(popupContent);
 
-      // Create marker with proper anchor (center-bottom)
+      // Create marker with center anchor for precise positioning
       const marker = new maplibregl.Marker({ 
         element: el,
-        anchor: 'bottom'
+        anchor: 'center'
       })
         .setLngLat([station.longitude, station.latitude])
         .addTo(mapRef.current!);
@@ -233,56 +231,10 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
       {/* Custom marker and popup styles */}
       <style>{`
         .charging-station-marker {
-          position: relative;
+          cursor: pointer;
         }
         
-        .marker-wrapper {
-          position: relative;
-          width: 40px;
-          height: 48px;
-        }
-        
-        .marker-container {
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .marker-pulse {
-          position: absolute;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
-        }
-        
-        .ac-charger .marker-pulse {
-          background: rgba(38, 116, 236, 0.3);
-        }
-        
-        .dc-charger .marker-pulse {
-          background: rgba(147, 51, 234, 0.3);
-        }
-        
-        @keyframes pulse-ring {
-          0% {
-            transform: scale(0.5);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(1.5);
-            opacity: 0;
-          }
-        }
-        
-        .marker-icon {
-          position: relative;
+        .marker-icon-fixed {
           width: 32px;
           height: 32px;
           border-radius: 50%;
@@ -292,18 +244,17 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
           color: white;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
           transition: transform 0.2s ease;
-          z-index: 1;
         }
         
-        .ac-charger .marker-icon {
+        .marker-icon-fixed.ac-charger {
           background: linear-gradient(135deg, #2674EC, #00C6FF);
         }
         
-        .dc-charger .marker-icon {
+        .marker-icon-fixed.dc-charger {
           background: linear-gradient(135deg, #9333EA, #EC4899);
         }
         
-        .charging-station-marker:hover .marker-icon {
+        .charging-station-marker:hover .marker-icon-fixed {
           transform: scale(1.2);
         }
         
