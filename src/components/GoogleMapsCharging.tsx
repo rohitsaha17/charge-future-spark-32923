@@ -137,21 +137,16 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
       const isDC = station.charger_type === 'DC';
       const isResidential = station.station_type === 'Residential';
 
-      // Create custom marker element - simple fixed-size element
+      // Create custom marker element - fixed size, no transforms
       const el = document.createElement('div');
-      el.className = 'charging-station-marker';
-      el.style.width = '32px';
-      el.style.height = '32px';
-      el.style.position = 'relative';
+      el.style.cssText = 'width:32px;height:32px;cursor:pointer;';
       el.innerHTML = `
-        <div class="marker-icon-fixed ${isDC ? 'dc-charger' : 'ac-charger'}">
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 4px 12px rgba(0,0,0,0.3);background:${isDC ? 'linear-gradient(135deg,#9333EA,#EC4899)' : 'linear-gradient(135deg,#2674EC,#00C6FF)'};">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
           </svg>
         </div>
       `;
-
-      el.style.cursor = 'pointer';
 
       // Create hover popup with station details
       const popupContent = `
@@ -228,36 +223,8 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
         className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant border border-border overflow-hidden"
       />
 
-      {/* Custom marker and popup styles */}
+      {/* Popup styles only - markers use inline styles */}
       <style>{`
-        .charging-station-marker {
-          cursor: pointer;
-        }
-        
-        .marker-icon-fixed {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-          transition: transform 0.2s ease;
-        }
-        
-        .marker-icon-fixed.ac-charger {
-          background: linear-gradient(135deg, #2674EC, #00C6FF);
-        }
-        
-        .marker-icon-fixed.dc-charger {
-          background: linear-gradient(135deg, #9333EA, #EC4899);
-        }
-        
-        .charging-station-marker:hover .marker-icon-fixed {
-          transform: scale(1.2);
-        }
-        
         /* Popup Styles */
         .station-hover-popup .maplibregl-popup-content {
           padding: 0;
