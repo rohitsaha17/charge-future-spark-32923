@@ -16,7 +16,7 @@ import aaiLogo from "@/assets/partners/aai-logo.png";
 import imperiaVistaLogo from "@/assets/partners/imperia-vista-logo.png";
 import osmLogo from "@/assets/partners/osm-logo.png";
 import appSectionBg from "@/assets/app-section-bg.jpg";
-import phoneMockup from "@/assets/phone-mockup-dynamic.png";
+import phoneMockup from "@/assets/phone-mockup-dual.png";
 import googlePlayBadge from "@/assets/google-play-official.png";
 import appStoreBadge from "@/assets/app-store-official.png";
 import gradientBreak from "@/assets/gradient-section-break.png";
