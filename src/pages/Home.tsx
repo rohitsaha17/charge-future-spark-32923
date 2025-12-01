@@ -232,16 +232,16 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Gradient Section Breaker (pulled up to touch the map) */}
+      {/* Gradient Section Breaker (pulled up to touch the map - no gap) */}
       <div
         style={{ backgroundImage: `url(${gradientBreak})` }}
         aria-hidden="true"
-        className="w-full h-32 bg-cover bg-center bg-no-repeat -mt-15 md:-mt-25 mx-0"
+        className="w-full h-32 bg-cover bg-center bg-no-repeat -mt-20 md:-mt-32 mx-0"
       />
       {/* Live Stats Section - Redesigned with Full-Width Illustration */}
       <section
         ref={statsSection.ref}
-        className={`py-12 md:py-20 lg:py-24 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-12 md:py-20 lg:py-24 pb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* White gradient overlay at top to merge smoothly */}
         <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
@@ -343,12 +343,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Storytelling Section - Where Innovation Meets Tradition */}
-      <StorytellingSection
-        title="Where Innovation Meets Tradition"
-        description="We're not just another charging provider company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
-        backgroundImage={appSectionBg}
-      />
+      {/* Storytelling Section - Where Innovation Meets Tradition - No gap from stats */}
+      <div className="-mt-8 md:-mt-12">
+        <StorytellingSection
+          title="Where Innovation Meets Tradition"
+          description="We're not just another charging provider company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
+          backgroundImage={appSectionBg}
+        />
+      </div>
 
       <GradientDivider />
 
@@ -519,7 +521,7 @@ const Home = () => {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-primary/10 to-cyan-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/10 to-primary/10 rounded-full blur-3xl"></div>
 
-        <div className="relative z-10 container mx-auto px-4 pt-32 md:pt-44 lg:pt-56">
+        <div className="relative z-10 container mx-auto px-4 pt-48 md:pt-64 lg:pt-80">
           <div className="max-w-6xl mx-auto">
             {/* Blue Themed Box Container - Compact Height */}
             <div className="relative bg-gradient-to-br from-[#1a3a6e] via-[#2674EC] to-[#00C6FF] rounded-3xl md:rounded-[2.5rem] p-5 md:p-6 lg:p-8 overflow-visible shadow-[0_20px_60px_-15px_rgba(38,116,236,0.4)]">
@@ -529,25 +531,25 @@ const Home = () => {
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50 rounded-3xl md:rounded-[2.5rem]"></div>
 
               <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-end">
-                {/* Left side - Phone Mockup with Dynamic Overflow - MUCH BIGGER */}
-                <div className="flex justify-center md:justify-center order-2 md:order-1 relative">
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 animate-fade-in">
-                    {/* Phone Image - Top Part Coming Out Significantly */}
+                {/* Left side - Phone Mockup - 2x BIGGER, above text on mobile */}
+                <div className="flex justify-center md:justify-center order-1 md:order-1 relative">
+                  <div className="relative md:absolute md:bottom-0 md:left-1/2 md:-translate-x-1/2 animate-fade-in">
+                    {/* Phone Image - 2x bigger, shifted down */}
                     <img
                       src={phoneMockup}
                       alt="A Plus Charge Mobile App Interface"
-                      className="w-[320px] md:w-[480px] lg:w-[580px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500"
-                      style={{ marginTop: '-280px' }}
+                      className="w-[380px] md:w-[700px] lg:w-[900px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500"
+                      style={{ marginTop: '-200px' }}
                     />
                     {/* Glow Effect Behind Phone */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent blur-3xl -z-10 scale-110"></div>
                   </div>
-                  {/* Spacer for phone height - reduced for smaller box */}
-                  <div className="h-[200px] md:h-[240px] lg:h-[280px]"></div>
+                  {/* Spacer for phone height on desktop */}
+                  <div className="hidden md:block h-[280px] lg:h-[320px]"></div>
                 </div>
 
                 {/* Right side - Content */}
-                <div className="text-center md:text-left space-y-4 order-1 md:order-2 py-4">
+                <div className="text-center md:text-left space-y-4 order-2 md:order-2 py-4">
                   <div className="space-y-3">
                     <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium border border-white/20">
                       📱 Available Now
