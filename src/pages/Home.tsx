@@ -388,7 +388,7 @@ const Home = () => {
       {/* Client Logos - Scrolling with Gradient Separator */}
       <section
         ref={partnersSection.ref}
-        className={`py-8 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-8 pb-2 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Gradient separator layer */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_15%_97%)] via-[hsl(216_83%_98%)] to-[hsl(220_15%_97%)]"></div>
@@ -514,14 +514,14 @@ const Home = () => {
       {/* App Download Section - Creative Design */}
       <section
         ref={appSection.ref}
-        className={`py-12 md:py-16 relative overflow-visible transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-4 md:py-6 relative overflow-visible transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30"></div>
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-primary/10 to-cyan-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/10 to-primary/10 rounded-full blur-3xl"></div>
 
-        <div className="relative z-10 container mx-auto px-4 pt-48 md:pt-64 lg:pt-80">
+        <div className="relative z-10 container mx-auto px-4 pt-24 md:pt-32 lg:pt-40">
           <div className="max-w-6xl mx-auto">
             {/* Blue Themed Box Container - Compact Height */}
             <div className="relative bg-gradient-to-br from-[#1a3a6e] via-[#2674EC] to-[#00C6FF] rounded-3xl md:rounded-[2.5rem] p-5 md:p-6 lg:p-8 overflow-visible shadow-[0_20px_60px_-15px_rgba(38,116,236,0.4)]">
