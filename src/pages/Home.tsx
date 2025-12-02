@@ -530,21 +530,19 @@ const Home = () => {
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-400/10 rounded-full blur-2xl"></div>
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50 rounded-3xl md:rounded-[2.5rem]"></div>
 
-              <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-end">
-                {/* Left side - Phone Mockup - 2x BIGGER, above text on mobile, coming out of top */}
-                <div className="flex justify-center md:justify-center order-1 md:order-1 relative">
-                  <div className="relative md:absolute md:bottom-0 md:left-1/2 md:-translate-x-1/2 animate-fade-in">
-                    {/* Phone Image - 2x bigger on desktop/tablet, shifted down and coming out of box */}
+              <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-center min-h-[400px] md:min-h-[500px]">
+                {/* Left side - Phone Mockup - Bigger size, 30% spilling from top */}
+                <div className="flex justify-center md:justify-center order-1 md:order-1 relative h-full">
+                  <div className="relative h-full flex items-end md:items-center animate-fade-in">
+                    {/* Phone Image - Covers almost full box height, 30% spills out from top */}
                     <img
                       src={phoneMockup}
                       alt="A Plus Charge Mobile App Interface"
-                      className="w-[500px] md:w-[900px] lg:w-[1100px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500 md:-translate-y-[280px] lg:-translate-y-[320px]"
+                      className="w-[500px] md:w-[600px] lg:w-[700px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500 md:-translate-y-[100px] lg:-translate-y-[120px]"
                     />
                     {/* Glow Effect Behind Phone */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent blur-3xl -z-10 scale-110"></div>
                   </div>
-                  {/* Spacer for phone height on desktop */}
-                  <div className="hidden md:block h-[280px] lg:h-[320px]"></div>
                 </div>
 
                 {/* Right side - Content */}
