@@ -388,7 +388,7 @@ const Home = () => {
       {/* Client Logos - Scrolling with Gradient Separator */}
       <section
         ref={partnersSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-8 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Gradient separator layer */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_15%_97%)] via-[hsl(216_83%_98%)] to-[hsl(220_15%_97%)]"></div>
@@ -396,7 +396,7 @@ const Home = () => {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
         <div className="relative z-10 container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-3">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-cyan-600 bg-clip-text text-transparent">
               Trusted Partners
             </h2>
@@ -531,15 +531,14 @@ const Home = () => {
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50 rounded-3xl md:rounded-[2.5rem]"></div>
 
               <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-end">
-                {/* Left side - Phone Mockup - 2x BIGGER, above text on mobile */}
+                {/* Left side - Phone Mockup - 2x BIGGER, above text on mobile, coming out of top */}
                 <div className="flex justify-center md:justify-center order-1 md:order-1 relative">
                   <div className="relative md:absolute md:bottom-0 md:left-1/2 md:-translate-x-1/2 animate-fade-in">
-                    {/* Phone Image - 2x bigger, shifted down */}
+                    {/* Phone Image - 2x bigger on desktop/tablet, shifted down and coming out of box */}
                     <img
                       src={phoneMockup}
                       alt="A Plus Charge Mobile App Interface"
-                      className="w-[380px] md:w-[700px] lg:w-[900px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500"
-                      style={{ marginTop: '-200px' }}
+                      className="w-[500px] md:w-[900px] lg:w-[1100px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500 md:-translate-y-[280px] lg:-translate-y-[320px]"
                     />
                     {/* Glow Effect Behind Phone */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent blur-3xl -z-10 scale-110"></div>
