@@ -8,16 +8,35 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isExiting, setIsExiting] = useState(false);
   const playAttemptedRef = useRef(false);
+  const loadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasCompletedRef = useRef(false);
+
+  const triggerExit = () => {
+    if (hasCompletedRef.current) return;
+    hasCompletedRef.current = true;
+    setIsExiting(true);
+    setTimeout(onComplete, 500);
+  };
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    // Set a 4-second timeout - if video hasn't started playing by then, skip intro
+    loadTimeoutRef.current = setTimeout(() => {
+      console.log("Video load timeout - skipping intro");
+      triggerExit();
+    }, 4000);
+
     const handleTimeUpdate = () => {
+      // Clear load timeout once video is playing
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+        loadTimeoutRef.current = null;
+      }
       // Play only first 4.5 seconds then exit
       if (video.currentTime >= 4.5 && !isExiting) {
-        setIsExiting(true);
-        setTimeout(onComplete, 500);
+        triggerExit();
       }
     };
 
@@ -29,9 +48,24 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       }
     };
 
+    const handleError = () => {
+      console.log("Video error - skipping intro");
+      triggerExit();
+    };
+
+    const handleStalled = () => {
+      console.log("Video stalled - starting fallback timer");
+      // If video stalls, give it 2 more seconds before skipping
+      setTimeout(() => {
+        if (video.paused || video.readyState < 3) {
+          triggerExit();
+        }
+      }, 2000);
+    };
+
     // Ultra-aggressive autoplay for mobile
     const forcePlay = async () => {
-      if (!video) return;
+      if (!video || hasCompletedRef.current) return;
       
       // Ensure muted and inline
       video.muted = true;
@@ -43,6 +77,11 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
         if (playPromise !== undefined) {
           await playPromise;
           console.log("Video autoplay successful");
+          // Clear load timeout on successful play
+          if (loadTimeoutRef.current) {
+            clearTimeout(loadTimeoutRef.current);
+            loadTimeoutRef.current = null;
+          }
           return;
         }
       } catch (error) {
@@ -56,40 +95,38 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
         await new Promise(resolve => setTimeout(resolve, 100));
         await video.play();
         console.log("Video autoplay successful on retry");
+        if (loadTimeoutRef.current) {
+          clearTimeout(loadTimeoutRef.current);
+          loadTimeoutRef.current = null;
+        }
         return;
       } catch (retryError) {
         console.warn("Retry autoplay blocked:", retryError);
       }
       
-      // Attempt 3: Play on any interaction
-      const playOnInteraction = async () => {
-        try {
-          video.muted = true;
-          await video.play();
-          console.log("Video playing after interaction");
-        } catch (e) {
-          console.error("All autoplay attempts failed:", e);
-        }
-      };
+      // On mobile, if autoplay fails, skip the intro immediately
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        console.log("Mobile autoplay failed - skipping intro");
+        triggerExit();
+        return;
+      }
       
-      // Listen for multiple interaction types
-      const events = ['touchstart', 'touchend', 'click', 'scroll', 'keydown'];
-      events.forEach(event => {
-        document.addEventListener(event, playOnInteraction, { once: true, passive: true });
-      });
-      
-      // Auto-cleanup after 5 seconds
+      // Desktop fallback - wait for interaction briefly then skip
       setTimeout(() => {
-        events.forEach(event => {
-          document.removeEventListener(event, playOnInteraction);
-        });
-      }, 5000);
+        if (!hasCompletedRef.current && (video.paused || video.readyState < 3)) {
+          console.log("Autoplay not working - skipping intro");
+          triggerExit();
+        }
+      }, 1500);
     };
 
     // Set up event listeners
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('loadeddata', handleCanPlay);
+    video.addEventListener('error', handleError);
+    video.addEventListener('stalled', handleStalled);
     
     // Try to play immediately on mount
     if (video.readyState >= 2) {
@@ -108,7 +145,12 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('loadeddata', handleCanPlay);
+      video.removeEventListener('error', handleError);
+      video.removeEventListener('stalled', handleStalled);
       clearTimeout(delayTimer);
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
     };
   }, [onComplete, isExiting]);
 

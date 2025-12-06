@@ -29,6 +29,7 @@ import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import AnimatedDownloadCounter from "@/components/AnimatedDownloadCounter";
 const Home = () => {
   const chargers = useCountUp({
     end: 50,
@@ -516,8 +517,16 @@ const Home = () => {
         ref={appSection.ref}
         className={`py-4 md:py-6 relative overflow-visible transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Background Effects */}
+        {/* Background Effects with Pattern */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30"></div>
+        {/* Subtle Circuit Pattern Background */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232674EC' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}></div>
+        {/* Diagonal Lines Pattern */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, hsl(var(--primary)) 35px, hsl(var(--primary)) 36px)`,
+        }}></div>
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-primary/10 to-cyan-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/10 to-primary/10 rounded-full blur-3xl"></div>
 
@@ -529,6 +538,10 @@ const Home = () => {
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-400/10 rounded-full blur-2xl"></div>
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50 rounded-3xl md:rounded-[2.5rem]"></div>
+              {/* Hexagon Pattern Overlay */}
+              <div className="absolute inset-0 opacity-10 rounded-3xl md:rounded-[2.5rem] overflow-hidden" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              }}></div>
 
               <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-center min-h-[400px] md:min-h-[500px]">
                 {/* Left side - Phone Mockup - Bigger size, 30% spilling from top */}
@@ -558,6 +571,32 @@ const Home = () => {
                     <p className="text-sm md:text-base text-white/80 leading-relaxed max-w-md">
                       Find chargers, start sessions, track usage, and pay - all from your pocket.
                     </p>
+                  </div>
+
+                  {/* Animated Download Counter */}
+                  <div className="flex items-center justify-center md:justify-start gap-3 py-2">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-xl border border-white/20">
+                      <div className="flex -space-x-2">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-white/30">A</div>
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-white/30">+</div>
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-white/30">⚡</div>
+                      </div>
+                      <div className="text-left">
+                        <div className="text-lg md:text-xl font-bold text-white">
+                          <span className="inline-flex">
+                            {appSection.isVisible && (
+                              <AnimatedDownloadCounter targetValue={50000} duration={2000} />
+                            )}
+                          </span>
+                          <span className="text-cyan-300">+</span>
+                        </div>
+                        <div className="text-[10px] text-white/70 uppercase tracking-wider font-medium">Downloads</div>
+                      </div>
+                    </div>
+                    <div className="hidden sm:flex items-center gap-1 text-white/60 text-xs">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                      Live users charging
+                    </div>
                   </div>
 
                   {/* Features */}
