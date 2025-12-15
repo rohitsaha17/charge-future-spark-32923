@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import GradientDivider from "@/components/GradientDivider";
+import StorytellingSection from "@/components/StorytellingSection";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Home, Building2, Zap, Rocket, Shield, TrendingUp } from "lucide-react";
+import { Home, Building2, Zap, Rocket, Shield, TrendingUp, CheckCircle, Users } from "lucide-react";
+import chargingStationLaunch from "@/assets/charging-station-launch.jpg";
 
 const Services = () => {
   const chargerTypes = [
@@ -66,33 +68,46 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-card/20 to-background"></div>
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Enhanced Header */}
-        <div className="text-center mb-16 relative">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm mb-6">
-            <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">Charging Solutions</span>
+    <div className="min-h-screen pb-20">
+      {/* Enhanced Hero Section */}
+      <section 
+        className="relative py-32 md:py-40 mb-12 overflow-hidden"
+        style={{
+          backgroundImage: `url(${chargingStationLaunch})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background"></div>
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" />
+          <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
+            <Zap className="w-4 h-4 text-cyan-300" />
+            <span className="text-sm font-semibold text-white/90">Complete Charging Solutions</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-cyan-500 bg-clip-text text-transparent">
-            Power Your <span className="text-foreground">Future</span>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
+            Power Your <span className="text-cyan-300">Future</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
             Comprehensive EV charging solutions designed for Northeast India's unique landscape - from residential 
             to ultra-fast highway charging across the Seven Sisters
           </p>
-          <div className="flex justify-center gap-6 mt-8">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              <span>3.3kW - 60kW Range</span>
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <span className="text-white font-medium">3.3kW - 60kW Range</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" />
-              <span>CAPEX & OPEX Models</span>
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <span className="text-white font-medium">CAPEX & OPEX Models</span>
             </div>
           </div>
         </div>
+      </section>
+
+      <div className="container mx-auto px-4 relative z-10">
 
         {/* Charger Types */}
         <div className="mb-20">
@@ -165,8 +180,13 @@ const Services = () => {
 
         <GradientDivider />
 
+        <StorytellingSection 
+          title="Powering Northeast India's Electric Dreams"
+          description="From the hills of Shillong to the plains of Guwahati, we're building infrastructure that doesn't just charge vehicles - it transforms communities and creates sustainable futures."
+        />
+
         {/* CTA */}
-        <div className="text-center">
+        <div className="text-center mt-16">
           <Button size="lg" asChild className="glow-effect">
             <Link to="/partner">Become Our Partner</Link>
           </Button>

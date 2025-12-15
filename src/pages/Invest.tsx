@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,8 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TrendingUp, Award, Shield, Target, Users, Zap } from "lucide-react";
 import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 const Invest = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const highlights = [
     { icon: TrendingUp, title: "Explosive Market Growth", description: "EV adoption accelerating rapidly in India" },
     { icon: Zap, title: "First-Mover Advantage", description: "Early presence in Northeast India" },
@@ -24,9 +28,42 @@ const Invest = () => {
     "Emerged as Northeast India's leading EV charging company"
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Thank you for your interest! Our team will contact you shortly.");
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const phone = formData.get('phone') as string;
+    const email = formData.get('email') as string;
+    const organization = formData.get('organization') as string;
+    const city = formData.get('city') as string;
+    const investorType = formData.get('investorType') as string;
+    const investmentRange = formData.get('investmentRange') as string;
+
+    try {
+      const { error } = await supabase
+        .from('investor_enquiries')
+        .insert({
+          name,
+          phone,
+          email,
+          organization: organization || null,
+          city: city || null,
+          investor_type: investorType || null,
+          investment_range: investmentRange || null,
+        });
+
+      if (error) throw error;
+      
+      toast.success("Thank you for your interest! Our team will contact you shortly.");
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      toast.error("Failed to submit enquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -161,33 +198,33 @@ const Invest = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label>Name</Label>
-                  <Input required placeholder="Your name" />
+                  <Label>Name *</Label>
+                  <Input name="name" required placeholder="Your name" />
                 </div>
                 <div>
-                  <Label>Phone</Label>
-                  <Input required type="tel" placeholder="Your phone" />
+                  <Label>Phone *</Label>
+                  <Input name="phone" required type="tel" placeholder="Your phone" />
                 </div>
               </div>
 
               <div>
-                <Label>Email</Label>
-                <Input required type="email" placeholder="your@email.com" />
+                <Label>Email *</Label>
+                <Input name="email" required type="email" placeholder="your@email.com" />
               </div>
 
               <div>
                 <Label>Organization / Fund Name</Label>
-                <Input placeholder="Organization name" />
+                <Input name="organization" placeholder="Organization name" />
               </div>
 
               <div>
                 <Label>City / Location</Label>
-                <Input placeholder="Your city" />
+                <Input name="city" placeholder="Your city" />
               </div>
 
               <div>
                 <Label>Type of Investor</Label>
-                <Select required>
+                <Select name="investorType">
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
@@ -202,7 +239,7 @@ const Invest = () => {
 
               <div>
                 <Label>Investment Interest (₹)</Label>
-                <Select>
+                <Select name="investmentRange">
                   <SelectTrigger>
                     <SelectValue placeholder="Select range" />
                   </SelectTrigger>
@@ -215,8 +252,8 @@ const Invest = () => {
                 </Select>
               </div>
 
-              <Button type="submit" className="w-full glow-effect">
-                Submit Enquiry
+              <Button type="submit" className="w-full glow-effect" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Enquiry"}
               </Button>
             </form>
           </Card>
