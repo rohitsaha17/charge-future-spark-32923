@@ -165,20 +165,6 @@ const About = () => {
           <p className="text-xl md:text-2xl text-white/90 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
             Born in Assam, built for the Northeast. We're not just installing chargers - we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-2xl font-bold text-cyan-300">50+</span>
-              <span className="text-sm text-white/80">Charging Stations</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-2xl font-bold text-cyan-300">7</span>
-              <span className="text-sm text-white/80">States Covered</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-2xl font-bold text-cyan-300">98%</span>
-              <span className="text-sm text-white/80">Uptime</span>
-            </div>
-          </div>
         </div>
       </section>
 
