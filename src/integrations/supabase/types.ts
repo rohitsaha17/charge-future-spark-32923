@@ -137,6 +137,93 @@ export type Database = {
         }
         Relationships: []
       }
+      investor_enquiries: {
+        Row: {
+          city: string | null
+          created_at: string
+          email: string
+          id: string
+          investment_range: string | null
+          investor_type: string | null
+          name: string
+          organization: string | null
+          phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          investment_range?: string | null
+          investor_type?: string | null
+          name: string
+          organization?: string | null
+          phone: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          investment_range?: string | null
+          investor_type?: string | null
+          name?: string
+          organization?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      partner_enquiries: {
+        Row: {
+          charger_type: string | null
+          created_at: string
+          email: string
+          id: string
+          location_address: string | null
+          location_lat: number | null
+          location_lng: number | null
+          message: string | null
+          name: string
+          phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          charger_type?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          location_address?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          message?: string | null
+          name: string
+          phone: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          charger_type?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          location_address?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          message?: string | null
+          name?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

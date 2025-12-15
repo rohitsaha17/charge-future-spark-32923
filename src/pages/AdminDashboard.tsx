@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { MapPin, FileText, LogOut } from 'lucide-react';
+import { MapPin, FileText, LogOut, MessageSquare } from 'lucide-react';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 p-8 pt-24">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-green-600 bg-clip-text text-transparent">
@@ -68,9 +68,9 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           <Link to="/admin/charging-stations">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardHeader>
                 <MapPin className="w-12 h-12 text-blue-600 mb-4" />
                 <CardTitle>Charging Stations</CardTitle>
@@ -79,13 +79,13 @@ const AdminDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full">Manage Charging Stations</Button>
+                <Button className="w-full">Manage Stations</Button>
               </CardContent>
             </Card>
           </Link>
 
           <Link to="/admin/blogs">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardHeader>
                 <FileText className="w-12 h-12 text-green-600 mb-4" />
                 <CardTitle>Blog Posts</CardTitle>
@@ -94,7 +94,22 @@ const AdminDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full">Manage Blog Posts</Button>
+                <Button className="w-full">Manage Blogs</Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/admin/enquiries">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <MessageSquare className="w-12 h-12 text-purple-600 mb-4" />
+                <CardTitle>Enquiries</CardTitle>
+                <CardDescription>
+                  View and manage partner & investor enquiries
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full">Manage Enquiries</Button>
               </CardContent>
             </Card>
           </Link>

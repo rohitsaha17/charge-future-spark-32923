@@ -32,27 +32,46 @@ const Invest = () => {
   return (
     <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
-      {/* Hero */}
+      {/* Enhanced Hero */}
       <section 
-        className="relative py-32 mb-20 overflow-hidden"
+        className="relative py-32 md:py-40 mb-20 overflow-hidden"
         style={{
           backgroundImage: `url(${energyFlow})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/80 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background"></div>
         <div className="absolute inset-0" style={{ background: 'var(--gradient-radial)', opacity: 0.3 }}></div>
+        {/* Animated particles */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" />
+          <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
-            Invest in the Future of Energy
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
+            <TrendingUp className="w-4 h-4 text-cyan-300" />
+            <span className="text-sm font-semibold text-white/90">Investment Opportunity</span>
+          </div>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
+            Invest in the <span className="text-cyan-300">Future</span><br />
+            <span className="text-white/95">of Energy</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
             At A Plus Charge, we're not just scaling EV charging infrastructure - we're building the backbone 
-            of India's clean mobility revolution. With proven traction, government recognition, and strong 
-            partnerships, we offer investors a unique opportunity to power growth in one of the fastest-growing 
-            markets of the decade.
+            of India's clean mobility revolution.
           </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <Award className="w-5 h-5 text-cyan-300" />
+              <span className="text-white font-medium">DPIIT Certified</span>
+            </div>
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <Shield className="w-5 h-5 text-cyan-300" />
+              <span className="text-white font-medium">UNNATI Recognized</span>
+            </div>
+          </div>
         </div>
       </section>
 
