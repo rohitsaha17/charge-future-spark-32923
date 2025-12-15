@@ -69,15 +69,29 @@ const Services = () => {
     <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/20 to-background"></div>
       <div className="container mx-auto px-4 relative z-10">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
-            Our Services
+        {/* Enhanced Header */}
+        <div className="text-center mb-16 relative">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm mb-6">
+            <Zap className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">Charging Solutions</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-cyan-500 bg-clip-text text-transparent">
+            Power Your <span className="text-foreground">Future</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Comprehensive EV charging solutions designed for Northeast India's unique landscape - from residential 
             to ultra-fast highway charging across the Seven Sisters
           </p>
+          <div className="flex justify-center gap-6 mt-8">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+              <span>3.3kW - 60kW Range</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" />
+              <span>CAPEX & OPEX Models</span>
+            </div>
+          </div>
         </div>
 
         {/* Charger Types */}

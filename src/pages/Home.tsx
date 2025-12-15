@@ -208,7 +208,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Charging Stations Map */}
+      {/* Charging Stations Map with Sidebar */}
       <section
         ref={mapSection.ref}
         className={`py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
@@ -227,8 +227,66 @@ const Home = () => {
               Strategically located across Northeast India to power your journey. Click on markers to navigate.
             </p>
           </div>
-          <div className="animate-fade-in max-w-7xl mx-auto" style={{ animationDelay: "0.2s" }}>
-            <GoogleMapsCharging />
+          
+          {/* Map with Sidebar Layout */}
+          <div className="animate-fade-in max-w-7xl mx-auto grid lg:grid-cols-4 gap-6" style={{ animationDelay: "0.2s" }}>
+            {/* Sidebar - Quick Stats & Navigation Help */}
+            <div className="lg:col-span-1 order-2 lg:order-1 space-y-4">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary/10 shadow-lg">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-primary" />
+                  Quick Stats
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-muted">
+                    <span className="text-muted-foreground text-sm">Total Stations</span>
+                    <span className="font-bold text-primary">25+</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-muted">
+                    <span className="text-muted-foreground text-sm">Live Chargers</span>
+                    <span className="font-bold text-cyan-600">50+</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-muted">
+                    <span className="text-muted-foreground text-sm">States Covered</span>
+                    <span className="font-bold text-green-600">7</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-muted-foreground text-sm">Avg. Uptime</span>
+                    <span className="font-bold text-emerald-600">98%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-primary/10 to-cyan-500/10 rounded-2xl p-6 border border-primary/20">
+                <h3 className="text-lg font-bold text-foreground mb-3">📍 Map Tips</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Click markers for station details
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Hover for quick preview
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Get directions to any station
+                  </li>
+                </ul>
+              </div>
+              
+              <Link
+                to="/find-charger"
+                className="block w-full text-center py-3 px-4 bg-gradient-to-r from-primary to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300"
+              >
+                View Full Map →
+              </Link>
+            </div>
+            
+            {/* Map Container */}
+            <div className="lg:col-span-3 order-1 lg:order-2">
+              <GoogleMapsCharging />
+            </div>
           </div>
         </div>
       </section>
@@ -543,7 +601,7 @@ const Home = () => {
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
               }}></div>
 
-              <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-center min-h-[400px] md:min-h-[500px]">
+              <div className="relative grid md:grid-cols-2 gap-4 md:gap-6 items-center min-h-[350px] md:min-h-[420px]">
                 {/* Left side - Phone Mockup - Bigger size, 30% spilling from top */}
                 <div className="flex justify-center md:justify-center order-1 md:order-1 relative h-full">
                   <div className="relative h-full flex items-end md:items-center animate-fade-in">
@@ -551,7 +609,7 @@ const Home = () => {
                     <img
                       src={phoneMockup}
                       alt="A Plus Charge Mobile App Interface"
-                      className="w-[500px] md:w-[600px] lg:w-[700px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500 md:-translate-y-[100px] lg:-translate-y-[120px]"
+                      className="w-[400px] md:w-[500px] lg:w-[550px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500 md:-translate-y-[80px] lg:-translate-y-[90px]"
                     />
                     {/* Glow Effect Behind Phone */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent blur-3xl -z-10 scale-110"></div>
@@ -582,7 +640,7 @@ const Home = () => {
                         <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-white/30">⚡</div>
                       </div>
                       <div className="text-left">
-                        <div className="text-lg md:text-xl font-bold text-white">
+                      <div className="text-lg md:text-xl font-bold text-white">
                           <span className="inline-flex">
                             {appSection.isVisible && (
                               <AnimatedDownloadCounter targetValue={50000} duration={2000} />
@@ -590,7 +648,7 @@ const Home = () => {
                           </span>
                           <span className="text-cyan-300">+</span>
                         </div>
-                        <div className="text-[10px] text-white/70 uppercase tracking-wider font-medium">Downloads</div>
+                        <div className="text-[10px] text-white/70 uppercase tracking-wider font-medium">Happy Users</div>
                       </div>
                     </div>
                     <div className="hidden sm:flex items-center gap-1 text-white/60 text-xs">

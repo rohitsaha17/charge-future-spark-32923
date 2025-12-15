@@ -33,14 +33,19 @@ const Blog = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 pt-24">
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-green-600 bg-clip-text text-transparent">
-          Our Blog
-        </h1>
-        <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">
-          Stay updated with the latest news, insights, and stories from the world of electric vehicle charging
-        </p>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm mb-6">
+            <span className="text-sm font-semibold text-primary">📚 Latest Updates</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+            Insights & <span className="text-foreground">Stories</span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Stay updated with the latest news, insights, and stories from the world of electric vehicle charging
+          </p>
+        </div>
 
         {blogs.length === 0 ? (
           <Card className="max-w-2xl mx-auto">

@@ -80,10 +80,14 @@ const FindCharger = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsl(216_83%_56%_/_0.08),_transparent_50%)]"></div>
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Header */}
+        {/* Enhanced Header */}
         <div className="text-center mb-12 space-y-4">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
-            Find a Charger
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
+            <MapPin className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">Live Network Map</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+            Find Your <span className="text-foreground">Charger</span>
           </h1>
           <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
             Locate our charging stations across Northeast India with real-time availability

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
-import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Twitter } from "lucide-react";
+import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Instagram } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
 import ctoPortrait from "@/assets/team/cto-portrait.jpg";
@@ -76,8 +76,8 @@ const About = () => {
       image: founderPortrait,
       story: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge - Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
       highlight: "PG in Entrepreneurship, Amity University | 10+ years in clean energy",
-      linkedin: "#",
-      twitter: "#"
+      linkedin: "https://in.linkedin.com/in/samyak-jain-alternatev",
+      instagram: "https://www.instagram.com/samyakjain_it_is/"
     },
     {
       name: "Priya Sharma",
@@ -130,7 +130,7 @@ const About = () => {
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Full-Width Hero Section */}
+      {/* Full-Width Hero Section - Enhanced */}
       <section id="hero" className="text-center mb-24 relative overflow-hidden">
         {/* Background Image with Gradient Blue to White Overlay */}
         <div className="absolute inset-0 z-0">
@@ -140,20 +140,45 @@ const About = () => {
             className="w-full h-full object-cover object-center"
           />
           {/* Blue to white gradient overlay for smooth merging */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background" />
+          {/* Animated particles effect */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '0s' }} />
+            <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+            <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-cyan-200 rounded-full animate-pulse" style={{ animationDelay: '1.5s' }} />
+          </div>
         </div>
         
         {/* Content */}
-        <div className="relative z-10 py-32 md:py-40 px-4">
+        <div className="relative z-10 py-32 md:py-48 px-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
+            <Zap className="w-4 h-4 text-cyan-300" />
+            <span className="text-sm font-semibold text-white/90">Powering Tomorrow's Mobility</span>
+          </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
-            From Vision to Reality:<br />
+            From Vision to <span className="text-cyan-300">Reality</span><br />
             <span className="text-white/95 drop-shadow-2xl">
               Electrifying Northeast India
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/95 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
+          <p className="text-xl md:text-2xl text-white/90 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
             Born in Assam, built for the Northeast. We're not just installing chargers - we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
           </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <span className="text-2xl font-bold text-cyan-300">50+</span>
+              <span className="text-sm text-white/80">Charging Stations</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <span className="text-2xl font-bold text-cyan-300">7</span>
+              <span className="text-sm text-white/80">States Covered</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <span className="text-2xl font-bold text-cyan-300">98%</span>
+              <span className="text-sm text-white/80">Uptime</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -279,13 +304,13 @@ const About = () => {
                       <span className="text-sm">LinkedIn</span>
                     </a>
                     <a 
-                      href={team[0].twitter} 
+                      href={team[0].instagram} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                     >
-                      <Twitter className="w-5 h-5" />
-                      <span className="text-sm">Twitter</span>
+                      <Instagram className="w-5 h-5" />
+                      <span className="text-sm">Instagram</span>
                     </a>
                   </div>
                 </div>

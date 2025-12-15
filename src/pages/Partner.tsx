@@ -126,13 +126,27 @@ const Partner = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
       <div className="absolute inset-0" style={{ background: 'var(--gradient-radial)', opacity: 0.2 }}></div>
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
-            Become Our Partner
+        <div className="text-center mb-12 relative">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm mb-6">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">Partnership Opportunities</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+            Grow With <span className="text-foreground">Us</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Join India's fastest-growing EV charging network. Calculate your ROI and start your partnership journey.
           </p>
+          <div className="flex flex-wrap justify-center gap-4 mt-8">
+            <div className="px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
+              <span className="text-2xl font-bold text-primary">15-20%</span>
+              <span className="text-sm text-muted-foreground ml-2">Expected ROI</span>
+            </div>
+            <div className="px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
+              <span className="text-2xl font-bold text-primary">₹0</span>
+              <span className="text-sm text-muted-foreground ml-2">Partnership Fee</span>
+            </div>
+          </div>
         </div>
 
         {/* Explanatory Video Section */}
