@@ -631,29 +631,11 @@ const Home = () => {
                     </p>
                   </div>
 
-                  {/* Animated Download Counter */}
+                  {/* Live Charging Indicator */}
                   <div className="flex items-center justify-center md:justify-start gap-3 py-2">
                     <div className="flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-xl border border-white/20">
-                      <div className="flex -space-x-2">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-white/30">A</div>
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-white/30">+</div>
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-white/30">⚡</div>
-                      </div>
-                      <div className="text-left">
-                      <div className="text-lg md:text-xl font-bold text-white">
-                          <span className="inline-flex">
-                            {appSection.isVisible && (
-                              <AnimatedDownloadCounter targetValue={50000} duration={2000} />
-                            )}
-                          </span>
-                          <span className="text-cyan-300">+</span>
-                        </div>
-                        <div className="text-[10px] text-white/70 uppercase tracking-wider font-medium">Happy Users</div>
-                      </div>
-                    </div>
-                    <div className="hidden sm:flex items-center gap-1 text-white/60 text-xs">
                       <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                      Live users charging
+                      <span className="text-sm text-white/90 font-medium">Live users charging now</span>
                     </div>
                   </div>
 

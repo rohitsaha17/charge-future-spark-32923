@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Partner = () => {
   const [chargerType, setChargerType] = useState("residential-3.3kw");
@@ -110,15 +111,50 @@ const Partner = () => {
     toast.success("Location marked on map!");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!selectedLocation) {
       toast.error("Please mark your location on the map");
       return;
     }
+
+    setIsSubmitting(true);
     
-    toast.success(`Enquiry submitted! Location: ${selectedLocation.lat.toFixed(6)}, ${selectedLocation.lng.toFixed(6)}`);
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const phone = formData.get('phone') as string;
+    const email = formData.get('email') as string;
+    const chargerType = formData.get('siteType') as string;
+    const message = `Power Load: ${formData.get('powerLoad')}kW, Ownership Model: ${formData.get('ownershipModel')}, Pin Code: ${formData.get('pincode')}, Address: ${formData.get('address')}`;
+
+    try {
+      const { error } = await supabase
+        .from('partner_enquiries')
+        .insert({
+          name,
+          phone,
+          email,
+          charger_type: chargerType,
+          message,
+          location_lat: selectedLocation.lat,
+          location_lng: selectedLocation.lng,
+          location_address: selectedLocation.address || null,
+        });
+
+      if (error) throw error;
+      
+      toast.success("Thank you! Your partnership enquiry has been submitted successfully. We'll contact you within 24 hours.");
+      (e.target as HTMLFormElement).reset();
+      setSelectedLocation(null);
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      toast.error("Failed to submit enquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -432,6 +468,7 @@ const Partner = () => {
                     <Label htmlFor="name">Name *</Label>
                     <Input 
                       id="name"
+                      name="name"
                       required 
                       placeholder="Your full name" 
                       maxLength={100}
@@ -441,6 +478,7 @@ const Partner = () => {
                     <Label htmlFor="phone">Phone *</Label>
                     <Input 
                       id="phone"
+                      name="phone"
                       required 
                       type="tel" 
                       placeholder="10-digit mobile number"
@@ -452,6 +490,7 @@ const Partner = () => {
                     <Label htmlFor="email">Email *</Label>
                     <Input 
                       id="email"
+                      name="email"
                       required 
                       type="email" 
                       placeholder="your@email.com"
@@ -469,6 +508,7 @@ const Partner = () => {
                     <Label htmlFor="pincode">Pin Code *</Label>
                     <Input 
                       id="pincode"
+                      name="pincode"
                       required 
                       placeholder="Enter 6-digit pin code"
                       pattern="[0-9]{6}"
@@ -479,6 +519,7 @@ const Partner = () => {
                     <Label htmlFor="address">Full Address *</Label>
                     <Input 
                       id="address"
+                      name="address"
                       required 
                       placeholder="Street, Area, City"
                       maxLength={200}
@@ -519,7 +560,7 @@ const Partner = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="siteType">Type of Site *</Label>
-                    <Select required>
+                    <Select name="siteType" required>
                       <SelectTrigger id="siteType">
                         <SelectValue placeholder="Select site type" />
                       </SelectTrigger>
@@ -537,6 +578,7 @@ const Partner = () => {
                     <Label htmlFor="powerLoad">Available Power Load (kW) *</Label>
                     <Input 
                       id="powerLoad"
+                      name="powerLoad"
                       required
                       type="number" 
                       placeholder="e.g., 50"
@@ -552,7 +594,7 @@ const Partner = () => {
                 <h3 className="text-lg font-semibold">Partnership Model</h3>
                 <div>
                   <Label htmlFor="ownershipModel">Ownership Model *</Label>
-                  <Select required>
+                  <Select name="ownershipModel" required>
                     <SelectTrigger id="ownershipModel">
                       <SelectValue placeholder="Select ownership model" />
                     </SelectTrigger>
@@ -574,8 +616,8 @@ const Partner = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full glow-effect">
-                Submit Partnership Enquiry
+              <Button type="submit" className="w-full glow-effect" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Partnership Enquiry"}
               </Button>
             </form>
           </Card>
