@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
+import ScrollReveal from "@/components/ScrollReveal";
 import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Instagram } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
@@ -19,6 +20,7 @@ import osmLogo from "@/assets/partners/osm-logo.png";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { JourneyTimeline } from "@/components/JourneyTimeline";
 import { useCountUp } from "@/hooks/useCountUp";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import {
   Accordion,
   AccordionContent,
@@ -130,111 +132,130 @@ const About = () => {
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Full-Width Hero Section - Enhanced */}
-      <section id="hero" className="text-center mb-24 relative overflow-hidden">
-        {/* Background Image with Gradient Blue to White Overlay */}
+      {/* Full-Width Hero Section - Clean and Professional */}
+      <section id="hero" className="text-center mb-24 relative overflow-hidden min-h-[80vh] flex items-center">
+        {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img 
             src={heroBackground} 
             alt="A Plus Charge Station Launch" 
             className="w-full h-full object-cover object-center"
           />
-          {/* Blue to white gradient overlay for smooth merging */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background" />
-          {/* Animated particles effect */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '0s' }} />
-            <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-            <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-            <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-cyan-200 rounded-full animate-pulse" style={{ animationDelay: '1.5s' }} />
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/95 via-primary/80 to-background" />
+        </div>
+        
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
         
         {/* Content */}
-        <div className="relative z-10 py-32 md:py-48 px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-            <Zap className="w-4 h-4 text-cyan-300" />
-            <span className="text-sm font-semibold text-white/90">Powering Tomorrow's Mobility</span>
+        <div className="relative z-10 container mx-auto px-4 py-20">
+          <div className="animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 hover:bg-white/20 transition-all duration-300">
+              <Zap className="w-5 h-5 text-cyan-300 animate-pulse" />
+              <span className="text-sm font-semibold text-white/95 tracking-wide">Northeast India's #1 EV Charging Network</span>
+            </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
-            From Vision to <span className="text-cyan-300">Reality</span><br />
-            <span className="text-white/95 drop-shadow-2xl">
-              Electrifying Northeast India
-            </span>
+          
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight text-white drop-shadow-2xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">A Plus Charge</span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
-            Born in Assam, built for the Northeast. We're not just installing chargers - we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
+          
+          <p className="text-xl md:text-2xl text-white/90 font-medium max-w-3xl mx-auto mb-10 drop-shadow-xl animate-fade-in leading-relaxed" style={{ animationDelay: '0.4s' }}>
+            Born in Assam, built for the Northeast. We're creating the backbone of sustainable mobility across seven sister states.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-2xl font-bold text-cyan-300">50+</span>
-              <span className="text-sm text-white/80">Charging Stations</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-2xl font-bold text-cyan-300">7</span>
-              <span className="text-sm text-white/80">States Covered</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-2xl font-bold text-cyan-300">98%</span>
-              <span className="text-sm text-white/80">Uptime</span>
-            </div>
+          
+          <div className="flex flex-wrap justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            {[
+              { value: '50+', label: 'Charging Stations' },
+              { value: '7', label: 'States Covered' },
+              { value: '98%', label: 'Uptime' },
+            ].map((stat, index) => (
+              <div key={index} className="flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                <span className="text-3xl font-bold text-cyan-300">{stat.value}</span>
+                <span className="text-sm text-white/80">{stat.label}</span>
+              </div>
+            ))}
           </div>
+        </div>
+        
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-8 h-8 text-white/60" />
         </div>
       </section>
 
       <div className="container mx-auto px-4 max-w-6xl">
 
         {/* Stats Section */}
-        <section id="stats" className="mb-24 scroll-mt-24">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {stats.map((stat, index) => (
-              <StatsCounter key={index} {...stat} />
-            ))}
-          </div>
-        </section>
-
-        {/* Trusted By Section */}
-        <section id="partners" className="mb-24 scroll-mt-24 -mx-4 px-4 py-12 bg-gradient-to-b from-muted/30 via-muted/10 to-transparent rounded-2xl">
-          <div className="text-center mb-8">
-            <p className="text-sm text-muted-foreground uppercase tracking-wider mb-6">Trusted by teams at</p>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-              {partners.map((partner, index) => (
-                <div key={index} className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300">
-                  <img src={partner.logo} alt={partner.name} className="h-8 md:h-10 object-contain" />
-                </div>
+        <ScrollReveal>
+          <section id="stats" className="mb-24 scroll-mt-24">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+              {stats.map((stat, index) => (
+                <ScrollReveal key={index} delay={index * 100} direction="up">
+                  <StatsCounter {...stat} />
+                </ScrollReveal>
               ))}
             </div>
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
+
+        {/* Trusted By Section */}
+        <ScrollReveal>
+          <section id="partners" className="mb-24 scroll-mt-24 -mx-4 px-4 py-12 bg-gradient-to-b from-muted/30 via-muted/10 to-transparent rounded-2xl">
+            <div className="text-center mb-8">
+              <p className="text-sm text-muted-foreground uppercase tracking-wider mb-6">Trusted by teams at</p>
+              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+                {partners.map((partner, index) => (
+                  <ScrollReveal key={index} delay={index * 50}>
+                    <div className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 hover:scale-110">
+                      <img src={partner.logo} alt={partner.name} className="h-8 md:h-10 object-contain" />
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        </ScrollReveal>
 
         <GradientDivider />
 
         {/* Story Section */}
-        <section id="story" className="mb-24 scroll-mt-24">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
-              It All Started with Range Anxiety
-            </h2>
-            <div className="space-y-6 text-muted-foreground leading-relaxed">
-              <p>
-                In 2021, our founder was driving an EV through Guwahati when the battery warning came on. 
-                The nearest charging station was 40km away, and it wasn't even operational. That moment of 
-                helplessness sparked an idea: Northeast India needed reliable charging infrastructure.
-              </p>
-              <p>
-                We spent months understanding the region's unique challenges - monsoon rains that could flood 
-                stations, power grids that needed smart load management, and communities that spoke different 
-                languages. Traditional charging solutions weren't built for us.
-              </p>
-              <p>
-                Today, we're proud to operate the region's most reliable network, with stations that work 
-                through storms, algorithms optimized for local power conditions, and support teams that speak 
-                your language. We're not just solving range anxiety - we're building the foundation for 
-                Northeast India's electric future.
-              </p>
+        <ScrollReveal>
+          <section id="story" className="mb-24 scroll-mt-24">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+                It All Started with Range Anxiety
+              </h2>
+              <div className="space-y-6 text-muted-foreground leading-relaxed">
+                <ScrollReveal delay={100}>
+                  <p>
+                    In 2021, our founder was driving an EV through Guwahati when the battery warning came on. 
+                    The nearest charging station was 40km away, and it wasn't even operational. That moment of 
+                    helplessness sparked an idea: Northeast India needed reliable charging infrastructure.
+                  </p>
+                </ScrollReveal>
+                <ScrollReveal delay={200}>
+                  <p>
+                    We spent months understanding the region's unique challenges - monsoon rains that could flood 
+                    stations, power grids that needed smart load management, and communities that spoke different 
+                    languages. Traditional charging solutions weren't built for us.
+                  </p>
+                </ScrollReveal>
+                <ScrollReveal delay={300}>
+                  <p>
+                    Today, we're proud to operate the region's most reliable network, with stations that work 
+                    through storms, algorithms optimized for local power conditions, and support teams that speak 
+                    your language. We're not just solving range anxiety - we're building the foundation for 
+                    Northeast India's electric future.
+                  </p>
+                </ScrollReveal>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
 
         <GradientDivider />
 
@@ -246,23 +267,27 @@ const About = () => {
         <GradientDivider />
 
         {/* What We Believe In */}
-        <section id="values" className="mb-24 scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What We Believe In</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {values.map((value, index) => {
-              const Icon = value.icon;
-              return (
-                <Card key={index} className="p-8 text-center hover:shadow-lg transition-shadow">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                    <Icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{value.title}</h3>
-                  <p className="text-muted-foreground">{value.description}</p>
-                </Card>
-              );
-            })}
-          </div>
-        </section>
+        <ScrollReveal>
+          <section id="values" className="mb-24 scroll-mt-24">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What We Believe In</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {values.map((value, index) => {
+                const Icon = value.icon;
+                return (
+                  <ScrollReveal key={index} delay={index * 150} direction="scale">
+                    <Card className="p-8 text-center hover:shadow-xl transition-all duration-500 hover:-translate-y-2 group">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors duration-300">
+                        <Icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-3">{value.title}</h3>
+                      <p className="text-muted-foreground">{value.description}</p>
+                    </Card>
+                  </ScrollReveal>
+                );
+              })}
+            </div>
+          </section>
+        </ScrollReveal>
 
         <GradientDivider />
 
