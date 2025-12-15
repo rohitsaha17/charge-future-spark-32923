@@ -2,8 +2,7 @@ import { useState } from "react";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import LocationPickerMap from "@/components/LocationPickerMap";
-import ScrollReveal from "@/components/ScrollReveal";
-import { Play, MapPin, ChevronDown } from "lucide-react";
+import { Play, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -159,50 +158,32 @@ const Partner = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20 relative overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center overflow-hidden bg-gradient-to-b from-primary via-primary/90 to-background">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-        
-        <div className="container mx-auto px-4 relative z-10 text-center py-20">
-          <div className="animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 hover:bg-white/20 transition-all duration-300">
-              <TrendingUp className="w-5 h-5 text-cyan-300 animate-pulse" />
-              <span className="text-sm font-semibold text-white/95 tracking-wide">Partnership Opportunities</span>
-            </div>
+    <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
+      <div className="absolute inset-0" style={{ background: 'var(--gradient-radial)', opacity: 0.2 }}></div>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-12 relative">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm mb-6">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">Partnership Opportunities</span>
           </div>
-          
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 text-white drop-shadow-2xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Become Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">Partner</span>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+            Grow With <span className="text-foreground">Us</span>
           </h1>
-          
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-10 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            Host a charging station. Earn passive income. Power the EV revolution.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Join India's fastest-growing EV charging network. Calculate your ROI and start your partnership journey.
           </p>
-          
-          <div className="flex flex-wrap justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <div className="flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
-              <span className="text-3xl font-bold text-cyan-300">15-20%</span>
-              <span className="text-sm text-white/80">Expected ROI</span>
+          <div className="flex flex-wrap justify-center gap-4 mt-8">
+            <div className="px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
+              <span className="text-2xl font-bold text-primary">15-20%</span>
+              <span className="text-sm text-muted-foreground ml-2">Expected ROI</span>
             </div>
-            <div className="flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
-              <span className="text-3xl font-bold text-cyan-300">₹0</span>
-              <span className="text-sm text-white/80">Partnership Fee</span>
+            <div className="px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
+              <span className="text-2xl font-bold text-primary">₹0</span>
+              <span className="text-sm text-muted-foreground ml-2">Partnership Fee</span>
             </div>
           </div>
         </div>
-        
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-8 h-8 text-white/60" />
-        </div>
-      </section>
-
-      <div className="container mx-auto px-4 relative z-10 pt-20">
 
         {/* Explanatory Video Section */}
         <div className="mb-20">

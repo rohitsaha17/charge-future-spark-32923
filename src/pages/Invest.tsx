@@ -4,11 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TrendingUp, Award, Shield, Target, Users, Zap, ChevronDown } from "lucide-react";
+import { TrendingUp, Award, Shield, Target, Users, Zap } from "lucide-react";
 import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
 import { supabase } from "@/integrations/supabase/client";
-import ScrollReveal from "@/components/ScrollReveal";
 
 const Invest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,80 +67,71 @@ const Invest = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20 relative overflow-hidden">
-      {/* Enhanced Hero - Full height with proper spacing */}
+    <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
+      {/* Enhanced Hero */}
       <section 
-        className="relative min-h-[85vh] flex items-center overflow-hidden"
+        className="relative py-32 md:py-40 mb-20 overflow-hidden"
         style={{
           backgroundImage: `url(${energyFlow})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/95 via-primary/85 to-background"></div>
-        
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background"></div>
+        <div className="absolute inset-0" style={{ background: 'var(--gradient-radial)', opacity: 0.3 }}></div>
+        {/* Animated particles */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" />
+          <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
-        
-        <div className="relative z-10 container mx-auto px-4 text-center py-20">
-          <div className="animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 hover:bg-white/20 transition-all duration-300">
-              <TrendingUp className="w-5 h-5 text-cyan-300 animate-pulse" />
-              <span className="text-sm font-semibold text-white/95 tracking-wide">Invest in Tomorrow's Infrastructure</span>
-            </div>
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
+            <TrendingUp className="w-4 h-4 text-cyan-300" />
+            <span className="text-sm font-semibold text-white/90">Investment Opportunity</span>
           </div>
-          
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 text-white drop-shadow-2xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Invest in <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">A Plus</span>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
+            Invest in the <span className="text-cyan-300">Future</span><br />
+            <span className="text-white/95">of Energy</span>
           </h1>
-          
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-10 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            Join Northeast India's fastest-growing EV charging network. Be part of the clean mobility revolution.
+          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
+            At A Plus Charge, we're not just scaling EV charging infrastructure - we're building the backbone 
+            of India's clean mobility revolution.
           </p>
-          
-          <div className="flex flex-wrap justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <div className="flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
               <Award className="w-5 h-5 text-cyan-300" />
               <span className="text-white font-medium">DPIIT Certified</span>
             </div>
-            <div className="flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
               <Shield className="w-5 h-5 text-cyan-300" />
               <span className="text-white font-medium">UNNATI Recognized</span>
             </div>
           </div>
         </div>
-        
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-8 h-8 text-white/60" />
-        </div>
       </section>
 
-      <div className="container mx-auto px-4 relative z-10 pt-20">
+      <div className="container mx-auto px-4 relative z-10">
         {/* Why Invest */}
-        <ScrollReveal>
-          <div className="mb-20">
-            <h2 className="text-3xl font-bold text-center mb-12">Why Invest in A Plus Charge?</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {highlights.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <ScrollReveal key={index} delay={index * 100} direction="scale">
-                    <Card className="p-6 hover:scale-105 hover:glow-effect transition-all duration-500 glass-card hover:-translate-y-2">
-                      <Icon className="w-10 h-10 text-primary mb-4" />
-                      <h3 className="font-semibold mb-2">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground">{item.description}</p>
-                    </Card>
-                  </ScrollReveal>
-                );
-              })}
-            </div>
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-center mb-12">Why Invest in A Plus Charge?</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {highlights.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <Card 
+                  key={index} 
+                  className="p-6 hover:scale-105 hover:glow-effect transition-all duration-300 glass-card"
+                >
+                  <Icon className="w-10 h-10 text-primary mb-4" />
+                  <h3 className="font-semibold mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                </Card>
+              );
+            })}
           </div>
-        </ScrollReveal>
+        </div>
 
         {/* Traction */}
         <div className="mb-20">
