@@ -98,6 +98,20 @@ const Home = () => {
               animationDelay: "1s",
             }}
           ></div>
+          
+          {/* Additional floating orbs for depth */}
+          <div
+            className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-gradient-to-br from-cyan-400/15 to-blue-500/10 rounded-full blur-2xl"
+            style={{
+              animation: "float 8s ease-in-out infinite",
+            }}
+          ></div>
+          <div
+            className="absolute bottom-1/3 right-1/4 w-[200px] h-[200px] bg-gradient-to-tl from-primary/15 to-emerald-400/10 rounded-full blur-2xl"
+            style={{
+              animation: "float 6s ease-in-out infinite reverse",
+            }}
+          ></div>
 
           {/* Subtle Grid Pattern */}
           <div
@@ -113,46 +127,152 @@ const Home = () => {
 
           {/* Radial Gradient Overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(38,116,236,0.08),transparent_50%)]"></div>
+          
+          {/* Animated circuit lines */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="circuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" />
+                <stop offset="100%" stopColor="hsl(186, 100%, 50%)" />
+              </linearGradient>
+            </defs>
+            <path 
+              d="M0,200 Q200,100 400,200 T800,200" 
+              stroke="url(#circuitGrad)" 
+              strokeWidth="2" 
+              fill="none"
+              className="animate-pulse"
+              style={{ animationDuration: "3s" }}
+            />
+            <path 
+              d="M100,400 Q300,300 500,400 T900,400" 
+              stroke="url(#circuitGrad)" 
+              strokeWidth="1.5" 
+              fill="none"
+              className="animate-pulse"
+              style={{ animationDuration: "4s", animationDelay: "1s" }}
+            />
+          </svg>
         </div>
+
+        {/* Floating animated icons */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Floating Zap icon */}
+          <div 
+            className="absolute top-[20%] left-[10%] text-primary/20"
+            style={{ animation: "floatIcon 5s ease-in-out infinite" }}
+          >
+            <Zap className="w-8 h-8 md:w-12 md:h-12" />
+          </div>
+          {/* Floating MapPin */}
+          <div 
+            className="absolute top-[60%] left-[5%] text-cyan-500/20"
+            style={{ animation: "floatIcon 7s ease-in-out infinite", animationDelay: "1s" }}
+          >
+            <MapPin className="w-6 h-6 md:w-10 md:h-10" />
+          </div>
+          {/* Floating lightning bolt decoration */}
+          <div 
+            className="absolute top-[15%] right-[25%] text-blue-400/15 hidden md:block"
+            style={{ animation: "floatIcon 6s ease-in-out infinite", animationDelay: "2s" }}
+          >
+            <Zap className="w-16 h-16" />
+          </div>
+          {/* Floating circle decorations */}
+          <div 
+            className="absolute bottom-[25%] left-[15%] w-4 h-4 bg-gradient-to-r from-primary to-cyan-500 rounded-full opacity-30"
+            style={{ animation: "floatIcon 4s ease-in-out infinite" }}
+          />
+          <div 
+            className="absolute top-[40%] left-[8%] w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-25"
+            style={{ animation: "floatIcon 5s ease-in-out infinite", animationDelay: "0.5s" }}
+          />
+          <div 
+            className="absolute bottom-[40%] right-[35%] w-2 h-2 bg-primary rounded-full opacity-20 hidden md:block"
+            style={{ animation: "floatIcon 6s ease-in-out infinite", animationDelay: "1.5s" }}
+          />
+        </div>
+
+        {/* Inline keyframes for floating animation */}
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-10px) translateX(-5px); }
+            75% { transform: translateY(-25px) translateX(5px); }
+          }
+          @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+            50% { transform: translateY(-15px) rotate(5deg); opacity: 0.35; }
+          }
+          @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+          }
+        `}</style>
 
         <div className="relative z-10 w-full py-16 md:py-20">
           <div className="container mx-auto px-6 md:px-8">
             <div className="relative flex flex-col md:flex-row items-center min-h-[80vh] md:min-h-[75vh]">
               {/* Left - Content */}
-              <div className="relative z-20 w-full md:w-[50%] lg:w-[48%] xl:w-[45%] md:ml-8 lg:ml-12 space-y-4 md:space-y-6 animate-fade-in text-center md:text-left">
-                {/* Badge */}
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
-                  <img src={logomark} alt="A+ Charge" className="w-3.5 h-3.5" />
-                  <span className="text-xs font-semibold text-primary">Northeast India's Leading EV Network</span>
+              <div className="relative z-20 w-full md:w-[50%] lg:w-[48%] xl:w-[45%] md:ml-8 lg:ml-12 space-y-4 md:space-y-6 text-center md:text-left">
+                {/* Badge with glow effect */}
+                <div 
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/25 backdrop-blur-sm shadow-lg animate-fade-in"
+                  style={{ 
+                    boxShadow: "0 0 20px rgba(38, 116, 236, 0.15), inset 0 0 20px rgba(38, 116, 236, 0.05)",
+                    animation: "pulse 3s ease-in-out infinite"
+                  }}
+                >
+                  <img src={logomark} alt="A+ Charge" className="w-4 h-4" />
+                  <span className="text-xs font-bold text-primary tracking-wide">Northeast India's Leading EV Network</span>
                 </div>
 
-                {/* Main Heading */}
-                <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight">
-                  <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                {/* Main Heading with enhanced gradient */}
+                <h1 
+                  className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight animate-fade-in"
+                  style={{ animationDelay: "0.1s" }}
+                >
+                  <span 
+                    className="bg-clip-text text-transparent"
+                    style={{
+                      backgroundImage: "linear-gradient(135deg, #2563eb 0%, #0891b2 50%, #06b6d4 100%)",
+                      backgroundSize: "200% auto",
+                      animation: "shimmer 4s linear infinite"
+                    }}
+                  >
                     Power Your Electric Journey
                   </span>
                 </h1>
 
-                {/* Description */}
-                <p className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-4">
+                {/* Description with increased right padding */}
+                <p 
+                  className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24 animate-fade-in"
+                  style={{ animationDelay: "0.2s" }}
+                >
                   India's fastest-growing EV Charge Point Operator, delivering smart, reliable, and sustainable charging
                   infrastructure across the Northeast - for drivers, developers, and partners.
                 </p>
 
-                {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-2 items-center md:items-start">
-                  {/* Primary Button */}
+                {/* CTAs with staggered animation */}
+                <div 
+                  className="flex flex-col sm:flex-row gap-3 pt-2 items-center md:items-start animate-fade-in"
+                  style={{ animationDelay: "0.3s" }}
+                >
+                  {/* Primary Button with enhanced glow */}
                   <Link
                     to="/find-charger"
                     className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
                       text-white bg-gradient-to-r from-[#2674EC] to-[#00C6FF]
                       shadow-[0_6px_24px_rgba(38,116,236,0.35)] 
                       transition-all duration-300 ease-out
-                      hover:shadow-[0_10px_36px_rgba(0,198,255,0.5)] hover:scale-[1.05] hover:-translate-y-0.5
-                      active:scale-95 w-full sm:w-auto whitespace-nowrap"
+                      hover:shadow-[0_10px_40px_rgba(0,198,255,0.6)] hover:scale-[1.05] hover:-translate-y-1
+                      active:scale-95 w-full sm:w-auto whitespace-nowrap overflow-hidden"
                   >
-                    <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-                    <span>Find a Charger</span>
+                    {/* Button shine effect */}
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    <Zap className="w-4 h-4 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="relative">Find a Charger</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
 
@@ -164,27 +284,48 @@ const Home = () => {
                       shadow-[0_4px_16px_rgba(38,116,236,0.1)]
                       transition-all duration-300 ease-out
                       hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50
-                      hover:border-primary/50 hover:shadow-[0_6px_24px_rgba(38,116,236,0.2)] 
-                      hover:scale-[1.05] hover:-translate-y-0.5
+                      hover:border-primary/50 hover:shadow-[0_6px_24px_rgba(38,116,236,0.25)] 
+                      hover:scale-[1.05] hover:-translate-y-1
                       active:scale-95 w-full sm:w-auto whitespace-nowrap"
                   >
                     <span>Become a Partner</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                 </div>
+
+                {/* Animated trust indicator */}
+                <div 
+                  className="flex items-center gap-3 pt-4 animate-fade-in"
+                  style={{ animationDelay: "0.4s" }}
+                >
+                  <div className="flex -space-x-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white">A+</div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-white text-xs border-2 border-white">
+                      <Zap className="w-4 h-4" />
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs border-2 border-white">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    <span className="font-semibold text-foreground">25+ stations</span> across Northeast India
+                  </div>
+                </div>
               </div>
 
               {/* Right - Illustration - Sticks to right edge */}
               <div
-                className="absolute right-0 top-1/2 -translate-y-1/2 w-[90%] md:w-[65%] lg:w-[68%] xl:w-[70%] hidden md:block animate-fade-in"
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-[90%] md:w-[65%] lg:w-[68%] xl:w-[70%] hidden md:block"
                 style={{
-                  animationDelay: "0.2s",
+                  animation: "fade-in 0.8s ease-out 0.3s both",
                 }}
               >
+                {/* Glow behind the image */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-cyan-500/10 blur-3xl scale-110" />
                 <img
                   src={heroEvCharging}
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
-                  className="w-full h-auto object-contain object-right drop-shadow-2xl"
+                  className="relative w-full h-auto object-contain object-right drop-shadow-2xl hover:scale-[1.02] transition-transform duration-700"
                   loading="eager"
                 />
               </div>
@@ -196,10 +337,11 @@ const Home = () => {
                   animationDelay: "0.2s",
                 }}
               >
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent blur-2xl" />
                 <img
                   src={heroEvCharging}
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
-                  className="w-full max-w-lg h-auto object-contain drop-shadow-2xl"
+                  className="relative w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
                 />
               </div>
