@@ -81,7 +81,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section - Enhanced Design */}
-      <section className="relative min-h-screen flex items-center overflow-hidden texture-noise">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Multi-layered Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
           {/* Animated Gradient Orbs */}
@@ -211,11 +211,11 @@ const Home = () => {
       {/* Charging Stations Map with Sidebar */}
       <section
         ref={mapSection.ref}
-        className={`py-20 relative overflow-visible transition-all duration-1000 pattern-dots ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Enhanced Radial Gradient Depth Layer */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.12),_transparent_70%)] pointer-events-none"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(216_40%_97%)] to-background pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.15),_transparent_70%)] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(220_15%_97%)] to-background pointer-events-none"></div>
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
@@ -300,10 +300,10 @@ const Home = () => {
       {/* Live Stats Section - Redesigned with Full-Width Illustration */}
       <section
         ref={statsSection.ref}
-        className={`py-12 md:py-20 lg:py-24 pb-0 relative overflow-hidden bg-gradient-to-br from-[hsl(220_20%_98%)] via-background to-[hsl(216_50%_97%)] pattern-circuit transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-12 md:py-20 lg:py-24 pb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* White gradient overlay at top to merge smoothly */}
-        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
 
         {/* Full-Width Illustration - Pinned to Right (Hidden on mobile) */}
         <div className="absolute inset-0 lg:flex md:flex hidden items-center justify-end overflow-hidden">
@@ -411,20 +411,17 @@ const Home = () => {
         />
       </div>
 
-      <GradientDivider variant="wave" />
+      <GradientDivider />
 
       {/* Benefits Section */}
-      <section className="relative pattern-grid">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(216_50%_97%)] to-background" />
-        <div
-          ref={benefitsSection.ref}
-          className={`relative z-10 transition-all duration-1000 ${benefitsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-        >
-          <BenefitsSection />
-        </div>
-      </section>
+      <div
+        ref={benefitsSection.ref}
+        className={`transition-all duration-1000 ${benefitsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+      >
+        <BenefitsSection />
+      </div>
 
-      <GradientDivider variant="accent" />
+      <GradientDivider />
 
       {/* Trust Section - Northeast Hills */}
       <StorytellingSection
@@ -433,17 +430,12 @@ const Home = () => {
         backgroundImage={northeastHillsLandscape}
       />
 
-      <GradientDivider variant="wave" />
+      <GradientDivider />
 
       {/* USP Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(216_50%_97%)] via-background to-[hsl(191_40%_97%)]" />
-        <div className="absolute inset-0 pattern-dots opacity-50" />
-        <div className="relative z-10">
-          <USPCarousel />
-        </div>
-      </section>
-      <GradientDivider variant="subtle" />
+      <USPCarousel />
+
+      <GradientDivider />
 
       {/* Storytelling Section - Charging Made Simple */}
       <StorytellingSection
@@ -455,12 +447,12 @@ const Home = () => {
       {/* Client Logos - Scrolling with Gradient Separator */}
       <section
         ref={partnersSection.ref}
-        className={`py-12 pb-6 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-8 pb-2 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Gradient separator layer */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(216_40%_97%)] via-[hsl(216_50%_96%)] to-[hsl(220_20%_98%)]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_15%_97%)] via-[hsl(216_83%_98%)] to-[hsl(220_15%_97%)]"></div>
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-3">
@@ -576,7 +568,7 @@ const Home = () => {
         </div>
       </section>
 
-      <GradientDivider variant="accent" />
+      <GradientDivider />
 
       {/* App Download Section - Creative Design */}
       <section
@@ -584,9 +576,11 @@ const Home = () => {
         className={`py-4 md:py-6 relative overflow-visible transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Background Effects with Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(220_20%_98%)] via-background to-[hsl(216_50%_97%)]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30"></div>
         {/* Subtle Circuit Pattern Background */}
-        <div className="absolute inset-0 pattern-circuit opacity-30"></div>
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232674EC' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}></div>
         {/* Diagonal Lines Pattern */}
         <div className="absolute inset-0 opacity-[0.02]" style={{
           backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, hsl(var(--primary)) 35px, hsl(var(--primary)) 36px)`,
@@ -699,23 +693,20 @@ const Home = () => {
         </div>
       </section>
 
-      <GradientDivider variant="subtle" />
+      <GradientDivider />
 
       {/* Testimonials Carousel */}
       <section
         ref={testimonialsSection.ref}
         className={`py-20 relative overflow-hidden transition-all duration-1000 ${testimonialsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Background with mesh gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(216_40%_97%)] via-background to-[hsl(216_50%_96%)]"></div>
-        <div className="absolute inset-0 pattern-dots opacity-30"></div>
         {/* Video background with parallax */}
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-[0.03]"
+          className="absolute inset-0 w-full h-full object-cover opacity-5"
           style={{
             transform: "translateZ(0)",
             willChange: "transform",
@@ -723,7 +714,7 @@ const Home = () => {
         >
           <source src="/intro-video.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-card/30 to-background"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">What Our Customers Say</h2>
@@ -735,7 +726,7 @@ const Home = () => {
         </div>
       </section>
 
-      <GradientDivider variant="accent" />
+      <GradientDivider />
 
       <StorytellingSection
         title="Join the Electric Revolution"
@@ -743,15 +734,14 @@ const Home = () => {
         backgroundImage={trustBg}
       />
 
-      <GradientDivider variant="wave" />
+      <GradientDivider />
 
       {/* FAQ Section */}
       <section
         ref={faqSection.ref}
         className={`py-20 relative overflow-hidden transition-all duration-1000 ${faqSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(216_40%_97%)] via-[hsl(220_20%_98%)] to-background"></div>
-        <div className="absolute inset-0 pattern-grid opacity-40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/10 to-background"></div>
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <h2 className="text-4xl font-bold text-center mb-4">Frequently Asked Questions</h2>
           <p className="text-center text-muted-foreground mb-12">Everything you need to know about A Plus Charge</p>

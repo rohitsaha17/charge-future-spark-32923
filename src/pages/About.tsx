@@ -131,7 +131,7 @@ const About = () => {
   return (
     <div className="min-h-screen pb-20">
       {/* Full-Width Hero Section - Enhanced */}
-      <section id="hero" className="text-center mb-24 relative overflow-hidden texture-noise">
+      <section id="hero" className="text-center mb-24 relative overflow-hidden">
         {/* Background Image with Gradient Blue to White Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -171,9 +171,8 @@ const About = () => {
       <div className="container mx-auto px-4 max-w-6xl">
 
         {/* Stats Section */}
-        <section id="stats" className="mb-24 scroll-mt-24 relative">
-          <div className="absolute inset-0 -mx-4 bg-gradient-to-r from-transparent via-primary/5 to-transparent rounded-3xl" />
-          <div className="relative py-12 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        <section id="stats" className="mb-24 scroll-mt-24">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {stats.map((stat, index) => (
               <StatsCounter key={index} {...stat} />
             ))}
@@ -181,16 +180,12 @@ const About = () => {
         </section>
 
         {/* Trusted By Section */}
-        <section id="partners" className="mb-24 scroll-mt-24 -mx-4 px-4 py-12 relative overflow-hidden rounded-2xl">
-          <div className="absolute inset-0 bg-gradient-to-b from-[hsl(216_40%_97%)] via-[hsl(216_50%_96%)] to-[hsl(220_20%_98%)]" />
-          <div className="absolute inset-0 pattern-dots opacity-30" />
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent" />
-          <div className="relative z-10 text-center mb-8">
+        <section id="partners" className="mb-24 scroll-mt-24 -mx-4 px-4 py-12 bg-gradient-to-b from-muted/30 via-muted/10 to-transparent rounded-2xl">
+          <div className="text-center mb-8">
             <p className="text-sm text-muted-foreground uppercase tracking-wider mb-6">Trusted by teams at</p>
             <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
               {partners.map((partner, index) => (
-                <div key={index} className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300 hover:scale-110">
+                <div key={index} className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300">
                   <img src={partner.logo} alt={partner.name} className="h-8 md:h-10 object-contain" />
                 </div>
               ))}
@@ -198,25 +193,16 @@ const About = () => {
           </div>
         </section>
 
-        <GradientDivider variant="wave" />
+        <GradientDivider />
 
         {/* Story Section */}
-        <section id="story" className="mb-24 scroll-mt-24 relative">
-          <div className="absolute inset-0 -mx-4 bg-gradient-to-br from-[hsl(216_50%_97%)] via-background to-[hsl(191_40%_97%)] rounded-3xl" />
-          <div className="absolute inset-0 -mx-4 pattern-grid opacity-30 rounded-3xl" />
-          <div className="relative max-w-3xl mx-auto py-12 px-4">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 mb-4">
-                <span className="w-8 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full" />
-                <span className="text-sm font-semibold text-primary uppercase tracking-wider">Our Story</span>
-                <span className="w-8 h-0.5 bg-gradient-to-l from-primary to-accent rounded-full" />
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold">
-                It All Started with Range Anxiety
-              </h2>
-            </div>
+        <section id="story" className="mb-24 scroll-mt-24">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+              It All Started with Range Anxiety
+            </h2>
             <div className="space-y-6 text-muted-foreground leading-relaxed">
-              <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+              <p>
                 In 2021, our founder was driving an EV through Guwahati when the battery warning came on. 
                 The nearest charging station was 40km away, and it wasn't even operational. That moment of 
                 helplessness sparked an idea: Northeast India needed reliable charging infrastructure.
@@ -236,39 +222,35 @@ const About = () => {
           </div>
         </section>
 
-        <GradientDivider variant="wave" />
+        <GradientDivider />
 
         <StorytellingSection 
           title="Building Trust Through Reliability"
           description="Every station we install is a promise kept. Every kilowatt delivered is trust earned. We don't just power vehicles - we power the dreams of a cleaner, brighter Northeast India."
         />
 
-        <GradientDivider variant="accent" />
+        <GradientDivider />
 
         {/* What We Believe In */}
-        <section id="values" className="mb-24 scroll-mt-24 relative">
-          <div className="absolute inset-0 -mx-4 bg-gradient-to-b from-[hsl(216_40%_97%)] via-background to-[hsl(216_50%_96%)] rounded-3xl" />
-          <div className="absolute inset-0 -mx-4 pattern-circuit opacity-20 rounded-3xl" />
-          <div className="relative py-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What We Believe In</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {values.map((value, index) => {
-                const Icon = value.icon;
-                return (
-                  <Card key={index} className="p-8 text-center card-floating gradient-border bg-background/80 backdrop-blur-sm">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-6">
-                      <Icon className="w-8 h-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-3">{value.title}</h3>
-                    <p className="text-muted-foreground">{value.description}</p>
-                  </Card>
-                );
-              })}
-            </div>
+        <section id="values" className="mb-24 scroll-mt-24">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What We Believe In</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {values.map((value, index) => {
+              const Icon = value.icon;
+              return (
+                <Card key={index} className="p-8 text-center hover:shadow-lg transition-shadow">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                    <Icon className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">{value.title}</h3>
+                  <p className="text-muted-foreground">{value.description}</p>
+                </Card>
+              );
+            })}
           </div>
         </section>
 
-        <GradientDivider variant="subtle" />
+        <GradientDivider />
 
         {/* Founder Section */}
         <section id="team" className="mb-24 scroll-mt-24">

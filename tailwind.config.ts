@@ -27,7 +27,6 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
           glow: "hsl(var(--primary-glow))",
-          dark: "hsl(var(--primary-dark))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -65,9 +64,6 @@ export default {
         },
         'content-highlight': 'hsl(var(--content-highlight))',
         'content-highlight-border': 'hsl(var(--content-highlight-border))',
-        'section-light': 'var(--section-light)',
-        'section-medium': 'var(--section-medium)',
-        'section-dark': 'var(--section-dark)',
       },
       boxShadow: {
         'elegant': 'var(--shadow-elegant)',
