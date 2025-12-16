@@ -21,8 +21,8 @@ const StorytellingSection = ({
         backgroundAttachment: "fixed",
       } : undefined}
     >
-      {/* Blue gradient overlay for better visibility */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-blue-600/80 to-primary-glow/85 backdrop-blur-[1px]"></div>
+      {/* Blue gradient overlay - fades from top to transparent bottom */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-blue-600/40 to-transparent"></div>
       
       <div className="relative z-10 container mx-auto px-4 text-center">
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 text-white drop-shadow-2xl">
