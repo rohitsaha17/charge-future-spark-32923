@@ -30,7 +30,6 @@ import { useCountUp } from "@/hooks/useCountUp";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AnimatedDownloadCounter from "@/components/AnimatedDownloadCounter";
-import PlexusBackground from "@/components/PlexusBackground";
 const Home = () => {
   const chargers = useCountUp({
     end: 50,
@@ -87,28 +86,73 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
           {/* Animated Gradient Orbs */}
           <div
-            className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/15 to-cyan-400/15 rounded-full blur-3xl animate-pulse"
-            style={{ animationDuration: "4s" }}
+            className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"
+            style={{
+              animationDuration: "4s",
+            }}
           ></div>
           <div
             className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 to-blue-300/10 rounded-full blur-3xl animate-pulse"
-            style={{ animationDuration: "6s", animationDelay: "1s" }}
+            style={{
+              animationDuration: "6s",
+              animationDelay: "1s",
+            }}
+          ></div>
+          
+          {/* Additional floating orbs for depth */}
+          <div
+            className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-gradient-to-br from-cyan-400/15 to-blue-500/10 rounded-full blur-2xl"
+            style={{
+              animation: "float 8s ease-in-out infinite",
+            }}
+          ></div>
+          <div
+            className="absolute bottom-1/3 right-1/4 w-[200px] h-[200px] bg-gradient-to-tl from-primary/15 to-emerald-400/10 rounded-full blur-2xl"
+            style={{
+              animation: "float 6s ease-in-out infinite reverse",
+            }}
           ></div>
 
-          {/* Radial Gradient Overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(38,116,236,0.06),transparent_50%)]"></div>
-        </div>
-
-        {/* Interactive Plexus Background */}
-        <div className="absolute inset-0">
-          <PlexusBackground 
-            particleCount={70} 
-            maxDistance={130} 
-            speed={0.3} 
-            opacity={0.15}
-            interactive={true}
-            mouseRadius={180}
+          {/* Subtle Grid Pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, hsl(216 83% 56%) 1px, transparent 1px),
+                linear-gradient(to bottom, hsl(216 83% 56%) 1px, transparent 1px)
+              `,
+              backgroundSize: "80px 80px",
+            }}
           />
+
+          {/* Radial Gradient Overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(38,116,236,0.08),transparent_50%)]"></div>
+          
+          {/* Animated circuit lines */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="circuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" />
+                <stop offset="100%" stopColor="hsl(186, 100%, 50%)" />
+              </linearGradient>
+            </defs>
+            <path 
+              d="M0,200 Q200,100 400,200 T800,200" 
+              stroke="url(#circuitGrad)" 
+              strokeWidth="2" 
+              fill="none"
+              className="animate-pulse"
+              style={{ animationDuration: "3s" }}
+            />
+            <path 
+              d="M100,400 Q300,300 500,400 T900,400" 
+              stroke="url(#circuitGrad)" 
+              strokeWidth="1.5" 
+              fill="none"
+              className="animate-pulse"
+              style={{ animationDuration: "4s", animationDelay: "1s" }}
+            />
+          </svg>
         </div>
 
         {/* Floating animated icons */}
@@ -151,18 +195,19 @@ const Home = () => {
 
         {/* Inline keyframes for floating animation */}
         <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-10px) translateX(-5px); }
+            75% { transform: translateY(-25px) translateX(5px); }
+          }
           @keyframes floatIcon {
             0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
             50% { transform: translateY(-15px) rotate(5deg); opacity: 0.35; }
           }
-          @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-          @keyframes textReveal {
-            0% { opacity: 0; transform: translateY(20px); filter: blur(10px); }
-            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+          @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
           }
         `}</style>
 
@@ -173,27 +218,27 @@ const Home = () => {
               <div className="relative z-20 w-full md:w-[50%] lg:w-[48%] xl:w-[45%] md:ml-8 lg:ml-12 space-y-4 md:space-y-6 text-center md:text-left">
                 {/* Badge with glow effect */}
                 <div 
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/25 backdrop-blur-sm shadow-lg"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/25 backdrop-blur-sm shadow-lg animate-fade-in"
                   style={{ 
                     boxShadow: "0 0 20px rgba(38, 116, 236, 0.15), inset 0 0 20px rgba(38, 116, 236, 0.05)",
-                    animation: "textReveal 0.6s ease-out forwards"
+                    animation: "pulse 3s ease-in-out infinite"
                   }}
                 >
                   <img src={logomark} alt="A+ Charge" className="w-4 h-4" />
                   <span className="text-xs font-bold text-primary tracking-wide">Northeast India's Leading EV Network</span>
                 </div>
 
-                {/* Main Heading with smooth gradient animation */}
+                {/* Main Heading with enhanced gradient */}
                 <h1 
-                  className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight"
-                  style={{ animation: "textReveal 0.8s ease-out 0.1s forwards", opacity: 0 }}
+                  className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight animate-fade-in"
+                  style={{ animationDelay: "0.1s" }}
                 >
                   <span 
-                    className="inline-block bg-clip-text text-transparent"
+                    className="bg-clip-text text-transparent"
                     style={{
-                      backgroundImage: "linear-gradient(135deg, #1d4ed8 0%, #2563eb 25%, #0891b2 50%, #06b6d4 75%, #0ea5e9 100%)",
-                      backgroundSize: "300% 300%",
-                      animation: "gradientFlow 6s ease infinite"
+                      backgroundImage: "linear-gradient(135deg, #2563eb 0%, #0891b2 50%, #06b6d4 100%)",
+                      backgroundSize: "200% auto",
+                      animation: "shimmer 4s linear infinite"
                     }}
                   >
                     Power Your Electric Journey
@@ -202,8 +247,8 @@ const Home = () => {
 
                 {/* Description with increased right padding */}
                 <p 
-                  className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24"
-                  style={{ animation: "textReveal 0.8s ease-out 0.2s forwards", opacity: 0 }}
+                  className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24 animate-fade-in"
+                  style={{ animationDelay: "0.2s" }}
                 >
                   India's fastest-growing EV Charge Point Operator, delivering smart, reliable, and sustainable charging
                   infrastructure across the Northeast - for drivers, developers, and partners.
@@ -211,8 +256,8 @@ const Home = () => {
 
                 {/* CTAs with staggered animation */}
                 <div 
-                  className="flex flex-col sm:flex-row gap-3 pt-2 items-center md:items-start"
-                  style={{ animation: "textReveal 0.8s ease-out 0.35s forwards", opacity: 0 }}
+                  className="flex flex-col sm:flex-row gap-3 pt-2 items-center md:items-start animate-fade-in"
+                  style={{ animationDelay: "0.3s" }}
                 >
                   {/* Primary Button with enhanced glow */}
                   <Link
@@ -250,8 +295,8 @@ const Home = () => {
 
                 {/* Animated trust indicator */}
                 <div 
-                  className="flex items-center gap-3 pt-4"
-                  style={{ animation: "textReveal 0.8s ease-out 0.5s forwards", opacity: 0 }}
+                  className="flex items-center gap-3 pt-4 animate-fade-in"
+                  style={{ animationDelay: "0.4s" }}
                 >
                   <div className="flex -space-x-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white">A+</div>
@@ -271,7 +316,9 @@ const Home = () => {
               {/* Right - Illustration - Sticks to right edge */}
               <div
                 className="absolute right-0 top-1/2 -translate-y-1/2 w-[90%] md:w-[65%] lg:w-[68%] xl:w-[70%] hidden md:block"
-                style={{ animation: "textReveal 1s ease-out 0.4s forwards", opacity: 0 }}
+                style={{
+                  animation: "fade-in 0.8s ease-out 0.3s both",
+                }}
               >
                 {/* Glow behind the image */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-cyan-500/10 blur-3xl scale-110" />
@@ -285,8 +332,10 @@ const Home = () => {
 
               {/* Mobile Illustration */}
               <div
-                className="relative w-full flex items-center justify-center md:hidden mt-8"
-                style={{ animation: "textReveal 1s ease-out 0.3s forwards", opacity: 0 }}
+                className="relative w-full flex items-center justify-center md:hidden mt-8 animate-fade-in"
+                style={{
+                  animationDelay: "0.2s",
+                }}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent blur-2xl" />
                 <img
