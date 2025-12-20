@@ -205,9 +205,13 @@ const Home = () => {
             0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
             50% { transform: translateY(-15px) rotate(5deg); opacity: 0.35; }
           }
-          @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
+          @keyframes wordSlide {
+            0% { opacity: 0; transform: translateY(40px) rotateX(-45deg); filter: blur(8px); }
+            100% { opacity: 1; transform: translateY(0) rotateX(0); filter: blur(0); }
+          }
+          @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(38, 116, 236, 0.3); }
+            50% { text-shadow: 0 0 40px rgba(0, 198, 255, 0.5), 0 0 60px rgba(38, 116, 236, 0.3); }
           }
         `}</style>
 
@@ -228,20 +232,46 @@ const Home = () => {
                   <span className="text-xs font-bold text-primary tracking-wide">Northeast India's Leading EV Network</span>
                 </div>
 
-                {/* Main Heading with enhanced gradient */}
-                <h1 
-                  className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight animate-fade-in"
-                  style={{ animationDelay: "0.1s" }}
-                >
-                  <span 
-                    className="bg-clip-text text-transparent"
-                    style={{
-                      backgroundImage: "linear-gradient(135deg, #2563eb 0%, #0891b2 50%, #06b6d4 100%)",
-                      backgroundSize: "200% auto",
-                      animation: "shimmer 4s linear infinite"
-                    }}
-                  >
-                    Power Your Electric Journey
+                {/* Main Heading with word-by-word reveal animation */}
+                <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight">
+                  <span className="block overflow-hidden">
+                    <span 
+                      className="inline-block bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent"
+                      style={{
+                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, glowPulse 3s ease-in-out infinite 0.6s"
+                      }}
+                    >
+                      Power
+                    </span>{" "}
+                    <span 
+                      className="inline-block bg-gradient-to-r from-blue-500 via-cyan-500 to-primary bg-clip-text text-transparent"
+                      style={{
+                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s forwards, glowPulse 3s ease-in-out infinite 0.75s",
+                        opacity: 0
+                      }}
+                    >
+                      Your
+                    </span>
+                  </span>
+                  <span className="block overflow-hidden">
+                    <span 
+                      className="inline-block bg-gradient-to-r from-cyan-500 via-primary to-blue-600 bg-clip-text text-transparent"
+                      style={{
+                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards, glowPulse 3s ease-in-out infinite 0.9s",
+                        opacity: 0
+                      }}
+                    >
+                      Electric
+                    </span>{" "}
+                    <span 
+                      className="inline-block bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent"
+                      style={{
+                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s forwards, glowPulse 3s ease-in-out infinite 1.05s",
+                        opacity: 0
+                      }}
+                    >
+                      Journey
+                    </span>
                   </span>
                 </h1>
 
@@ -358,6 +388,16 @@ const Home = () => {
         {/* Enhanced Radial Gradient Depth Layer */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.15),_transparent_70%)] pointer-events-none"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(220_15%_97%)] to-background pointer-events-none"></div>
+        
+        {/* Animated floating orbs */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-primary/10 to-cyan-500/10 rounded-full blur-2xl animate-subtle-float"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-tl from-blue-500/10 to-primary/10 rounded-full blur-2xl animate-subtle-float" style={{ animationDelay: "2s" }}></div>
+        
+        {/* Subtle dot pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `radial-gradient(circle, hsl(216 83% 56%) 1px, transparent 1px)`,
+          backgroundSize: "32px 32px"
+        }}></div>
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
@@ -457,9 +497,21 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent pointer-events-none"></div>
         </div>
 
-        {/* Background decorative elements */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tl from-blue-500/5 to-primary/5 rounded-full blur-3xl z-0"></div>
+        {/* Background decorative elements with animation */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0 animate-section-glow"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tl from-blue-500/5 to-primary/5 rounded-full blur-3xl z-0 animate-section-glow" style={{ animationDelay: "2s" }}></div>
+        
+        {/* Subtle geometric pattern */}
+        <div className="absolute inset-0 opacity-[0.02] z-0" style={{
+          backgroundImage: `linear-gradient(30deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
+            linear-gradient(150deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
+            linear-gradient(30deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
+            linear-gradient(150deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
+            linear-gradient(60deg, hsl(191 100% 50% / 0.5) 25%, transparent 25.5%, transparent 75%, hsl(191 100% 50% / 0.5) 75%, hsl(191 100% 50% / 0.5)),
+            linear-gradient(60deg, hsl(191 100% 50% / 0.5) 25%, transparent 25.5%, transparent 75%, hsl(191 100% 50% / 0.5) 75%, hsl(191 100% 50% / 0.5))`,
+          backgroundSize: "80px 140px",
+          backgroundPosition: "0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px"
+        }}></div>
 
         <div className="container mx-auto px-4 relative z-20">
           <div className="flex flex-col lg:flex-row items-start gap-8 md:gap-12 max-w-2xl md:max-w-xl lg:max-w-2xl md:ml-0">
@@ -595,6 +647,10 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_15%_97%)] via-[hsl(216_83%_98%)] to-[hsl(220_15%_97%)]"></div>
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+        
+        {/* Animated glow orbs */}
+        <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-gradient-to-r from-primary/10 to-cyan-500/10 rounded-full blur-3xl animate-subtle-float opacity-50"></div>
+        <div className="absolute top-1/2 right-1/4 w-48 h-48 bg-gradient-to-l from-blue-500/10 to-primary/10 rounded-full blur-3xl animate-subtle-float opacity-50" style={{ animationDelay: "3s" }}></div>
 
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-3">
@@ -857,6 +913,11 @@ const Home = () => {
           <source src="/intro-video.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-background via-card/30 to-background"></div>
+        
+        {/* Floating decorative elements */}
+        <div className="absolute top-10 left-10 w-24 h-24 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-2xl animate-subtle-float"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-gradient-to-tl from-cyan-500/10 to-transparent rounded-full blur-2xl animate-subtle-float" style={{ animationDelay: "1.5s" }}></div>
+        
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">What Our Customers Say</h2>
@@ -884,6 +945,18 @@ const Home = () => {
         className={`py-20 relative overflow-hidden transition-all duration-1000 ${faqSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/10 to-background"></div>
+        
+        {/* Animated background orbs */}
+        <div className="absolute top-1/4 right-10 w-40 h-40 bg-gradient-to-br from-primary/8 to-cyan-500/8 rounded-full blur-3xl animate-section-glow"></div>
+        <div className="absolute bottom-1/4 left-10 w-48 h-48 bg-gradient-to-tl from-blue-500/8 to-primary/8 rounded-full blur-3xl animate-section-glow" style={{ animationDelay: "2s" }}></div>
+        
+        {/* Subtle wave pattern */}
+        <div className="absolute inset-0 opacity-[0.015]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%232674EC' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
+          backgroundSize: "100% 100%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "bottom"
+        }}></div>
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <h2 className="text-4xl font-bold text-center mb-4">Frequently Asked Questions</h2>
           <p className="text-center text-muted-foreground mb-12">Everything you need to know about A Plus Charge</p>

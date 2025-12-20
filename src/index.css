@@ -189,6 +189,67 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes textReveal {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+      filter: blur(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes subtleFloat {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(-10px) scale(1.02);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes sectionGlow {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-text-reveal {
+    animation: textReveal 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
+
+  .animate-subtle-float {
+    animation: subtleFloat 8s ease-in-out infinite;
+  }
+
+  .animate-section-glow {
+    animation: sectionGlow 4s ease-in-out infinite;
+  }
+
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
