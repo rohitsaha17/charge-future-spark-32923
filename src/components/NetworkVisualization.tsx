@@ -12,7 +12,7 @@ import {
   Handshake,
   ArrowRight
 } from 'lucide-react';
-import logomark from '@/assets/a-plus-logomark.png';
+import logomark from '@/assets/logomark-blue.png';
 const features = [
   { 
     icon: Rocket,
@@ -67,6 +67,8 @@ const features = [
 const NetworkVisualization = () => {
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [clickedNode, setClickedNode] = useState<number | null>(null);
+  const [particles, setParticles] = useState<{id: number; x: number; y: number; angle: number; color: string}[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
@@ -105,6 +107,24 @@ const NetworkVisualization = () => {
       y: centerY + radius * Math.sin(angle)
     };
   });
+
+  // Handle node click for particle burst
+  const handleNodeClick = (index: number, x: number, y: number) => {
+    setClickedNode(index);
+    const newParticles = Array.from({ length: 12 }, (_, i) => ({
+      id: Date.now() + i,
+      x,
+      y,
+      angle: (i / 12) * 360,
+      color: features[index].color
+    }));
+    setParticles(prev => [...prev, ...newParticles]);
+    
+    setTimeout(() => {
+      setClickedNode(null);
+      setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
+    }, 600);
+  };
 
   const sectionRef = useScrollReveal();
 
@@ -221,10 +241,25 @@ const NetworkVisualization = () => {
             })}
           </svg>
 
-          {/* Center Node - A Plus Logo with Pulse */}
+          {/* Particle Burst Effects */}
+          {particles.map(particle => (
+            <div
+              key={particle.id}
+              className="absolute w-2 h-2 rounded-full pointer-events-none z-30"
+              style={{
+                left: particle.x,
+                top: particle.y,
+                backgroundColor: particle.color,
+                boxShadow: `0 0 10px ${particle.color}`,
+                animation: `particleBurst 0.6s ease-out forwards`,
+                '--particle-angle': `${particle.angle}deg`
+              } as React.CSSProperties}
+            />
+          ))}
+
+          {/* Center Node - A Plus Logo with Pulse - Centered in the container */}
           <div 
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
-            style={{ left: centerX, top: centerY }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
           >
             <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center shadow-2xl group cursor-pointer"
               style={{
@@ -240,7 +275,7 @@ const NetworkVisualization = () => {
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-cyan-500 opacity-40" 
                 style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
               
-              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-slate-900 flex items-center justify-center overflow-hidden p-3 relative z-10">
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white flex items-center justify-center overflow-hidden p-3 relative z-10">
                 <img src={logomark} alt="A Plus Charge" className="w-14 h-14 md:w-20 md:h-20 object-contain" 
                   style={{ animation: 'logoPulse 2s ease-in-out infinite' }} />
               </div>
@@ -264,6 +299,7 @@ const NetworkVisualization = () => {
                 }}
                 onMouseEnter={() => setActiveNode(index)}
                 onMouseLeave={() => setActiveNode(null)}
+                onClick={() => handleNodeClick(index, pos.x, pos.y)}
               >
                 {/* Node */}
                 <div 
@@ -386,8 +422,8 @@ const NetworkVisualization = () => {
           50% { opacity: 1; }
         }
         @keyframes centerPulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); }
-          50% { transform: translate(-50%, -50%) scale(1.05); }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
         }
         @keyframes pulseGlow {
           0%, 100% { opacity: 0.4; transform: scale(1); }
@@ -404,6 +440,16 @@ const NetworkVisualization = () => {
         @keyframes shine {
           from { transform: translateX(-100%); }
           to { transform: translateX(100%); }
+        }
+        @keyframes particleBurst {
+          0% {
+            transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(0) scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(80px) scale(0);
+            opacity: 0;
+          }
         }
       `}</style>
     </section>
