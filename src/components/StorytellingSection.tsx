@@ -5,13 +5,19 @@ interface StorytellingSectionProps {
   description: string;
   backgroundImage?: string;
   theme?: "light" | "dark";
+  /** Optional extra classes for outer section (keeps existing behavior by default) */
+  className?: string;
+  /** Remove only the top padding so the section can stick to previous block */
+  noTopPadding?: boolean;
 }
 
-const StorytellingSection = ({ 
-  title, 
-  description, 
+const StorytellingSection = ({
+  title,
+  description,
   backgroundImage,
-  theme = "light" 
+  theme = "light",
+  className,
+  noTopPadding = false,
 }: StorytellingSectionProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
@@ -21,7 +27,6 @@ const StorytellingSection = ({
       if (sectionRef.current) {
         const rect = sectionRef.current.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        // Calculate parallax offset based on section position
         const offset = (rect.top - windowHeight) * 0.3;
         setScrollY(offset);
       }
@@ -33,22 +38,28 @@ const StorytellingSection = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const paddingClasses = noTopPadding
+    ? 'pt-0 pb-16 md:pt-0 md:pb-20'
+    : 'py-16 md:py-20';
+
   return (
-    <section 
+    <section
       ref={sectionRef}
-      className="relative py-16 md:py-20 overflow-hidden"
-      style={backgroundImage ? {
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: `center ${50 + scrollY * 0.05}%`,
-        backgroundAttachment: "scroll",
-      } : undefined}
+      className={`relative overflow-hidden ${paddingClasses} ${className ?? ''}`}
+      style={
+        backgroundImage
+          ? {
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: `center ${50 + scrollY * 0.05}%`,
+              backgroundAttachment: 'scroll',
+            }
+          : undefined
+      }
     >
-      {/* Enhanced gradient overlay - top has low transparency, bottom fully transparent */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/50 via-blue-600/30 to-transparent"></div>
-      {/* Additional vignette effect for depth */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.2)_100%)]"></div>
-      
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/50 via-blue-600/30 to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.2)_100%)]" />
+
       <div className="relative z-10 container mx-auto px-4 text-center">
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 text-white drop-shadow-2xl">
           {title}
@@ -62,3 +73,5 @@ const StorytellingSection = ({
 };
 
 export default StorytellingSection;
+
+

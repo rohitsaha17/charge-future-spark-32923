@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { microFeedback } from "@/lib/microFeedback";
 import { MapPin, Users, Zap, ChevronDown, ArrowRight, Settings, Wrench, Megaphone, DollarSign, Monitor, HeadphonesIcon } from "lucide-react";
 import { useState } from "react";
 import heroIllustration from "@/assets/hero-illustration.png";
@@ -487,17 +488,19 @@ const Home = () => {
                       }`}
                       onMouseEnter={() => setActiveService(index)}
                       onMouseLeave={() => setActiveService(null)}
+                      onClick={() => microFeedback({ vibratePattern: [12, 40, 12], frequencyHz: 720 })}
+                      onTouchStart={() => microFeedback({ vibratePattern: 16, frequencyHz: 720 })}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`p-2.5 rounded-lg flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
                           <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
                         <div className="flex-1 min-h-[48px] flex flex-col justify-center">
-                          <h3 className={`font-bold text-base md:text-lg transition-all duration-300 ${isActive ? 'text-white text-sm' : 'text-foreground'}`}>
+                          <h3 className={`font-bold text-base md:text-lg transition-all duration-300 ${isActive ? 'text-white text-sm -translate-y-1' : 'text-foreground translate-y-0'}`}>
                             {service.title}
                           </h3>
                           <p className={`text-xs leading-relaxed transition-all duration-300 overflow-hidden ${
-                            isActive ? 'text-white/90 opacity-100 max-h-20 mt-1' : 'opacity-0 max-h-0'
+                            isActive ? 'text-white/90 opacity-100 max-h-20 mt-1 translate-y-0' : 'opacity-0 max-h-0 -translate-y-1'
                           }`}>
                             {service.description}
                           </p>
@@ -523,6 +526,8 @@ const Home = () => {
 
       {/* Storytelling Section - Where Innovation Meets Tradition - Attached to image */}
       <StorytellingSection
+        noTopPadding
+        className="-mt-1"
         title="Where Innovation Meets Tradition"
         description="We're not just another charging provider company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
         backgroundImage={appSectionBg}
