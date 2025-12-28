@@ -41,9 +41,9 @@ const StorytellingSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`relative h-[30vh] md:h-[35vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
+      className={`relative h-[30vh] md:h-[35vh] flex items-center justify-center overflow-hidden -my-px ${className ?? ''}`}
     >
-      {/* Fixed Parallax Background - Full page, stays in place */}
+      {/* Fixed Parallax Background - Full opacity */}
       {backgroundImage && (
         <div 
           className="absolute inset-0"
@@ -56,9 +56,13 @@ const StorytellingSection = ({
         />
       )}
       
-      {/* Top and bottom fade transitions */}
-      <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-background to-transparent z-[1]" />
-      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background to-transparent z-[1]" />
+      {/* Blue gradient overlay - full opacity at top, fading to transparent at bottom */}
+      <div 
+        className="absolute inset-0 z-[1]"
+        style={{
+          background: 'linear-gradient(to bottom, hsl(217 91% 60% / 0.85) 0%, hsl(217 91% 60% / 0.5) 40%, transparent 100%)'
+        }}
+      />
 
       {/* Content */}
       <div 
