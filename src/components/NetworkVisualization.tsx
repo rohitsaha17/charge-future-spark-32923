@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+import {
   Rocket, 
   Layers, 
   CircleDollarSign, 
@@ -105,8 +106,10 @@ const NetworkVisualization = () => {
     };
   });
 
+  const sectionRef = useScrollReveal();
+
   return (
-    <section className="relative w-full py-16 overflow-hidden">
+    <section ref={sectionRef.ref} className={`relative w-full py-0 overflow-hidden transition-all duration-1000 ${sectionRef.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div 
