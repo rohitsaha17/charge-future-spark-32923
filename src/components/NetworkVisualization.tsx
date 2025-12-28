@@ -71,6 +71,7 @@ const NetworkVisualization = () => {
   const [particles, setParticles] = useState<{id: number; x: number; y: number; angle: number; color: string}[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [nodeOffsets, setNodeOffsets] = useState<{x: number; y: number}[]>(features.map(() => ({ x: 0, y: 0 })));
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -88,11 +89,35 @@ const NetworkVisualization = () => {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
-      setMousePos({
+      const newMousePos = {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
+      };
+      setMousePos(newMousePos);
+
+      // Calculate magnetic attraction for each node
+      const newOffsets = nodePositions.map((pos) => {
+        const dx = newMousePos.x - pos.x;
+        const dy = newMousePos.y - pos.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDistance = 150;
+        const maxOffset = 15;
+
+        if (distance < maxDistance) {
+          const strength = (1 - distance / maxDistance) * maxOffset;
+          return {
+            x: (dx / distance) * strength,
+            y: (dy / distance) * strength
+          };
+        }
+        return { x: 0, y: 0 };
       });
+      setNodeOffsets(newOffsets);
     }
+  };
+
+  const handleMouseLeave = () => {
+    setNodeOffsets(features.map(() => ({ x: 0, y: 0 })));
   };
 
   // Calculate node positions in a circular layout around center
@@ -165,6 +190,7 @@ const NetworkVisualization = () => {
           className="relative mx-auto max-w-4xl"
           style={{ height: dimensions.height }}
           onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
           <svg 
             className="absolute inset-0 w-full h-full"
@@ -275,7 +301,7 @@ const NetworkVisualization = () => {
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-cyan-500 opacity-40" 
                 style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
               
-              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white flex items-center justify-center overflow-hidden p-3 relative z-10">
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-slate-800 dark:bg-slate-900 flex items-center justify-center overflow-hidden p-3 relative z-10">
                 <img src={logomark} alt="A Plus Charge" className="w-14 h-14 md:w-20 md:h-20 object-contain" 
                   style={{ animation: 'logoPulse 2s ease-in-out infinite' }} />
               </div>
@@ -293,13 +319,13 @@ const NetworkVisualization = () => {
                 key={index}
                 className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
                 style={{ 
-                  left: pos.x, 
-                  top: pos.y,
-                  transition: 'all 0.3s ease-out'
+                  left: pos.x + nodeOffsets[index].x, 
+                  top: pos.y + nodeOffsets[index].y,
+                  transition: 'left 0.15s ease-out, top 0.15s ease-out'
                 }}
                 onMouseEnter={() => setActiveNode(index)}
                 onMouseLeave={() => setActiveNode(null)}
-                onClick={() => handleNodeClick(index, pos.x, pos.y)}
+                onClick={() => handleNodeClick(index, pos.x + nodeOffsets[index].x, pos.y + nodeOffsets[index].y)}
               >
                 {/* Node */}
                 <div 
