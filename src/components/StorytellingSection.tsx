@@ -41,7 +41,7 @@ const StorytellingSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
+      className={`relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
     >
       {/* Fixed Parallax Background - Full page, stays in place */}
       {backgroundImage && (
