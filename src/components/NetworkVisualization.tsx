@@ -109,7 +109,7 @@ const NetworkVisualization = () => {
   const sectionRef = useScrollReveal();
 
   return (
-    <section ref={sectionRef.ref} className={`relative w-full py-0 overflow-hidden transition-all duration-1000 ${sectionRef.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+    <section ref={sectionRef.ref} className={`relative w-full py-16 md:py-24 overflow-hidden transition-all duration-1000 ${sectionRef.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div 
