@@ -8,7 +8,7 @@ import heroEvCharging from "@/assets/hero-ev-charging-v2.png";
 import trustBg from "@/assets/trust-bg.jpg";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import brahmaputraSunset from "@/assets/brahmaputra-sunset.jpg";
-import USPCarousel from "@/components/USPCarousel";
+import NetworkVisualization from "@/components/NetworkVisualization";
 import atherLogo from "@/assets/partners/ather-logo-new.png";
 import mgLogo from "@/assets/partners/mg-logo-new.png";
 import tataLogo from "@/assets/partners/tata-logo-new.png";
@@ -25,6 +25,7 @@ import chargingStationIllustration from "@/assets/charging-station-illustration.
 import GoogleMapsCharging from "@/components/GoogleMapsCharging";
 import BenefitsSection from "@/components/BenefitsSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import ChatBot from "@/components/ChatBot";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AnimatedDownloadCounter from "@/components/AnimatedDownloadCounter";
@@ -229,46 +230,13 @@ const Home = () => {
                   <span className="text-xs font-bold text-primary tracking-wide">Northeast India's Leading EV Network</span>
                 </div>
 
-                {/* Main Heading with word-by-word reveal animation */}
+                {/* Main Heading - Clean gradient text */}
                 <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight">
-                  <span className="block overflow-hidden">
-                    <span 
-                      className="inline-block bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent"
-                      style={{
-                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, glowPulse 3s ease-in-out infinite 0.6s"
-                      }}
-                    >
-                      Power
-                    </span>{" "}
-                    <span 
-                      className="inline-block bg-gradient-to-r from-blue-500 via-cyan-500 to-primary bg-clip-text text-transparent"
-                      style={{
-                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s forwards, glowPulse 3s ease-in-out infinite 0.75s",
-                        opacity: 0
-                      }}
-                    >
-                      Your
-                    </span>
+                  <span className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent animate-fade-in">
+                    Power Your
                   </span>
-                  <span className="block overflow-hidden">
-                    <span 
-                      className="inline-block bg-gradient-to-r from-cyan-500 via-primary to-blue-600 bg-clip-text text-transparent"
-                      style={{
-                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards, glowPulse 3s ease-in-out infinite 0.9s",
-                        opacity: 0
-                      }}
-                    >
-                      Electric
-                    </span>{" "}
-                    <span 
-                      className="inline-block bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent"
-                      style={{
-                        animation: "wordSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s forwards, glowPulse 3s ease-in-out infinite 1.05s",
-                        opacity: 0
-                      }}
-                    >
-                      Journey
-                    </span>
+                  <span className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-600 bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: "0.15s" }}>
+                    Electric Journey
                   </span>
                 </h1>
 
@@ -473,7 +441,7 @@ const Home = () => {
       {/* Live Stats Section - Redesigned with Full-Width Illustration and Service Pointers */}
       <section
         ref={statsSection.ref}
-        className={`py-12 md:py-16 pb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-12 md:py-16 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Full-Width Illustration - Pinned to Right (Hidden on mobile) */}
         <div className="absolute inset-0 lg:flex md:flex hidden items-center justify-end overflow-hidden">
@@ -504,7 +472,7 @@ const Home = () => {
                 <div className="w-20 h-1.5 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Interactive Service Pointers */}
+              {/* Interactive Service Pointers - Bigger titles with hover reveal */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {servicePointers.map((service, index) => {
                   const Icon = service.icon;
@@ -512,7 +480,7 @@ const Home = () => {
                   return (
                     <div
                       key={index}
-                      className={`group relative p-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                      className={`group relative p-4 md:p-5 rounded-xl cursor-pointer transition-all duration-300 overflow-hidden ${
                         isActive 
                           ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg scale-[1.02]' 
                           : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30 hover:shadow-md'
@@ -520,23 +488,21 @@ const Home = () => {
                       onMouseEnter={() => setActiveService(index)}
                       onMouseLeave={() => setActiveService(null)}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
-                          <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-primary'}`} />
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2.5 rounded-lg flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
+                          <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
-                        <div className="flex-1">
-                          <h3 className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-foreground'}`}>
+                        <div className="flex-1 min-h-[48px] flex flex-col justify-center">
+                          <h3 className={`font-bold text-base md:text-lg transition-all duration-300 ${isActive ? 'text-white text-sm' : 'text-foreground'}`}>
                             {service.title}
                           </h3>
-                          <p className={`text-xs mt-1 leading-relaxed ${isActive ? 'text-white/90' : 'text-muted-foreground'} ${isActive ? 'opacity-100 max-h-20' : 'opacity-0 max-h-0 overflow-hidden'} transition-all duration-300`}>
+                          <p className={`text-xs leading-relaxed transition-all duration-300 overflow-hidden ${
+                            isActive ? 'text-white/90 opacity-100 max-h-20 mt-1' : 'opacity-0 max-h-0'
+                          }`}>
                             {service.description}
                           </p>
                         </div>
                       </div>
-                      {/* Active indicator */}
-                      {isActive && (
-                        <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
-                      )}
                     </div>
                   );
                 })}
@@ -577,8 +543,8 @@ const Home = () => {
         backgroundImage={northeastHillsLandscape}
       />
 
-      {/* USP Section */}
-      <USPCarousel />
+      {/* USP Section - Interactive Network */}
+      <NetworkVisualization />
 
 
       {/* Storytelling Section - Charging Made Simple */}
@@ -917,6 +883,8 @@ const Home = () => {
           </Accordion>
         </div>
       </section>
+      {/* ChatBot */}
+      <ChatBot />
     </div>
   );
 };
