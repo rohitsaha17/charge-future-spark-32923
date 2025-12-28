@@ -41,7 +41,7 @@ const StorytellingSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
+      className={`relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
     >
       {/* Fixed Parallax Background - Full page, stays in place */}
       {backgroundImage && (
@@ -57,19 +57,19 @@ const StorytellingSection = ({
       )}
       
       {/* Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/50 via-blue-600/30 to-primary/40" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.2)_100%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-blue-600/40 to-primary/50" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_20%,_rgba(0,0,0,0.3)_100%)]" />
 
       {/* Content */}
       <div 
-        className={`relative z-10 container mx-auto px-4 text-center transition-all duration-700 ease-out ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+        className={`relative z-10 container mx-auto px-4 text-center transition-all duration-1000 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <h2 className="text-xl md:text-3xl lg:text-4xl font-bold mb-4 text-white drop-shadow-xl">
+        <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 text-white drop-shadow-2xl">
           {title}
         </h2>
-        <p className="text-sm md:text-base lg:text-lg text-white/90 max-w-3xl mx-auto leading-relaxed drop-shadow-lg font-medium">
+        <p className="text-base md:text-lg lg:text-xl text-white/95 max-w-4xl mx-auto leading-relaxed drop-shadow-lg font-medium">
           {description}
         </p>
       </div>

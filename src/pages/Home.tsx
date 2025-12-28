@@ -80,7 +80,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section - Interactive & Creative */}
-      <section id="hero" className="relative min-h-[85vh] flex items-center overflow-hidden pt-20">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Multi-layered Background with Network Effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
           {/* Animated Gradient Orbs */}
@@ -211,9 +211,9 @@ const Home = () => {
           }
         `}</style>
 
-        <div className="relative z-10 w-full py-8 md:py-12">
+        <div className="relative z-10 w-full py-16 md:py-20">
           <div className="container mx-auto px-6 md:px-8">
-            <div className="relative flex flex-col md:flex-row items-center min-h-[60vh] md:min-h-[55vh]">
+            <div className="relative flex flex-col md:flex-row items-center min-h-[80vh] md:min-h-[75vh]">
               {/* Left - Content */}
               <div className="relative z-20 w-full md:w-[50%] lg:w-[48%] xl:w-[45%] md:ml-8 lg:ml-12 space-y-4 md:space-y-6 text-center md:text-left">
                 {/* Badge */}
@@ -291,9 +291,9 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Right - Illustration - Bigger and aligned */}
+              {/* Right - Illustration */}
               <div
-                className="absolute right-[-8%] top-[45%] -translate-y-1/2 w-[60%] md:w-[55%] lg:w-[58%] xl:w-[60%] hidden md:block"
+                className="absolute right-[-5%] top-1/2 -translate-y-1/2 w-[55%] md:w-[50%] lg:w-[52%] xl:w-[55%] hidden md:block"
                 style={{ animation: "scaleIn 0.8s ease-out 0.3s both" }}
               >
                 <img
@@ -321,20 +321,18 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Scroll indicator with smooth scroll */}
-        <button 
-          onClick={() => document.getElementById('map-section')?.scrollIntoView({ behavior: 'smooth' })}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground/50 hover:text-primary transition-colors cursor-pointer"
+        {/* Scroll indicator */}
+        <div 
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground/50"
           style={{ animation: "slideUp 0.6s ease-out 0.8s both" }}
         >
           <span className="text-xs uppercase tracking-widest">Scroll</span>
           <ChevronDown className="w-5 h-5 animate-bounce" />
-        </button>
+        </div>
       </section>
 
       {/* Charging Stations Map with Sidebar */}
       <section
-        id="map-section"
         ref={mapSection.ref}
         className={`py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
@@ -387,7 +385,7 @@ const Home = () => {
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-muted-foreground text-sm">Avg. Uptime</span>
-                    <span className="font-bold text-emerald-600">97%</span>
+                    <span className="font-bold text-emerald-600">98%</span>
                   </div>
                 </div>
               </div>
@@ -460,39 +458,46 @@ const Home = () => {
                 <div className="w-20 h-1.5 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Service Pointers - Compact, consistent size, no scale on hover */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {/* Interactive Service Pointers - Bigger titles with hover reveal */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {servicePointers.map((service, index) => {
                   const Icon = service.icon;
                   const isActive = activeService === index;
+                  // Split title into two lines if contains &
+                  const titleParts = service.title.includes('&') 
+                    ? service.title.split('&').map((p, i) => i === 0 ? p.trim() + ' &' : p.trim())
+                    : [service.title];
                   return (
                     <div
                       key={index}
-                      className={`group relative p-3 md:p-4 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden ${
+                      className={`group relative p-5 md:p-6 rounded-xl cursor-pointer transition-all duration-300 overflow-hidden min-h-[100px] ${
                         isActive 
-                          ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-md' 
-                          : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30'
+                          ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg scale-[1.02]' 
+                          : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30 hover:shadow-md'
                       }`}
                       onMouseEnter={() => setActiveService(index)}
                       onMouseLeave={() => setActiveService(null)}
                       onClick={() => microFeedback({ vibratePattern: [12, 40, 12], frequencyHz: 720 })}
                       onTouchStart={() => microFeedback({ vibratePattern: 16, frequencyHz: 720 })}
                     >
-                      <div className="flex items-center gap-2">
-                        <div className={`p-2 rounded-lg flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
-                          <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-primary'}`} />
+                      <div className="flex items-start gap-4">
+                        <div className={`p-3 rounded-xl flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
+                          <Icon className={`w-7 h-7 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
-                        <h3 className={`font-semibold text-xs md:text-sm leading-tight transition-colors duration-300 ${
-                          isActive ? 'text-white' : 'text-foreground'
-                        }`}>
-                          {service.title}
-                        </h3>
-                      </div>
-                      {/* Description tooltip on hover */}
-                      <div className={`mt-2 text-[10px] leading-relaxed transition-all duration-300 overflow-hidden ${
-                        isActive ? 'text-white/90 opacity-100 max-h-16' : 'opacity-0 max-h-0'
-                      }`}>
-                        {service.description}
+                        <div className="flex-1 flex flex-col justify-center">
+                          <h3 className={`font-bold transition-all duration-300 leading-tight ${
+                            isActive ? 'text-white text-sm -translate-y-1' : 'text-foreground text-lg md:text-xl translate-y-0'
+                          }`}>
+                            {titleParts.map((part, i) => (
+                              <span key={i} className="block">{part}</span>
+                            ))}
+                          </h3>
+                          <p className={`text-xs leading-relaxed transition-all duration-300 overflow-hidden ${
+                            isActive ? 'text-white/90 opacity-100 max-h-24 mt-2 translate-y-0' : 'opacity-0 max-h-0 -translate-y-2'
+                          }`}>
+                            {service.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );

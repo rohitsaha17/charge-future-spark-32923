@@ -68,13 +68,13 @@ const NetworkVisualization = () => {
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        setDimensions({ width: rect.width, height: Math.min(rect.width * 0.65, 500) });
+        setDimensions({ width: rect.width, height: Math.min(rect.width * 0.75, 600) });
       }
     };
     
@@ -109,7 +109,7 @@ const NetworkVisualization = () => {
   const sectionRef = useScrollReveal();
 
   return (
-    <section ref={sectionRef.ref} className={`relative w-full py-12 md:py-16 overflow-hidden transition-all duration-1000 ${sectionRef.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+    <section ref={sectionRef.ref} className={`relative w-full py-0 overflow-hidden transition-all duration-1000 ${sectionRef.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div 
