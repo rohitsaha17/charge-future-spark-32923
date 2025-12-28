@@ -20,15 +20,24 @@ const StorytellingSection = ({
   noTopPadding = false,
 }: StorytellingSectionProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const [parallaxOffset, setParallaxOffset] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       if (sectionRef.current) {
         const rect = sectionRef.current.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        const offset = (rect.top - windowHeight) * 0.3;
-        setScrollY(offset);
+        
+        // Parallax effect
+        const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
+        const offset = Math.max(0, Math.min(1, scrollProgress)) * 50;
+        setParallaxOffset(offset);
+        
+        // Visibility for fade-in
+        if (rect.top < windowHeight * 0.85) {
+          setIsVisible(true);
+        }
       }
     };
 
@@ -45,18 +54,22 @@ const StorytellingSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`relative overflow-hidden ${paddingClasses} ${className ?? ''}`}
-      style={
-        backgroundImage
-          ? {
-              backgroundImage: `url(${backgroundImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: `center ${50 + scrollY * 0.05}%`,
-              backgroundAttachment: 'scroll',
-            }
-          : undefined
-      }
+      className={`relative overflow-hidden ${paddingClasses} ${className ?? ''} transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
     >
+      {/* Parallax Background */}
+      {backgroundImage && (
+        <div 
+          className="absolute inset-0 scale-110"
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            transform: `translateY(${-parallaxOffset}px) scale(1.1)`,
+            transition: 'transform 0.1s ease-out',
+          }}
+        />
+      )}
+      
       <div className="absolute inset-0 bg-gradient-to-b from-primary/50 via-blue-600/30 to-transparent" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.2)_100%)]" />
 
@@ -73,5 +86,4 @@ const StorytellingSection = ({
 };
 
 export default StorytellingSection;
-
 

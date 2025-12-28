@@ -6,14 +6,12 @@ import {
   CircleDollarSign, 
   Mountain, 
   Languages, 
-  MapPinned, 
   Users, 
   Grid3X3, 
   Handshake,
-  ArrowRight,
-  Zap
+  ArrowRight
 } from 'lucide-react';
-
+import logomark from '@/assets/a-plus-logomark.png';
 const features = [
   { 
     icon: Rocket,
@@ -231,11 +229,8 @@ const NetworkVisualization = () => {
               }}
             >
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-cyan-500 animate-ping opacity-20" />
-              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-slate-900 flex items-center justify-center">
-                <div className="text-center">
-                  <Zap className="w-8 h-8 md:w-10 md:h-10 text-cyan-400 mx-auto" />
-                  <span className="text-white font-bold text-sm md:text-base">A+</span>
-                </div>
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-slate-900 flex items-center justify-center overflow-hidden p-3">
+                <img src={logomark} alt="A Plus Charge" className="w-14 h-14 md:w-20 md:h-20 object-contain" />
               </div>
             </div>
           </div>
