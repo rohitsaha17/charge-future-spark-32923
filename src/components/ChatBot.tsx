@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Zap, MapPin, Battery, HelpCircle, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Send, Zap, MapPin, Battery, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import logomark from '@/assets/a-plus-logomark.png';
 interface Message {
   id: string;
   text: string;
@@ -153,8 +153,8 @@ const ChatBot = () => {
         <div className="bg-gradient-to-r from-primary to-cyan-500 p-4 text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9zdmc+')] opacity-30" />
           <div className="relative flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm overflow-hidden">
+              <img src={logomark} alt="A Plus" className="w-7 h-7 object-contain" />
             </div>
             <div>
               <h3 className="font-bold">A Plus Charge Assistant</h3>

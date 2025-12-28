@@ -79,26 +79,25 @@ const Home = () => {
   ];
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Enhanced Design */}
+      {/* Hero Section - Interactive & Creative */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Multi-layered Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
           {/* Animated Gradient Orbs */}
           <div
-            className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"
+            className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl"
             style={{
-              animationDuration: "4s",
+              animation: "orbFloat 8s ease-in-out infinite",
             }}
           ></div>
           <div
-            className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 to-blue-300/10 rounded-full blur-3xl animate-pulse"
+            className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 to-blue-300/10 rounded-full blur-3xl"
             style={{
-              animationDuration: "6s",
-              animationDelay: "1s",
+              animation: "orbFloat 10s ease-in-out infinite reverse",
             }}
           ></div>
           
-          {/* Additional floating orbs for depth */}
+          {/* Additional floating orbs */}
           <div
             className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-gradient-to-br from-cyan-400/15 to-blue-500/10 rounded-full blur-2xl"
             style={{
@@ -112,7 +111,47 @@ const Home = () => {
             }}
           ></div>
 
-          {/* Subtle Grid Pattern */}
+          {/* Electric Circuit Pattern */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="circuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="hsl(186, 100%, 50%)" stopOpacity="0.2" />
+              </linearGradient>
+              <filter id="electricGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            {/* Animated electric lines */}
+            <path 
+              d="M0,300 Q150,200 300,300 T600,250 T900,300 T1200,280 T1500,300" 
+              stroke="url(#circuitGrad)" 
+              strokeWidth="2" 
+              fill="none"
+              filter="url(#electricGlow)"
+              className="animate-pulse"
+              style={{ animationDuration: "3s" }}
+            />
+            <path 
+              d="M0,500 Q200,400 400,500 T800,450 T1200,500" 
+              stroke="url(#circuitGrad)" 
+              strokeWidth="1.5" 
+              fill="none"
+              filter="url(#electricGlow)"
+              style={{ animation: "dashMove 15s linear infinite" }}
+              strokeDasharray="10,10"
+            />
+            {/* Connection nodes */}
+            <circle cx="300" cy="300" r="4" fill="hsl(216, 83%, 56%)" opacity="0.3" className="animate-pulse" />
+            <circle cx="600" cy="250" r="3" fill="hsl(186, 100%, 50%)" opacity="0.4" style={{ animation: "pulse 2s infinite 0.5s" }} />
+            <circle cx="900" cy="300" r="5" fill="hsl(216, 83%, 56%)" opacity="0.25" className="animate-pulse" />
+          </svg>
+
+          {/* Grid Pattern */}
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -123,61 +162,28 @@ const Home = () => {
               backgroundSize: "80px 80px",
             }}
           />
-
-          {/* Radial Gradient Overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(38,116,236,0.08),transparent_50%)]"></div>
-          
-          {/* Animated circuit lines */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="circuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" />
-                <stop offset="100%" stopColor="hsl(186, 100%, 50%)" />
-              </linearGradient>
-            </defs>
-            <path 
-              d="M0,200 Q200,100 400,200 T800,200" 
-              stroke="url(#circuitGrad)" 
-              strokeWidth="2" 
-              fill="none"
-              className="animate-pulse"
-              style={{ animationDuration: "3s" }}
-            />
-            <path 
-              d="M100,400 Q300,300 500,400 T900,400" 
-              stroke="url(#circuitGrad)" 
-              strokeWidth="1.5" 
-              fill="none"
-              className="animate-pulse"
-              style={{ animationDuration: "4s", animationDelay: "1s" }}
-            />
-          </svg>
         </div>
 
         {/* Floating animated icons */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Floating Zap icon */}
           <div 
             className="absolute top-[20%] left-[10%] text-primary/20"
             style={{ animation: "floatIcon 5s ease-in-out infinite" }}
           >
             <Zap className="w-8 h-8 md:w-12 md:h-12" />
           </div>
-          {/* Floating MapPin */}
           <div 
             className="absolute top-[60%] left-[5%] text-cyan-500/20"
             style={{ animation: "floatIcon 7s ease-in-out infinite", animationDelay: "1s" }}
           >
             <MapPin className="w-6 h-6 md:w-10 md:h-10" />
           </div>
-          {/* Floating lightning bolt decoration */}
           <div 
             className="absolute top-[15%] right-[25%] text-blue-400/15 hidden md:block"
             style={{ animation: "floatIcon 6s ease-in-out infinite", animationDelay: "2s" }}
           >
             <Zap className="w-16 h-16" />
           </div>
-          {/* Floating circle decorations */}
           <div 
             className="absolute bottom-[25%] left-[15%] w-4 h-4 bg-gradient-to-r from-primary to-cyan-500 rounded-full opacity-30"
             style={{ animation: "floatIcon 4s ease-in-out infinite" }}
@@ -186,14 +192,15 @@ const Home = () => {
             className="absolute top-[40%] left-[8%] w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-25"
             style={{ animation: "floatIcon 5s ease-in-out infinite", animationDelay: "0.5s" }}
           />
-          <div 
-            className="absolute bottom-[40%] right-[35%] w-2 h-2 bg-primary rounded-full opacity-20 hidden md:block"
-            style={{ animation: "floatIcon 6s ease-in-out infinite", animationDelay: "1.5s" }}
-          />
         </div>
 
-        {/* Inline keyframes for floating animation */}
+        {/* Keyframes */}
         <style>{`
+          @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+          }
           @keyframes float {
             0%, 100% { transform: translateY(0) translateX(0); }
             25% { transform: translateY(-20px) translateX(10px); }
@@ -204,13 +211,20 @@ const Home = () => {
             0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
             50% { transform: translateY(-15px) rotate(5deg); opacity: 0.35; }
           }
-          @keyframes wordSlide {
-            0% { opacity: 0; transform: translateY(40px) rotateX(-45deg); filter: blur(8px); }
-            100% { opacity: 1; transform: translateY(0) rotateX(0); filter: blur(0); }
+          @keyframes dashMove {
+            to { stroke-dashoffset: -200; }
           }
-          @keyframes glowPulse {
-            0%, 100% { text-shadow: 0 0 20px rgba(38, 116, 236, 0.3); }
-            50% { text-shadow: 0 0 40px rgba(0, 198, 255, 0.5), 0 0 60px rgba(38, 116, 236, 0.3); }
+          @keyframes textGlow {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(38, 116, 236, 0.3)); }
+            50% { filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.5)); }
+          }
+          @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes scaleIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
           }
         `}</style>
 
@@ -219,43 +233,71 @@ const Home = () => {
             <div className="relative flex flex-col md:flex-row items-center min-h-[80vh] md:min-h-[75vh]">
               {/* Left - Content */}
               <div className="relative z-20 w-full md:w-[50%] lg:w-[48%] xl:w-[45%] md:ml-8 lg:ml-12 space-y-4 md:space-y-6 text-center md:text-left">
-                {/* Badge with glow effect */}
+                {/* Badge */}
                 <div 
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/25 backdrop-blur-sm shadow-lg animate-fade-in"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/25 backdrop-blur-sm shadow-lg"
                   style={{ 
-                    boxShadow: "0 0 20px rgba(38, 116, 236, 0.15), inset 0 0 20px rgba(38, 116, 236, 0.05)",
-                    animation: "pulse 3s ease-in-out infinite"
+                    animation: "slideUp 0.6s ease-out both",
+                    boxShadow: "0 0 20px rgba(38, 116, 236, 0.15), inset 0 0 20px rgba(38, 116, 236, 0.05)"
                   }}
                 >
                   <img src={logomark} alt="A+ Charge" className="w-4 h-4" />
                   <span className="text-xs font-bold text-primary tracking-wide">Northeast India's Leading EV Network</span>
                 </div>
 
-                {/* Main Heading - Clean gradient text */}
+                {/* Main Heading with typing effect style */}
                 <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight">
-                  <span className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent animate-fade-in">
+                  <span 
+                    className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent"
+                    style={{ animation: "slideUp 0.6s ease-out 0.1s both, textGlow 3s ease-in-out infinite" }}
+                  >
                     Power Your
                   </span>
-                  <span className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-600 bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: "0.15s" }}>
+                  <span 
+                    className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-600 bg-clip-text text-transparent"
+                    style={{ animation: "slideUp 0.6s ease-out 0.2s both, textGlow 3s ease-in-out 0.5s infinite" }}
+                  >
                     Electric Journey
                   </span>
                 </h1>
 
-                {/* Description with increased right padding */}
+                {/* Description */}
                 <p 
-                  className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24 animate-fade-in"
-                  style={{ animationDelay: "0.2s" }}
+                  className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24"
+                  style={{ animation: "slideUp 0.6s ease-out 0.3s both" }}
                 >
                   India's fastest-growing EV Charge Point Operator, delivering smart, reliable, and sustainable charging
                   infrastructure across the Northeast - for drivers, developers, and partners.
                 </p>
 
-                {/* CTAs with staggered animation */}
+                {/* Interactive Stats Row */}
                 <div 
-                  className="flex flex-col sm:flex-row gap-3 pt-2 items-center md:items-start animate-fade-in"
-                  style={{ animationDelay: "0.3s" }}
+                  className="flex flex-wrap gap-4 md:gap-6 pt-2"
+                  style={{ animation: "slideUp 0.6s ease-out 0.35s both" }}
                 >
-                  {/* Primary Button with enhanced glow */}
+                  {[
+                    { value: "25+", label: "Stations", icon: MapPin },
+                    { value: "50+", label: "Chargers", icon: Zap },
+                    { value: "7", label: "States", icon: Users },
+                  ].map((stat, idx) => (
+                    <div 
+                      key={stat.label}
+                      className="group flex items-center gap-2 px-3 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-primary/10 hover:border-primary/30 hover:bg-white/80 transition-all duration-300 cursor-default hover:scale-105"
+                    >
+                      <stat.icon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                      <div className="text-left">
+                        <span className="block text-lg font-bold text-primary">{stat.value}</span>
+                        <span className="block text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTAs */}
+                <div 
+                  className="flex flex-col sm:flex-row gap-3 pt-2 items-center md:items-start"
+                  style={{ animation: "slideUp 0.6s ease-out 0.4s both" }}
+                >
                   <Link
                     to="/find-charger"
                     className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
@@ -265,14 +307,12 @@ const Home = () => {
                       hover:shadow-[0_10px_40px_rgba(0,198,255,0.6)] hover:scale-[1.05] hover:-translate-y-1
                       active:scale-95 w-full sm:w-auto whitespace-nowrap overflow-hidden"
                   >
-                    {/* Button shine effect */}
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                     <Zap className="w-4 h-4 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
                     <span className="relative">Find a Charger</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
 
-                  {/* Secondary Button */}
                   <Link
                     to="/partner"
                     className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
@@ -288,35 +328,13 @@ const Home = () => {
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                 </div>
-
-                {/* Animated trust indicator */}
-                <div 
-                  className="flex items-center gap-3 pt-4 animate-fade-in"
-                  style={{ animationDelay: "0.4s" }}
-                >
-                  <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white">A+</div>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-white text-xs border-2 border-white">
-                      <Zap className="w-4 h-4" />
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs border-2 border-white">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    <span className="font-semibold text-foreground">25+ stations</span> across Northeast India
-                  </div>
-                </div>
               </div>
 
-              {/* Right - Illustration - Sticks to right edge */}
+              {/* Right - Illustration */}
               <div
                 className="absolute right-0 top-1/2 -translate-y-1/2 w-[90%] md:w-[65%] lg:w-[68%] xl:w-[70%] hidden md:block"
-                style={{
-                  animation: "fade-in 0.8s ease-out 0.3s both",
-                }}
+                style={{ animation: "scaleIn 0.8s ease-out 0.3s both" }}
               >
-                {/* Glow behind the image */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-cyan-500/10 blur-3xl scale-110" />
                 <img
                   src={heroEvCharging}
@@ -328,10 +346,8 @@ const Home = () => {
 
               {/* Mobile Illustration */}
               <div
-                className="relative w-full flex items-center justify-center md:hidden mt-8 animate-fade-in"
-                style={{
-                  animationDelay: "0.2s",
-                }}
+                className="relative w-full flex items-center justify-center md:hidden mt-8"
+                style={{ animation: "scaleIn 0.6s ease-out 0.2s both" }}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent blur-2xl" />
                 <img
@@ -343,6 +359,15 @@ const Home = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div 
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground/50"
+          style={{ animation: "slideUp 0.6s ease-out 0.8s both" }}
+        >
+          <span className="text-xs uppercase tracking-widest">Scroll</span>
+          <ChevronDown className="w-5 h-5 animate-bounce" />
         </div>
       </section>
 
@@ -524,14 +549,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Storytelling Section - Where Innovation Meets Tradition - Attached to image */}
-      <StorytellingSection
-        noTopPadding
-        className="-mt-1"
-        title="Where Innovation Meets Tradition"
-        description="We're not just another charging provider company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
-        backgroundImage={appSectionBg}
-      />
+      {/* Benefits Section */}
 
       {/* Benefits Section */}
       <div
