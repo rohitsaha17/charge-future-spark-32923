@@ -20,7 +20,7 @@ interface Testimonial {
 const testimonials: Testimonial[] = [
   {
     name: "Rajesh Kumar",
-    role: "Tesla Model 3 Owner",
+    role: "Mahindra XEV 9e Owner",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh",
     rating: 5,
     review: "A Plus Charge has transformed my daily commute. Their charging stations are reliable, fast, and always available when I need them. The best EV charging network in Northeast India!",

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { MapPin, Users, Zap, ChevronDown, ArrowRight } from "lucide-react";
+import { MapPin, Users, Zap, ChevronDown, ArrowRight, Settings, Wrench, Megaphone, DollarSign, Monitor, HeadphonesIcon } from "lucide-react";
+import { useState } from "react";
 import heroIllustration from "@/assets/hero-illustration.png";
 import logomark from "@/assets/a-plus-logomark.png";
 import heroEvCharging from "@/assets/hero-ev-charging-v2.png";
@@ -19,30 +20,17 @@ import appSectionBg from "@/assets/app-section-bg.jpg";
 import phoneMockup from "@/assets/phone-mockup-dual.png";
 import googlePlayBadge from "@/assets/google-play-official.png";
 import appStoreBadge from "@/assets/app-store-official.png";
-import gradientBreak from "@/assets/gradient-section-break.png";
-import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import chargingStationIllustration from "@/assets/charging-station-illustration.png";
 import GoogleMapsCharging from "@/components/GoogleMapsCharging";
 import BenefitsSection from "@/components/BenefitsSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
-import { useCountUp } from "@/hooks/useCountUp";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AnimatedDownloadCounter from "@/components/AnimatedDownloadCounter";
+
 const Home = () => {
-  const chargers = useCountUp({
-    end: 50,
-    duration: 2500,
-  });
-  const stations = useCountUp({
-    end: 25,
-    duration: 2500,
-  });
-  const customers = useCountUp({
-    end: 1000,
-    duration: 2500,
-  });
+  const [activeService, setActiveService] = useState<number | null>(null);
   const mapSection = useScrollReveal();
   const statsSection = useScrollReveal();
   const benefitsSection = useScrollReveal();
@@ -51,6 +39,15 @@ const Home = () => {
   const appSection = useScrollReveal();
   const testimonialsSection = useScrollReveal();
   const faqSection = useScrollReveal();
+  
+  const servicePointers = [
+    { icon: Settings, title: "Installation & Commissioning", description: "End-to-end setup of charging infrastructure with certified technicians" },
+    { icon: Wrench, title: "Operations & Maintenance (O&M)", description: "24/7 monitoring, preventive maintenance, and rapid issue resolution" },
+    { icon: Megaphone, title: "Location Promotion & Marketing", description: "Strategic visibility campaigns to maximize station footfall" },
+    { icon: DollarSign, title: "Revenue Sharing & Monetization", description: "Transparent revenue models with attractive partner returns" },
+    { icon: Monitor, title: "Charging Management Platform", description: "Real-time analytics, remote monitoring, and smart charging controls" },
+    { icon: HeadphonesIcon, title: "Issue Resolution & Support", description: "Dedicated support team for swift problem resolution" },
+  ];
   const faqs = [
     {
       question: "What types of EV chargers do you offer?",
@@ -473,20 +470,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Gradient Section Breaker (pulled up to touch the map - no gap) */}
-      <div
-        style={{ backgroundImage: `url(${gradientBreak})` }}
-        aria-hidden="true"
-        className="w-full h-32 bg-cover bg-center bg-no-repeat -mt-20 md:-mt-32 mx-0"
-      />
-      {/* Live Stats Section - Redesigned with Full-Width Illustration */}
+      {/* Live Stats Section - Redesigned with Full-Width Illustration and Service Pointers */}
       <section
         ref={statsSection.ref}
-        className={`py-12 md:py-20 lg:py-24 pb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-12 md:py-16 pb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* White gradient overlay at top to merge smoothly */}
-        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
-
         {/* Full-Width Illustration - Pinned to Right (Hidden on mobile) */}
         <div className="absolute inset-0 lg:flex md:flex hidden items-center justify-end overflow-hidden">
           <img
@@ -497,29 +485,16 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent pointer-events-none"></div>
         </div>
 
-        {/* Background decorative elements with animation */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0 animate-section-glow"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tl from-blue-500/5 to-primary/5 rounded-full blur-3xl z-0 animate-section-glow" style={{ animationDelay: "2s" }}></div>
-        
-        {/* Subtle geometric pattern */}
-        <div className="absolute inset-0 opacity-[0.02] z-0" style={{
-          backgroundImage: `linear-gradient(30deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
-            linear-gradient(150deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
-            linear-gradient(30deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
-            linear-gradient(150deg, hsl(216 83% 56%) 12%, transparent 12.5%, transparent 87%, hsl(216 83% 56%) 87.5%, hsl(216 83% 56%)),
-            linear-gradient(60deg, hsl(191 100% 50% / 0.5) 25%, transparent 25.5%, transparent 75%, hsl(191 100% 50% / 0.5) 75%, hsl(191 100% 50% / 0.5)),
-            linear-gradient(60deg, hsl(191 100% 50% / 0.5) 25%, transparent 25.5%, transparent 75%, hsl(191 100% 50% / 0.5) 75%, hsl(191 100% 50% / 0.5))`,
-          backgroundSize: "80px 140px",
-          backgroundPosition: "0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px"
-        }}></div>
+        {/* Background decorative elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0"></div>
 
         <div className="container mx-auto px-4 relative z-20">
-          <div className="flex flex-col lg:flex-row items-start gap-8 md:gap-12 max-w-2xl md:max-w-xl lg:max-w-2xl md:ml-0">
-            {/* Left Side - Heading and Stats */}
-            <div className="w-full space-y-6 md:space-y-8">
+          <div className="flex flex-col lg:flex-row items-start gap-6 md:gap-8 max-w-2xl md:max-w-xl lg:max-w-3xl md:ml-0">
+            {/* Left Side - Heading and Service Pointers */}
+            <div className="w-full space-y-5">
               {/* Heading */}
-              <div className="space-y-4">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              <div className="space-y-3">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                   <span className="bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent">
                     FAST & RELIABLE
                   </span>
@@ -529,83 +504,63 @@ const Home = () => {
                 <div className="w-20 h-1.5 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Compact Stats Grid - Responsive sizing */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6 min-w-0 md:scale-[0.85] lg:scale-100 md:origin-left">
-                <div
-                  ref={chargers.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg min-w-0"
-                >
-                  <div className="flex items-center gap-1 sm:gap-2 md:gap-3 mb-1 md:mb-2">
-                    <div className="bg-primary/10 rounded-lg w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
-                      <Zap className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary" />
+              {/* Interactive Service Pointers */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {servicePointers.map((service, index) => {
+                  const Icon = service.icon;
+                  const isActive = activeService === index;
+                  return (
+                    <div
+                      key={index}
+                      className={`group relative p-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                        isActive 
+                          ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg scale-[1.02]' 
+                          : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30 hover:shadow-md'
+                      }`}
+                      onMouseEnter={() => setActiveService(index)}
+                      onMouseLeave={() => setActiveService(null)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`p-2 rounded-lg ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
+                          <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-primary'}`} />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-foreground'}`}>
+                            {service.title}
+                          </h3>
+                          <p className={`text-xs mt-1 leading-relaxed ${isActive ? 'text-white/90' : 'text-muted-foreground'} ${isActive ? 'opacity-100 max-h-20' : 'opacity-0 max-h-0 overflow-hidden'} transition-all duration-300`}>
+                            {service.description}
+                          </p>
+                        </div>
+                      </div>
+                      {/* Active indicator */}
+                      {isActive && (
+                        <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
+                      )}
                     </div>
-                  </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">
-                    {chargers.count}+
-                  </div>
-                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">
-                    Live Chargers
-                  </div>
-                </div>
-
-                <div
-                  ref={stations.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-6 border border-cyan-500/10 hover:border-cyan-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg min-w-0"
-                >
-                  <div className="flex items-center gap-1 sm:gap-2 md:gap-3 mb-1 md:mb-2">
-                    <div className="bg-cyan-500/10 rounded-lg w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors flex-shrink-0">
-                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-cyan-600" />
-                    </div>
-                  </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">
-                    {stations.count}+
-                  </div>
-                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">
-                    Stations
-                  </div>
-                </div>
-
-                <div
-                  ref={customers.ref}
-                  className="group bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-6 border border-green-500/10 hover:border-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg min-w-0"
-                >
-                  <div className="flex items-center gap-1 sm:gap-2 md:gap-3 mb-1 md:mb-2">
-                    <div className="bg-green-500/10 rounded-lg w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors flex-shrink-0">
-                      <Users className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-green-600" />
-                    </div>
-                  </div>
-                  <div className="text-lg sm:text-xl md:text-3xl font-bold text-foreground truncate">
-                    {customers.count}+
-                  </div>
-                  <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1 leading-tight">
-                    Customers
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
 
             {/* Mobile Image - Appears below stats on mobile */}
-            <div className="w-full lg:hidden md:hidden flex justify-end relative mt-12 mb-8 overflow-visible min-h-[300px] sm:min-h-[400px]">
+            <div className="w-full lg:hidden md:hidden flex justify-end relative mt-8 mb-0 overflow-visible min-h-[280px] sm:min-h-[350px]">
               <img
                 src={chargingStationIllustration}
                 alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-                className="w-full max-w-none object-contain object-right scale-[2.125] origin-right"
+                className="w-full max-w-none object-contain object-right scale-[2] origin-right"
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Storytelling Section - Where Innovation Meets Tradition - No gap from stats */}
-      <div className="-mt-8 md:-mt-12">
-        <StorytellingSection
-          title="Where Innovation Meets Tradition"
-          description="We're not just another charging provider company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
-          backgroundImage={appSectionBg}
-        />
-      </div>
-
-      <GradientDivider />
+      {/* Storytelling Section - Where Innovation Meets Tradition - Attached to image */}
+      <StorytellingSection
+        title="Where Innovation Meets Tradition"
+        description="We're not just another charging provider company. We're your neighbors, your community partners, building infrastructure that respects our heritage while embracing tomorrow. Every charging station is a step toward energy independence for the Northeast."
+        backgroundImage={appSectionBg}
+      />
 
       {/* Benefits Section */}
       <div
@@ -615,8 +570,6 @@ const Home = () => {
         <BenefitsSection />
       </div>
 
-      <GradientDivider />
-
       {/* Trust Section - Northeast Hills */}
       <StorytellingSection
         title="Rooted in Northeast India, Powering the Future"
@@ -624,12 +577,9 @@ const Home = () => {
         backgroundImage={northeastHillsLandscape}
       />
 
-      <GradientDivider />
-
       {/* USP Section */}
       <USPCarousel />
 
-      <GradientDivider />
 
       {/* Storytelling Section - Charging Made Simple */}
       <StorytellingSection
@@ -766,8 +716,6 @@ const Home = () => {
         </div>
       </section>
 
-      <GradientDivider />
-
       {/* App Download Section - Creative Design */}
       <section
         ref={appSection.ref}
@@ -891,7 +839,6 @@ const Home = () => {
         </div>
       </section>
 
-      <GradientDivider />
 
       {/* Testimonials Carousel */}
       <section
@@ -929,7 +876,6 @@ const Home = () => {
         </div>
       </section>
 
-      <GradientDivider />
 
       <StorytellingSection
         title="Join the Electric Revolution"
@@ -937,7 +883,7 @@ const Home = () => {
         backgroundImage={trustBg}
       />
 
-      <GradientDivider />
+      
 
       {/* FAQ Section */}
       <section
