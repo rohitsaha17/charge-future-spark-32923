@@ -56,13 +56,9 @@ const StorytellingSection = ({
         />
       )}
       
-      {/* Gradient Overlay - Blue with more opacity on top, fading to transparent at bottom */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/40 to-transparent" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_20%,_rgba(0,0,0,0.2)_100%)]" />
-      
       {/* Top and bottom fade transitions */}
-      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-background to-transparent z-[1]" />
-      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent z-[1]" />
+      <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-background to-transparent z-[1]" />
+      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background to-transparent z-[1]" />
 
       {/* Content */}
       <div 
