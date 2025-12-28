@@ -137,14 +137,29 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
       const isDC = station.charger_type === 'DC';
       const isResidential = station.station_type === 'Residential';
 
-      // Create custom marker element - fixed size, no transforms
+      // Create custom pushpin marker element
       const el = document.createElement('div');
-      el.style.cssText = 'width:32px;height:32px;cursor:pointer;';
+      el.style.cssText = 'width:36px;height:48px;cursor:pointer;position:relative;';
       el.innerHTML = `
-        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 4px 12px rgba(0,0,0,0.3);background:${isDC ? 'linear-gradient(135deg,#9333EA,#EC4899)' : 'linear-gradient(135deg,#2674EC,#00C6FF)'};">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        <div style="position:relative;width:36px;height:48px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48" fill="none" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
+            <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 30 18 30s18-16.5 18-30C36 8.06 27.94 0 18 0z" fill="${isDC ? 'url(#dcGrad' + station.id + ')' : 'url(#acGrad' + station.id + ')'}"/>
+            <defs>
+              <linearGradient id="dcGrad${station.id}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#9333EA"/>
+                <stop offset="100%" stop-color="#EC4899"/>
+              </linearGradient>
+              <linearGradient id="acGrad${station.id}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2674EC"/>
+                <stop offset="100%" stop-color="#00C6FF"/>
+              </linearGradient>
+            </defs>
           </svg>
+          <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);width:20px;height:20px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${isDC ? '#9333EA' : '#2674EC'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
         </div>
       `;
 
@@ -176,10 +191,10 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
         className: 'station-hover-popup'
       }).setHTML(popupContent);
 
-      // Create marker with center anchor for precise positioning
+      // Create marker with bottom anchor for pushpin positioning
       const marker = new maplibregl.Marker({ 
         element: el,
-        anchor: 'center'
+        anchor: 'bottom'
       })
         .setLngLat([station.longitude, station.latitude])
         .addTo(mapRef.current!);

@@ -86,15 +86,28 @@ const BenefitsSection = () => {
         })}
         </div>
 
-        {/* Call to Action */}
+        {/* Call to Action - Improved Buttons */}
         <div className="mt-16 text-center">
           <p className="text-lg text-foreground/70 mb-6">Ready to make the switch to electric?</p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a href="/partner" className="px-8 py-4 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground rounded-xl font-semibold hover:shadow-glow transition-all duration-300 hover:scale-105">
-              Become a Partner
+            <a 
+              href="/partner" 
+              className="group relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-cyan-500 text-white rounded-xl font-semibold shadow-[0_6px_24px_rgba(38,116,236,0.35)] transition-all duration-300 hover:shadow-[0_10px_40px_rgba(0,198,255,0.5)] hover:scale-105 hover:-translate-y-1 overflow-hidden"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+              <span className="relative">Become a Partner</span>
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
             </a>
-            <a href="/find-charger" className="px-8 py-4 bg-content-highlight border-2 border-content-highlight-border text-foreground rounded-xl font-semibold hover:bg-content-highlight/70 hover:border-primary/50 transition-all duration-300 hover:scale-105">
-              Find a Charger
+            <a 
+              href="/find-charger" 
+              className="group inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-primary/30 text-primary rounded-xl font-semibold shadow-lg transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:border-primary/50 hover:shadow-xl hover:scale-105 hover:-translate-y-1"
+            >
+              <span>Find a Charger</span>
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
             </a>
           </div>
         </div>
