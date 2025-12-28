@@ -37,10 +37,11 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
   const [stations, setStations] = useState<Station[]>([]);
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [hoveredStationId, setHoveredStationId] = useState<string | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const markersRef = useRef<{ marker: maplibregl.Marker; popup: maplibregl.Popup; stationId: string }[]>([]);
+  const popupRef = useRef<maplibregl.Popup | null>(null);
 
   // Fetch stations once
   useEffect(() => {
@@ -62,11 +63,21 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
     fetchStations();
   }, []);
 
+  const handleNavigate = (lat: number, lng: number) => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+    const url = isMobile
+      ? `https://maps.google.com/?q=${lat},${lng}`
+      : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(url, '_blank');
+  };
+
   // Initialize map
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    mapRef.current = new maplibregl.Map({
+    const map = new maplibregl.Map({
       container: mapContainerRef.current,
       style: {
         version: 8,
@@ -91,131 +102,200 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
       zoom: 8,
     });
 
-    mapRef.current.addControl(new maplibregl.NavigationControl(), 'top-right');
+    mapRef.current = map;
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    // Create popup instance
+    popupRef.current = new maplibregl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      maxWidth: '280px',
+      className: 'station-hover-popup',
+      offset: 25
+    });
 
     return () => {
-      markersRef.current.forEach(({ marker, popup }) => {
-        popup.remove();
-        marker.remove();
-      });
-      markersRef.current = [];
-      mapRef.current?.remove();
+      popupRef.current?.remove();
+      map.remove();
     };
   }, []);
 
-  const handleMarkerClick = useCallback((station: Station) => {
-    setSelectedStation(station);
-    setDialogOpen(true);
-    onStationSelect?.(station.id);
-  }, [onStationSelect]);
-
-  const handleNavigate = (lat: number, lng: number) => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-    const url = isMobile
-      ? `https://maps.google.com/?q=${lat},${lng}`
-      : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-    window.open(url, '_blank');
-  };
-
-  // Add markers when stations change
+  // Add GeoJSON source and layers when stations change
   useEffect(() => {
-    if (!mapRef.current || stations.length === 0) return;
+    const map = mapRef.current;
+    if (!map || stations.length === 0) return;
 
-    // Clear existing markers
-    markersRef.current.forEach(({ marker, popup }) => {
-      popup.remove();
-      marker.remove();
-    });
-    markersRef.current = [];
+    const setupLayers = () => {
+      // Remove existing source and layers if they exist
+      if (map.getLayer('station-labels')) map.removeLayer('station-labels');
+      if (map.getLayer('stations-dc')) map.removeLayer('stations-dc');
+      if (map.getLayer('stations-ac')) map.removeLayer('stations-ac');
+      if (map.getLayer('stations-glow')) map.removeLayer('stations-glow');
+      if (map.getSource('stations')) map.removeSource('stations');
 
-    // Add markers for all stations
-    stations.forEach((station) => {
-      if (!mapRef.current) return;
+      // Create GeoJSON data
+      const geojsonData: GeoJSON.FeatureCollection = {
+        type: 'FeatureCollection',
+        features: stations.map(station => ({
+          type: 'Feature',
+          properties: {
+            id: station.id,
+            name: station.name,
+            city: station.city,
+            state: station.state,
+            charger_type: station.charger_type,
+            station_type: station.station_type,
+            power_output: station.power_output,
+            available_chargers: station.available_chargers,
+            total_chargers: station.total_chargers,
+            isDC: station.charger_type === 'DC'
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [station.longitude, station.latitude]
+          }
+        }))
+      };
 
-      const isDC = station.charger_type === 'DC';
-      const isResidential = station.station_type === 'Residential';
+      // Add source
+      map.addSource('stations', {
+        type: 'geojson',
+        data: geojsonData
+      });
 
-      // Create custom pushpin marker element
-      const el = document.createElement('div');
-      el.style.cssText = 'width:36px;height:48px;cursor:pointer;position:relative;';
-      el.innerHTML = `
-        <div style="position:relative;width:36px;height:48px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48" fill="none" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
-            <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 30 18 30s18-16.5 18-30C36 8.06 27.94 0 18 0z" fill="${isDC ? 'url(#dcGrad' + station.id + ')' : 'url(#acGrad' + station.id + ')'}"/>
-            <defs>
-              <linearGradient id="dcGrad${station.id}" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#9333EA"/>
-                <stop offset="100%" stop-color="#EC4899"/>
-              </linearGradient>
-              <linearGradient id="acGrad${station.id}" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#2674EC"/>
-                <stop offset="100%" stop-color="#00C6FF"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);width:20px;height:20px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${isDC ? '#9333EA' : '#2674EC'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-            </svg>
-          </div>
-        </div>
-      `;
-
-      // Create hover popup with station details
-      const popupContent = `
-        <div class="station-popup">
-          <div class="popup-header ${isDC ? 'dc' : 'ac'}">
-            <span class="popup-badge">${isDC ? 'DC Fast' : 'AC'}</span>
-            <span class="popup-type">${isResidential ? '🏠 Residential' : '🌐 Public'}</span>
-          </div>
-          <h3 class="popup-title">${station.name}</h3>
-          <p class="popup-address">${station.city}, ${station.state}</p>
-          <div class="popup-details">
-            <span class="popup-power">${station.power_output}</span>
-            <span class="popup-availability">
-              <span class="availability-dot"></span>
-              ${station.available_chargers}/${station.total_chargers} Available
-            </span>
-          </div>
-          <p class="popup-hint">Click for directions</p>
-        </div>
-      `;
-
-      const popup = new maplibregl.Popup({
-        offset: [0, -20],
-        closeButton: false,
-        closeOnClick: false,
-        maxWidth: '280px',
-        className: 'station-hover-popup'
-      }).setHTML(popupContent);
-
-      // Create marker with bottom anchor for pushpin positioning
-      const marker = new maplibregl.Marker({ 
-        element: el,
-        anchor: 'bottom'
-      })
-        .setLngLat([station.longitude, station.latitude])
-        .addTo(mapRef.current!);
-
-      // Show popup on hover
-      el.addEventListener('mouseenter', () => {
-        if (mapRef.current) {
-          popup.setLngLat([station.longitude, station.latitude]).addTo(mapRef.current);
+      // Glow layer (behind markers)
+      map.addLayer({
+        id: 'stations-glow',
+        type: 'circle',
+        source: 'stations',
+        paint: {
+          'circle-radius': 20,
+          'circle-color': ['case', ['get', 'isDC'], '#9333EA', '#2674EC'],
+          'circle-blur': 1,
+          'circle-opacity': 0.3
         }
       });
 
-      el.addEventListener('mouseleave', () => {
-        popup.remove();
+      // AC Stations layer
+      map.addLayer({
+        id: 'stations-ac',
+        type: 'circle',
+        source: 'stations',
+        filter: ['==', ['get', 'isDC'], false],
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 8, 12, 14, 16, 18],
+          'circle-color': '#2674EC',
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#ffffff'
+        }
       });
 
-      // Handle click
-      el.addEventListener('click', () => handleMarkerClick(station));
+      // DC Stations layer
+      map.addLayer({
+        id: 'stations-dc',
+        type: 'circle',
+        source: 'stations',
+        filter: ['==', ['get', 'isDC'], true],
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 10, 12, 16, 16, 20],
+          'circle-color': '#9333EA',
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#ffffff'
+        }
+      });
 
-      markersRef.current.push({ marker, popup, stationId: station.id });
-    });
-  }, [stations, handleMarkerClick]);
+      // Add lightning bolt icon using SVG
+      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="0"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`;
+      const img = new Image(24, 24);
+      img.onload = () => {
+        if (!map.hasImage('lightning')) {
+          map.addImage('lightning', img);
+          // Add symbol layer for lightning icons
+          map.addLayer({
+            id: 'station-labels',
+            type: 'symbol',
+            source: 'stations',
+            layout: {
+              'icon-image': 'lightning',
+              'icon-size': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 12, 0.6, 16, 0.8],
+              'icon-allow-overlap': true,
+              'icon-ignore-placement': true
+            }
+          });
+        }
+      };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+
+      // Mouse events for hover popup
+      const showPopup = (e: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] }) => {
+        if (!e.features || e.features.length === 0) return;
+        
+        const feature = e.features[0];
+        const props = feature.properties;
+        const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number];
+        
+        setHoveredStationId(props.id);
+        map.getCanvas().style.cursor = 'pointer';
+
+        const isDC = props.isDC || props.charger_type === 'DC';
+        const isResidential = props.station_type === 'Residential';
+
+        const popupContent = `
+          <div class="station-popup">
+            <div class="popup-header ${isDC ? 'dc' : 'ac'}">
+              <span class="popup-badge">${isDC ? 'DC Fast' : 'AC'}</span>
+              <span class="popup-type">${isResidential ? '🏠 Residential' : '🌐 Public'}</span>
+            </div>
+            <h3 class="popup-title">${props.name}</h3>
+            <p class="popup-address">${props.city}, ${props.state}</p>
+            <div class="popup-details">
+              <span class="popup-power">${props.power_output}</span>
+              <span class="popup-availability">
+                <span class="availability-dot"></span>
+                ${props.available_chargers}/${props.total_chargers} Available
+              </span>
+            </div>
+            <p class="popup-hint">Click for directions</p>
+          </div>
+        `;
+
+        popupRef.current?.setLngLat(coords).setHTML(popupContent).addTo(map);
+      };
+
+      const hidePopup = () => {
+        setHoveredStationId(null);
+        map.getCanvas().style.cursor = '';
+        popupRef.current?.remove();
+      };
+
+      const handleClick = (e: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] }) => {
+        if (!e.features || e.features.length === 0) return;
+        
+        const props = e.features[0].properties;
+        const station = stations.find(s => s.id === props.id);
+        if (station) {
+          setSelectedStation(station);
+          setDialogOpen(true);
+          onStationSelect?.(station.id);
+        }
+      };
+
+      // Bind events to both layers
+      ['stations-ac', 'stations-dc'].forEach(layerId => {
+        map.on('mouseenter', layerId, showPopup);
+        map.on('mousemove', layerId, showPopup);
+        map.on('mouseleave', layerId, hidePopup);
+        map.on('click', layerId, handleClick);
+      });
+    };
+
+    // Wait for map to be loaded
+    if (map.loaded()) {
+      setupLayers();
+    } else {
+      map.on('load', setupLayers);
+    }
+  }, [stations, onStationSelect]);
 
   // Pan to selected station from external selection
   useEffect(() => {
@@ -238,9 +318,8 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
         className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant border border-border overflow-hidden"
       />
 
-      {/* Popup styles only - markers use inline styles */}
+      {/* Popup styles */}
       <style>{`
-        /* Popup Styles */
         .station-hover-popup .maplibregl-popup-content {
           padding: 0;
           border-radius: 12px;
