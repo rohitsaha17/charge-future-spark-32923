@@ -5,9 +5,7 @@ interface StorytellingSectionProps {
   description: string;
   backgroundImage?: string;
   theme?: "light" | "dark";
-  /** Optional extra classes for outer section (keeps existing behavior by default) */
   className?: string;
-  /** Remove only the top padding so the section can stick to previous block */
   noTopPadding?: boolean;
 }
 
@@ -20,7 +18,6 @@ const StorytellingSection = ({
   noTopPadding = false,
 }: StorytellingSectionProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [parallaxOffset, setParallaxOffset] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -29,12 +26,6 @@ const StorytellingSection = ({
         const rect = sectionRef.current.getBoundingClientRect();
         const windowHeight = window.innerHeight;
         
-        // Parallax effect
-        const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
-        const offset = Math.max(0, Math.min(1, scrollProgress)) * 50;
-        setParallaxOffset(offset);
-        
-        // Visibility for fade-in
         if (rect.top < windowHeight * 0.85) {
           setIsVisible(true);
         }
@@ -47,33 +38,34 @@ const StorytellingSection = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const paddingClasses = noTopPadding
-    ? 'pt-0 pb-16 md:pt-0 md:pb-20'
-    : 'py-16 md:py-20';
-
   return (
     <section
       ref={sectionRef}
-      className={`relative overflow-hidden ${paddingClasses} ${className ?? ''} transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+      className={`relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
     >
-      {/* Parallax Background */}
+      {/* Fixed Parallax Background - Full page, stays in place */}
       {backgroundImage && (
         <div 
-          className="absolute inset-0 scale-110"
+          className="absolute inset-0"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            transform: `translateY(${-parallaxOffset}px) scale(1.1)`,
-            transition: 'transform 0.1s ease-out',
+            backgroundAttachment: 'fixed',
           }}
         />
       )}
       
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/50 via-blue-600/30 to-transparent" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.2)_100%)]" />
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-blue-600/40 to-primary/50" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_20%,_rgba(0,0,0,0.3)_100%)]" />
 
-      <div className="relative z-10 container mx-auto px-4 text-center">
+      {/* Content */}
+      <div 
+        className={`relative z-10 container mx-auto px-4 text-center transition-all duration-1000 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 text-white drop-shadow-2xl">
           {title}
         </h2>
