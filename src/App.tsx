@@ -32,6 +32,11 @@ const AppContent = () => {
   const [isNavigating, setIsNavigating] = useState(false);
   const [displayLocation, setDisplayLocation] = useState(location);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   useEffect(() => {
     // Only check on initial mount when on home page
     if ((location.pathname === '/' || location.pathname === '/index') && isInitialLoad) {

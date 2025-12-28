@@ -24,7 +24,15 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 animate-slide-down">
       <div className="container mx-auto px-4 py-4">
         <div className="nav-glass rounded-2xl px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3 animate-fade-in">
+          <Link 
+            to="/" 
+            className="flex items-center space-x-3 animate-fade-in"
+            onClick={() => {
+              if (location.pathname === '/') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+          >
             <img src={logo} alt="A Plus Charge" className="h-8 w-auto" />
           </Link>
 
@@ -34,6 +42,11 @@ const Navigation = () => {
               <Link
                 key={link.path}
                 to={link.path}
+                onClick={() => {
+                  if (link.path === '/' && location.pathname === '/') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
                 className={`text-sm font-medium transition-all duration-200 px-4 py-2 rounded-lg ${
                   isActive(link.path)
                     ? "text-primary border-b-2 border-primary"
