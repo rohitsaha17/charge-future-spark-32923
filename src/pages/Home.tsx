@@ -427,14 +427,14 @@ const Home = () => {
       {/* Live Stats Section - Redesigned with Full-Width Illustration and Service Pointers */}
       <section
         ref={statsSection.ref}
-        className={`py-10 md:py-12 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-8 sm:py-10 md:py-12 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Full-Width Illustration - Pinned to Right (Hidden on mobile) */}
-        <div className="absolute inset-0 lg:flex md:flex hidden items-end justify-end overflow-hidden">
+        {/* Full-Width Illustration - Pinned to Right (Hidden on mobile/tablet) */}
+        <div className="absolute inset-0 hidden lg:flex items-end justify-end overflow-hidden">
           <img
             src={chargingStationIllustration}
             alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-            className="relative w-[100%] md:w-[95%] lg:w-[85%] max-w-none object-contain object-right-bottom lg:translate-x-0 md:translate-x-[5%] lg:translate-y-16 md:translate-y-16"
+            className="relative w-[85%] max-w-none object-contain object-right-bottom translate-y-16"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent pointer-events-none"></div>
         </div>
@@ -443,12 +443,12 @@ const Home = () => {
         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0"></div>
 
         <div className="container mx-auto px-4 relative z-20">
-          <div className="flex flex-col lg:flex-row items-start gap-4 md:gap-6 max-w-2xl md:max-w-xl lg:max-w-3xl md:ml-0">
+          <div className="flex flex-col lg:flex-row items-start gap-4 md:gap-6 max-w-full sm:max-w-2xl lg:max-w-3xl lg:ml-0">
             {/* Left Side - Heading and Service Pointers */}
             <div className="w-full space-y-4">
               {/* Heading */}
               <div className="space-y-2">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
+                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
                   <span className="bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent">
                     FAST & RELIABLE
                   </span>
@@ -470,7 +470,7 @@ const Home = () => {
                   return (
                     <div
                       key={index}
-                      className={`group relative p-3 md:p-4 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden h-[72px] ${
+                      className={`group relative p-3 md:p-4 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden h-auto min-h-[64px] sm:h-[72px] ${
                         isActive 
                           ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-md' 
                           : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30'
@@ -505,12 +505,12 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mobile Image - Appears below stats on mobile */}
-            <div className="w-full lg:hidden md:hidden flex justify-end relative mt-6 mb-0 overflow-visible min-h-[250px] sm:min-h-[300px]">
+            {/* Mobile/Tablet Image - Appears below stats */}
+            <div className="w-full lg:hidden flex justify-center relative mt-4 sm:mt-6">
               <img
                 src={chargingStationIllustration}
                 alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-                className="w-full max-w-none object-contain object-right scale-[1.8] origin-right"
+                className="w-full max-w-md sm:max-w-lg md:max-w-xl object-contain"
               />
             </div>
           </div>
