@@ -69,9 +69,11 @@ const NetworkVisualization = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [clickedNode, setClickedNode] = useState<number | null>(null);
   const [particles, setParticles] = useState<{id: number; x: number; y: number; angle: number; color: string}[]>([]);
+  const [trailParticles, setTrailParticles] = useState<{id: number; x: number; y: number; opacity: number}[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [nodeOffsets, setNodeOffsets] = useState<{x: number; y: number}[]>(features.map(() => ({ x: 0, y: 0 })));
+  const lastTrailTime = useRef(0);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -94,6 +96,24 @@ const NetworkVisualization = () => {
         y: e.clientY - rect.top
       };
       setMousePos(newMousePos);
+
+      // Add trail particle with throttle
+      const now = Date.now();
+      if (now - lastTrailTime.current > 30) {
+        lastTrailTime.current = now;
+        const newTrail = {
+          id: now,
+          x: newMousePos.x,
+          y: newMousePos.y,
+          opacity: 1
+        };
+        setTrailParticles(prev => [...prev.slice(-15), newTrail]);
+        
+        // Fade out trail particles
+        setTimeout(() => {
+          setTrailParticles(prev => prev.filter(p => p.id !== newTrail.id));
+        }, 500);
+      }
 
       // Calculate magnetic attraction for each node
       const newOffsets = nodePositions.map((pos) => {
@@ -118,6 +138,7 @@ const NetworkVisualization = () => {
 
   const handleMouseLeave = () => {
     setNodeOffsets(features.map(() => ({ x: 0, y: 0 })));
+    setTrailParticles([]);
   };
 
   // Calculate node positions in a circular layout around center
@@ -392,13 +413,15 @@ const NetworkVisualization = () => {
                     style={{ borderColor: feature.color }}
                   />
                   
-                  {/* Node circle with gradient fill on hover */}
+                  {/* Node circle with gradient fill on hover and subtle pulse */}
                   <div 
                     className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center border-2 transition-all duration-300 relative overflow-hidden"
                     style={{ 
                       backgroundColor: isActive ? feature.color : 'rgba(30, 41, 59, 0.9)',
                       borderColor: feature.color,
-                      boxShadow: isActive ? `0 0 40px ${feature.color}80, inset 0 0 20px rgba(255,255,255,0.2)` : 'none'
+                      boxShadow: isActive ? `0 0 40px ${feature.color}80, inset 0 0 20px rgba(255,255,255,0.2)` : `0 0 ${8 + (index % 3) * 4}px ${feature.color}40`,
+                      animation: `nodePulse ${2 + (index % 4) * 0.3}s ease-in-out infinite`,
+                      animationDelay: `${index * 0.2}s`
                     }}
                   >
                     {/* Shine effect */}
@@ -436,6 +459,21 @@ const NetworkVisualization = () => {
               </div>
             );
           })}
+
+          {/* Cursor trail particles */}
+          {trailParticles.map((particle, index) => (
+            <div
+              key={particle.id}
+              className="absolute w-3 h-3 rounded-full pointer-events-none"
+              style={{
+                left: particle.x - 6,
+                top: particle.y - 6,
+                background: `radial-gradient(circle, rgba(0, 198, 255, ${0.6 - index * 0.03}) 0%, rgba(38, 116, 236, ${0.4 - index * 0.02}) 50%, transparent 70%)`,
+                transform: `scale(${1 - index * 0.05})`,
+                animation: 'trailFade 0.5s ease-out forwards'
+              }}
+            />
+          ))}
 
           {/* Mouse follow effect */}
           <div 
@@ -510,6 +548,20 @@ const NetworkVisualization = () => {
             transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(80px) scale(0);
             opacity: 0;
           }
+        }
+        @keyframes nodePulse {
+          0%, 100% { 
+            box-shadow: 0 0 8px currentColor;
+            transform: scale(1);
+          }
+          50% { 
+            box-shadow: 0 0 20px currentColor;
+            transform: scale(1.03);
+          }
+        }
+        @keyframes trailFade {
+          0% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(0.3); }
         }
       `}</style>
     </section>
