@@ -128,17 +128,20 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
         const isDC = station.charger_type === 'DC';
         const isResidential = station.station_type === 'Residential';
 
-        // Create custom marker element
+        // Create custom marker element with proper styling
         const el = document.createElement('div');
         el.className = 'station-marker';
+        el.style.width = '44px';
+        el.style.height = '52px';
+        el.style.cursor = 'pointer';
         el.innerHTML = `
-          <div class="marker-container ${isDC ? 'dc' : 'ac'}">
-            <div class="marker-pin">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <div class="marker-container ${isDC ? 'dc' : 'ac'}" style="position: relative; width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center;">
+            <div class="marker-pulse" style="position: absolute; bottom: 6px; width: 40px; height: 40px; border-radius: 50%; background: ${isDC ? 'rgba(147, 51, 234, 0.3)' : 'rgba(38, 116, 236, 0.3)'}; animation: markerPulse 2s infinite;"></div>
+            <div class="marker-pin" style="position: relative; width: 36px; height: 44px; background: ${isDC ? 'linear-gradient(135deg, #9333EA, #EC4899)' : 'linear-gradient(135deg, #2674EC, #00C6FF)'}; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style="transform: rotate(45deg);">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
             </div>
-            <div class="marker-pulse"></div>
           </div>
         `;
 
