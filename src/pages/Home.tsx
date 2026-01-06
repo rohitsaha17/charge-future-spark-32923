@@ -302,13 +302,13 @@ const Home = () => {
                     className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent"
                     style={{ animation: "slideUp 0.6s ease-out 0.1s both, textGlow 3s ease-in-out infinite" }}
                   >
-                    Power Your
+                    Northeast India's Largest
                   </span>
                   <span 
                     className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-600 bg-clip-text text-transparent"
                     style={{ animation: "slideUp 0.6s ease-out 0.2s both, textGlow 3s ease-in-out 0.5s infinite" }}
                   >
-                    Electric Journey
+                    & Most Trusted EV Network
                   </span>
                 </h1>
 
@@ -317,8 +317,7 @@ const Home = () => {
                   className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24"
                   style={{ animation: "slideUp 0.6s ease-out 0.3s both" }}
                 >
-                  India's fastest-growing EV Charge Point Operator, delivering smart, reliable, and sustainable charging
-                  infrastructure across the Northeast - for drivers, developers, and partners.
+                  Powering your journey across the hills and plains with smart, high-speed charging solutions. From daily commutes to highway adventures, we keep you moving.
                 </p>
 
 
@@ -421,18 +420,18 @@ const Home = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
             <div className="inline-block px-4 py-2 bg-primary/10 rounded-full mb-2">
-              <span className="text-primary font-semibold">Live Network</span>
+              <span className="text-primary font-semibold">Our Network at a Glance</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Our Charging Network</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Live Network Pulse</h2>
             <p className="text-foreground/70 max-w-2xl mx-auto text-lg">
-              Strategically located across Northeast India to power your journey. Click on markers to navigate.
+              45+ Live Public Stations • 100+ Locations by March 2026 • 97% Average Uptime for worry-free travel
             </p>
           </div>
           
           {/* Map with Sidebar Layout */}
-          <div className="animate-fade-in max-w-7xl mx-auto grid lg:grid-cols-4 gap-6" style={{ animationDelay: "0.2s" }}>
+          <div className="animate-fade-in max-w-7xl mx-auto grid md:grid-cols-4 gap-6" style={{ animationDelay: "0.2s" }}>
             {/* Sidebar - Quick Stats & Navigation Help */}
-            <div className="lg:col-span-1 order-2 lg:order-1 space-y-4">
+            <div className="md:col-span-1 order-2 md:order-1 space-y-4">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary/10 shadow-lg">
                 <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                   <Zap className="w-5 h-5 text-primary" />
@@ -440,20 +439,20 @@ const Home = () => {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2 border-b border-muted">
-                    <span className="text-muted-foreground text-sm">Total Stations</span>
-                    <span className="font-bold text-primary">25+</span>
+                    <span className="text-muted-foreground text-sm">Live Stations</span>
+                    <span className="font-bold text-primary">45+</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-muted">
-                    <span className="text-muted-foreground text-sm">Live Chargers</span>
-                    <span className="font-bold text-cyan-600">50+</span>
+                    <span className="text-muted-foreground text-sm">By March 2026</span>
+                    <span className="font-bold text-cyan-600">100+</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-muted">
                     <span className="text-muted-foreground text-sm">States Covered</span>
-                    <span className="font-bold text-green-600">7</span>
+                    <span className="font-bold text-green-600">9</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-muted-foreground text-sm">Avg. Uptime</span>
-                    <span className="font-bold text-emerald-600">98%</span>
+                    <span className="font-bold text-emerald-600">97%</span>
                   </div>
                 </div>
               </div>
@@ -485,7 +484,7 @@ const Home = () => {
             </div>
             
             {/* Map Container */}
-            <div className="lg:col-span-3 order-1 lg:order-2">
+            <div className="md:col-span-3 order-1 md:order-2">
               <GoogleMapsCharging />
             </div>
           </div>
@@ -497,22 +496,22 @@ const Home = () => {
         ref={statsSection.ref}
         className={`py-8 sm:py-10 md:py-12 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Full-Width Illustration - Pinned to Right, 50% cropped from left */}
-        <div className="absolute inset-0 hidden lg:flex items-end justify-end overflow-hidden pointer-events-none">
+        {/* Full-Width Illustration - Pinned to Right for desktop/tablet */}
+        <div className="absolute inset-0 hidden md:flex items-end justify-end overflow-hidden pointer-events-none">
           <img
             src={chargingStationIllustration}
             alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
             className="relative h-full w-auto max-w-none object-cover object-right -mr-[5%]"
-            style={{ objectPosition: '75% bottom' }}
+            style={{ objectPosition: '75% bottom', clipPath: 'inset(0 0 0 50%)' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/30 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/20 pointer-events-none"></div>
         </div>
 
         {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0"></div>
 
         <div className="container mx-auto px-4 relative z-20">
-          <div className="flex flex-col lg:flex-row items-start gap-4 md:gap-6 max-w-full sm:max-w-2xl lg:max-w-3xl lg:ml-0">
+          <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6 max-w-full md:max-w-[60%] lg:max-w-[55%] md:ml-0">
             {/* Left Side - Heading and Service Pointers */}
             <div className="w-full space-y-4">
               {/* Heading */}
@@ -527,15 +526,15 @@ const Home = () => {
                 <div className="w-16 h-1 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Interactive Service Pointers - 2x3 on mobile, with staggered entrance animations */}
-              <div className="grid grid-cols-2 gap-1.5">
+              {/* Interactive Service Pointers - 2x3 on mobile, narrower on tablet/desktop */}
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-1.5 md:gap-2 md:max-w-md">
                 {servicePointers.map((service, index) => {
                   const Icon = service.icon;
                   const isActive = activeService === index;
                   return (
                     <div
                       key={index}
-                      className={`group relative p-2 md:p-3 rounded-lg cursor-pointer transition-all duration-300 overflow-hidden h-auto min-h-[44px] sm:min-h-[48px] ${
+                      className={`group relative p-2 md:p-2 lg:p-3 rounded-lg cursor-pointer transition-all duration-300 overflow-hidden min-h-[44px] sm:min-h-[48px] md:min-h-[52px] ${
                         isActive 
                           ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-md' 
                           : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30'
@@ -570,15 +569,16 @@ const Home = () => {
                 })}
               </div>
             </div>
-
-            {/* Mobile/Tablet Image - Appears below stats with full visibility */}
-            <div className="w-full lg:hidden flex justify-center relative mt-4 sm:mt-6 px-2">
-              <img
-                src={chargingStationIllustration}
-                alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-                className="w-full max-w-xs sm:max-w-sm md:max-w-md object-contain object-center"
-              />
-            </div>
+          </div>
+          
+          {/* Mobile Image - Appears below stats with 50% crop from left */}
+          <div className="w-full md:hidden flex justify-end relative mt-4 sm:mt-6 overflow-hidden">
+            <img
+              src={chargingStationIllustration}
+              alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
+              className="w-[150%] max-w-none object-cover object-right -mr-4"
+              style={{ clipPath: 'inset(0 0 0 40%)' }}
+            />
           </div>
         </div>
       </section>
@@ -595,8 +595,8 @@ const Home = () => {
 
       {/* Trust Section - Northeast Hills */}
       <StorytellingSection
-        title="Rooted in Northeast India, Powering the Future"
-        description="Like the mighty Brahmaputra that connects our lands, we're building a charging network that flows across Assam, Meghalaya, Arunachal Pradesh, and beyond. From the hills of Shillong to the plains of Guwahati, we understand our region's unique terrain and deliver charging solutions that work in every season, every landscape."
+        title="Rooted in the Heart of Guwahati"
+        description="Rooted in the heart of Guwahati and branching across the Seven Sisters with brother Sikkim and West Bengal. A Plus Charge was founded to solve a critical challenge: the EV infrastructure gap in East and North-East India. We are here to pioneer a lifestyle shift - replacing traditional fuel stops with smart, high-speed charging hubs."
         backgroundImage={northeastHillsLandscape}
       />
 
@@ -604,10 +604,10 @@ const Home = () => {
       <NetworkVisualization />
 
 
-      {/* Storytelling Section - Charging Made Simple */}
+      {/* Storytelling Section - Our Edge */}
       <StorytellingSection
-        title="Charging Made Simple, Everywhere You Go"
-        description="From bustling cities to remote hill stations, we're bringing reliable EV charging to every corner of the Northeast. Because your journey shouldn't be limited by where you can charge."
+        title="Mastery of the Terrain"
+        description="Local Expertise, Global Standards. While the geography of the Northeast can be a barrier for many, it is our home turf. From the high-altitude airstrips of Shillong to the remote roads of Upper Assam, we deploy technology that thrives in our unique landscape. Community-First Growth - powered by local talent."
         backgroundImage={brahmaputraSunset}
       />
 
@@ -901,8 +901,8 @@ const Home = () => {
 
 
       <StorytellingSection
-        title="Join the Electric Revolution"
-        description="Every kilowatt charged, every mile driven electric, every partner who joins us - together we're creating a cleaner, greener Northeast India. The future isn't coming, it's already here."
+        title="The Roadmap: Scaling with Impact"
+        description="Strategic Expansion: We are on a fast-track to activate 100+ marquee locations by 2026, turning the Northeast into one of India's most EV-friendly zones. Our eyes are set on 10,000+ EV stations by 2030, creating a seamless, sustainable corridor that connects every corner of our land."
         backgroundImage={trustBg}
       />
 

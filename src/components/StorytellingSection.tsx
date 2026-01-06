@@ -49,7 +49,7 @@ const StorytellingSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`relative w-full min-h-[25vh] md:min-h-[30vh] lg:min-h-[35vh] flex items-center justify-center overflow-hidden snap-start snap-always ${className ?? ''}`}
+      className={`relative w-full min-h-[25vh] md:min-h-[30vh] lg:min-h-[35vh] flex items-center justify-center overflow-hidden snap-start snap-always scroll-mt-0 ${className ?? ''}`}
       style={{ margin: 0, padding: 0 }}
     >
       {/* Full-page parallax background with visible edges */}

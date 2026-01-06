@@ -13,19 +13,19 @@ const Invest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const highlights = [
-    { icon: TrendingUp, title: "Explosive Market Growth", description: "EV adoption accelerating rapidly in India" },
-    { icon: Zap, title: "First-Mover Advantage", description: "Early presence in Northeast India" },
-    { icon: Target, title: "Diversified Revenue", description: "Multiple income streams and models" },
-    { icon: Shield, title: "Asset-Light Expansion", description: "Efficient scalable growth strategy" },
-    { icon: Award, title: "Government Recognition", description: "UNNATI & DPIIT certified" },
-    { icon: Users, title: "Strong Partnerships", description: "Ather Energy, MG, Tata" },
+    { icon: TrendingUp, title: "The Regional Vacuum", description: "East & Northeast India: 1-2% EV penetration. We own the First-Mover advantage." },
+    { icon: Zap, title: "Operational Excellence", description: "97% network uptime in India's most challenging terrains" },
+    { icon: Target, title: "First-Mover Regional Moat", description: "Exclusive operations at major airports and government facilities" },
+    { icon: Shield, title: "Diversified Revenue", description: "Charging income, equipment sales, SaaS fees, and integrated advertising" },
+    { icon: Award, title: "Capital-Efficient Growth", description: "Asset-light hybrid model targeting 10,000+ stations by 2030" },
+    { icon: Users, title: "OEM Partnerships", description: "Verified regional partner for Tata Motors, MG, and Ather Energy" },
   ];
 
   const traction = [
-    "Incorporated in 2022, operational in 2023",
-    "Secured PCC compliance and deployed 30kW DC chargers",
-    "Partnered with Ather Energy and GMDA",
-    "Emerged as Northeast India's leading EV charging company"
+    "Marquee Deployments: Exclusive presence at AAI sites in Silchar, Dibrugarh, Jorhat, and Shillong",
+    "OEM Trusted: Primary regional infrastructure partner for Tata Motors, MG, and Ather Energy",
+    "Government-Backed: Operating within GMDA parking facilities and high-traffic transit hubs",
+    "The 97% Standard: Highest reliability rate in the region"
   ];
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -92,12 +92,11 @@ const Invest = () => {
             <span className="text-sm font-semibold text-white/90">Investment Opportunity</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
-            Invest in the <span className="text-cyan-300">Future</span><br />
-            <span className="text-white/95">of Energy</span>
+            Why <span className="text-cyan-300">Invest?</span><br />
+            <span className="text-white/95">The Strategic Thesis</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
-            At A Plus Charge, we're not just scaling EV charging infrastructure - we're building the backbone 
-            of India's clean mobility revolution.
+            The Regional Vacuum: East and Northeast India represent a massive untapped market with only 1-2% EV station penetration. We own the "First-Mover" advantage.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
@@ -106,7 +105,11 @@ const Invest = () => {
             </div>
             <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
               <Shield className="w-5 h-5 text-cyan-300" />
-              <span className="text-white font-medium">UNNATI Recognized</span>
+              <span className="text-white font-medium">97% Network Uptime</span>
+            </div>
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <TrendingUp className="w-5 h-5 text-cyan-300" />
+              <span className="text-white font-medium">10,000+ Stations by 2030</span>
             </div>
           </div>
         </div>
@@ -155,19 +158,19 @@ const Invest = () => {
             <Card className="p-6 hover:glow-effect transition-all duration-300 glass-card">
               <h3 className="text-xl font-bold mb-4 text-primary">Equity Participation</h3>
               <p className="text-muted-foreground">
-                Be part of A Plus Charge's growth journey and share in our success.
+                Secure a foundational stake in A Plus Charge's journey as we scale to become the dominant energy provider for the Northeast's electric future.
               </p>
             </Card>
             <Card className="p-6 hover:glow-effect transition-all duration-300 glass-card">
               <h3 className="text-xl font-bold mb-4 text-primary">Strategic Partnership</h3>
               <p className="text-muted-foreground">
-                Enable rapid expansion across highways, cities, and real estate hubs.
+                Collaborate on the rapid deployment of high-speed charging corridors across major regional highways, urban centers, and premium real estate hubs.
               </p>
             </Card>
             <Card className="p-6 hover:glow-effect transition-all duration-300 glass-card">
               <h3 className="text-xl font-bold mb-4 text-primary">Venture Investment</h3>
               <p className="text-muted-foreground">
-                Join at a high-growth inflection point in the Indian EV infrastructure market.
+                Capitalize on a unique high-growth inflection point within India's specialized EV infrastructure market, backed by strong government policy and local dominance.
               </p>
             </Card>
           </div>
