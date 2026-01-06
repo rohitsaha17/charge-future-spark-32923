@@ -184,8 +184,8 @@ const NetworkVisualization = () => {
           </p>
         </div>
 
-        {/* Mobile/Tablet Grid Layout */}
-        <div className="lg:hidden grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6">
+        {/* Mobile/Tablet Grid Layout - now shows on md and below */}
+        <div className="lg:hidden grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (

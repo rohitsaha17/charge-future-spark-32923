@@ -28,16 +28,16 @@ import {
 
 const About = () => {
   const stats = [
-    { value: 50, label: "Charging Stations", suffix: "+" },
-    { value: 25000, label: "Charges Delivered", suffix: "+" },
-    { value: 98, label: "Uptime Rate", suffix: "%" },
-    { value: 500, label: "Happy Customers", suffix: "+" },
+    { value: 45, label: "Live Public Stations", suffix: "+" },
+    { value: 100, label: "Locations by 2026", suffix: "+" },
+    { value: 97, label: "Average Uptime", suffix: "%" },
+    { value: 9, label: "States Covered", suffix: "" },
   ];
 
   const values = [
     { icon: Zap, title: "Reliability First", description: "97%+ uptime guaranteed across all stations" },
     { icon: Users, title: "Customer Obsessed", description: "24/7 support, local language help whenever you need it" },
-    { icon: Leaf, title: "Sustainability", description: "Clean energy for a greener Northeast" },
+    { icon: Leaf, title: "Community-First Growth", description: "Powered by local talent, creating jobs in our communities" },
   ];
 
   const partners = [
@@ -199,24 +199,27 @@ const About = () => {
         <section id="story" className="mb-24 scroll-mt-24">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
-              It All Started with Range Anxiety
+              The Mission
             </h2>
             <div className="space-y-6 text-muted-foreground leading-relaxed">
               <p>
-                In 2021, our founder was driving an EV through Guwahati when the battery warning came on. 
-                The nearest charging station was 40km away, and it wasn't even operational. That moment of 
-                helplessness sparked an idea: Northeast India needed reliable charging infrastructure.
+                Rooted in the heart of Guwahati and branching across the Seven Sisters with brother Sikkim and West Bengal, 
+                A Plus Charge (AlternatEV Solutions) was founded to solve a critical challenge: the EV infrastructure gap 
+                in East and North-East India.
               </p>
               <p>
-                We spent months understanding the region's unique challenges - monsoon rains that could flood 
-                stations, power grids that needed smart load management, and communities that spoke different 
-                languages. Traditional charging solutions weren't built for us.
+                We are here to pioneer a lifestyle shift. By replacing traditional fuel stops with smart, high-speed 
+                charging hubs, we are making electric mobility the new standard for our region.
               </p>
               <p>
-                Today, we're proud to operate the region's most reliable network, with stations that work 
-                through storms, algorithms optimized for local power conditions, and support teams that speak 
-                your language. We're not just solving range anxiety - we're building the foundation for 
-                Northeast India's electric future.
+                <strong>Our Edge: Mastery of the Terrain.</strong> Local Expertise, Global Standards. While the geography 
+                of the Northeast can be a barrier for many, it is our home turf. From the high-altitude airstrips of 
+                Shillong to the remote roads of Upper Assam, we deploy technology that thrives in our unique landscape.
+              </p>
+              <p>
+                <strong>Community-First Growth:</strong> We are powered by local talent. By engaging regional workforces 
+                and understanding local needs, we ensure the EV revolution creates jobs and economic value right here 
+                in our communities.
               </p>
             </div>
           </div>
@@ -225,8 +228,8 @@ const About = () => {
         <GradientDivider />
 
         <StorytellingSection 
-          title="Building Trust Through Reliability"
-          description="Every station we install is a promise kept. Every kilowatt delivered is trust earned. We don't just power vehicles - we power the dreams of a cleaner, brighter Northeast India."
+          title="The Roadmap: Scaling with Impact"
+          description="Strategic Expansion: We are on a fast-track to activate 100+ marquee locations by 2026, turning the Northeast into one of India's most EV-friendly zones. A Greener Horizon: Our eyes are set on 10,000+ EV stations by 2030."
         />
 
         <GradientDivider />

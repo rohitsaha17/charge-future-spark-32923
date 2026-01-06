@@ -18,7 +18,7 @@ const FloatingFindCharger = () => {
   return (
     <Link
       to="/find-charger"
-      className={`fixed bottom-6 right-6 z-50 md:hidden flex items-center gap-2 px-4 py-3 rounded-full
+      className={`fixed bottom-6 left-4 z-50 md:hidden flex items-center gap-2 px-4 py-3 rounded-full
         bg-gradient-to-r from-primary to-cyan-500 text-white font-semibold text-sm
         shadow-[0_4px_20px_rgba(38,116,236,0.4)] 
         transition-all duration-300 ease-out

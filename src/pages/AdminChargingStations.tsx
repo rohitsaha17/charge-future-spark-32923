@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Pencil, X } from 'lucide-react';
 import { z } from 'zod';
 
 const stationSchema = z.object({
@@ -24,10 +25,14 @@ const stationSchema = z.object({
   price_per_unit: z.number().positive().optional(),
 });
 
+type Station = Database['public']['Tables']['charging_stations']['Row'];
+
 const AdminChargingStations = () => {
   const navigate = useNavigate();
-  const [stations, setStations] = useState<any[]>([]);
+  const [stations, setStations] = useState<Station[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingStation, setEditingStation] = useState<Station | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -40,6 +45,21 @@ const AdminChargingStations = () => {
     power_output: '60kW',
     total_chargers: '2',
     price_per_unit: '',
+  });
+
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    address: '',
+    city: '',
+    state: '',
+    latitude: '',
+    longitude: '',
+    charger_type: '',
+    connector_type: '',
+    power_output: '',
+    total_chargers: '',
+    price_per_unit: '',
+    status: 'active',
   });
 
   useEffect(() => {
@@ -140,6 +160,71 @@ const AdminChargingStations = () => {
         toast.error(error.errors[0].message);
       } else {
         toast.error(error.message || 'Failed to add charging station');
+      }
+    }
+  };
+
+  const handleEdit = (station: Station) => {
+    setEditingStation(station);
+    setEditFormData({
+      name: station.name,
+      address: station.address,
+      city: station.city,
+      state: station.state,
+      latitude: station.latitude.toString(),
+      longitude: station.longitude.toString(),
+      charger_type: station.charger_type,
+      connector_type: station.connector_type,
+      power_output: station.power_output,
+      total_chargers: station.total_chargers.toString(),
+      price_per_unit: station.price_per_unit?.toString() || '',
+      status: station.status,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStation) return;
+
+    try {
+      const validatedData = stationSchema.parse({
+        ...editFormData,
+        latitude: parseFloat(editFormData.latitude),
+        longitude: parseFloat(editFormData.longitude),
+        total_chargers: parseInt(editFormData.total_chargers),
+        price_per_unit: editFormData.price_per_unit ? parseFloat(editFormData.price_per_unit) : undefined,
+      });
+
+      const { error } = await supabase
+        .from('charging_stations')
+        .update({
+          name: validatedData.name,
+          address: validatedData.address,
+          city: validatedData.city,
+          state: validatedData.state,
+          latitude: validatedData.latitude,
+          longitude: validatedData.longitude,
+          charger_type: validatedData.charger_type,
+          connector_type: validatedData.connector_type,
+          power_output: validatedData.power_output,
+          total_chargers: validatedData.total_chargers,
+          price_per_unit: validatedData.price_per_unit,
+          status: editFormData.status,
+        })
+        .eq('id', editingStation.id);
+
+      if (error) throw error;
+
+      toast.success('Charging station updated successfully!');
+      setIsEditDialogOpen(false);
+      setEditingStation(null);
+      fetchStations();
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error(error.message || 'Failed to update charging station');
       }
     }
   };
@@ -325,18 +410,36 @@ const AdminChargingStations = () => {
                 {stations.map((station) => (
                   <div key={station.id} className="p-4 border rounded-lg bg-card">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold">{station.name}</h3>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold">{station.name}</h3>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            station.status === 'active' 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {station.status}
+                          </span>
+                        </div>
                         <p className="text-sm text-muted-foreground">{station.city}, {station.state}</p>
                         <p className="text-sm">{station.charger_type} • {station.power_output}</p>
                       </div>
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => handleDelete(station.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleEdit(station)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleDelete(station.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -344,6 +447,147 @@ const AdminChargingStations = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Charging Station</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Station Name</Label>
+                  <Input
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>City</Label>
+                  <Input
+                    value={editFormData.city}
+                    onChange={(e) => setEditFormData({ ...editFormData, city: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Address</Label>
+                <Input
+                  value={editFormData.address}
+                  onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>State</Label>
+                  <Input
+                    value={editFormData.state}
+                    onChange={(e) => setEditFormData({ ...editFormData, state: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Charger Type</Label>
+                  <Input
+                    value={editFormData.charger_type}
+                    onChange={(e) => setEditFormData({ ...editFormData, charger_type: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Latitude</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    value={editFormData.latitude}
+                    onChange={(e) => setEditFormData({ ...editFormData, latitude: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Longitude</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    value={editFormData.longitude}
+                    onChange={(e) => setEditFormData({ ...editFormData, longitude: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Connector</Label>
+                  <Input
+                    value={editFormData.connector_type}
+                    onChange={(e) => setEditFormData({ ...editFormData, connector_type: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Power</Label>
+                  <Input
+                    value={editFormData.power_output}
+                    onChange={(e) => setEditFormData({ ...editFormData, power_output: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Chargers</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.total_chargers}
+                    onChange={(e) => setEditFormData({ ...editFormData, total_chargers: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Price per kWh</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.price_per_unit}
+                    onChange={(e) => setEditFormData({ ...editFormData, price_per_unit: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <select
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+                    value={editFormData.status}
+                    onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="maintenance">Maintenance</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button type="submit" className="flex-1">
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
