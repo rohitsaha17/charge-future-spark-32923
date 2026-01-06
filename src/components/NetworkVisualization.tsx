@@ -184,8 +184,8 @@ const NetworkVisualization = () => {
           </p>
         </div>
 
-        {/* Mobile/Tablet Grid Layout - now shows on md and below */}
-        <div className="lg:hidden grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+        {/* Mobile Grid Layout - only shows on small screens */}
+        <div className="md:hidden grid grid-cols-2 gap-3 mb-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
@@ -207,10 +207,10 @@ const NetworkVisualization = () => {
           })}
         </div>
 
-        {/* Desktop Network Visualization */}
+        {/* Desktop & Tablet Network Visualization */}
         <div 
           ref={containerRef}
-          className="relative mx-auto max-w-4xl hidden lg:block"
+          className="relative mx-auto max-w-4xl hidden md:block"
           style={{ height: dimensions.height }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -448,8 +448,8 @@ const NetworkVisualization = () => {
           />
         </div>
 
-        {/* CTA - Desktop Only for Network viz */}
-        <div className="text-center mt-6 md:mt-8 hidden lg:block">
+        {/* CTA - Desktop & Tablet for Network viz */}
+        <div className="text-center mt-6 md:mt-8 hidden md:block">
           <Link
             to="/partner"
             className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-cyan-500 text-white rounded-xl font-semibold shadow-[0_0_30px_rgba(38,116,236,0.4)] hover:shadow-[0_0_50px_rgba(0,198,255,0.6)] transition-all duration-300 hover:scale-105"
@@ -460,7 +460,7 @@ const NetworkVisualization = () => {
         </div>
 
         {/* Mobile CTA */}
-        <div className="text-center mt-6 lg:hidden">
+        <div className="text-center mt-6 md:hidden">
           <Link
             to="/partner"
             className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-cyan-500 text-white rounded-xl font-semibold text-sm shadow-[0_0_20px_rgba(38,116,236,0.3)] hover:shadow-[0_0_40px_rgba(0,198,255,0.5)] transition-all duration-300 hover:scale-105"
