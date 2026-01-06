@@ -82,37 +82,44 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section - Interactive & Creative */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Multi-layered Background with Network Effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-          {/* Animated Gradient Orbs */}
+        {/* Enhanced Electric/Energetic Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628] via-[#0d2847] to-[#0a1628]">
+          {/* Animated Electric Gradient Orbs */}
           <div
-            className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl"
+            className="absolute top-[-10%] right-[-5%] w-[700px] h-[700px] bg-gradient-to-br from-primary/40 to-cyan-400/30 rounded-full blur-[100px]"
             style={{
               animation: "orbFloat 8s ease-in-out infinite",
             }}
           ></div>
           <div
-            className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 to-blue-300/10 rounded-full blur-3xl"
+            className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-cyan-500/30 to-blue-600/25 rounded-full blur-[80px]"
             style={{
               animation: "orbFloat 10s ease-in-out infinite reverse",
             }}
           ></div>
+          <div
+            className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-gradient-to-r from-emerald-500/20 to-cyan-400/15 rounded-full blur-[60px]"
+            style={{
+              animation: "orbFloat 12s ease-in-out infinite",
+              animationDelay: "2s"
+            }}
+          ></div>
 
-          {/* Advanced Plexus/Wave Effect */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" xmlns="http://www.w3.org/2000/svg">
+          {/* Electric Circuit Lines */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-60" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="networkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="hsl(186, 100%, 50%)" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.2" />
+              <linearGradient id="electricGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="hsl(186, 100%, 50%)" stopOpacity="0.8" />
+                <stop offset="50%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="hsl(160, 84%, 39%)" stopOpacity="0.4" />
               </linearGradient>
-              <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="hsl(186, 100%, 50%)" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.3" />
+              <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="hsl(186, 100%, 60%)" stopOpacity="0" />
+                <stop offset="50%" stopColor="hsl(186, 100%, 70%)" stopOpacity="1" />
+                <stop offset="100%" stopColor="hsl(186, 100%, 60%)" stopOpacity="0" />
               </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <filter id="electricGlow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                 <feMerge>
                   <feMergeNode in="coloredBlur"/>
                   <feMergeNode in="SourceGraphic"/>
@@ -120,87 +127,72 @@ const Home = () => {
               </filter>
             </defs>
             
-            {/* Animated wave paths */}
-            <path 
-              d="M0,200 Q250,150 500,200 T1000,200 T1500,200 T2000,200" 
-              fill="none" 
-              stroke="url(#waveGrad1)" 
-              strokeWidth="2"
-              opacity="0.4"
-              style={{ animation: "waveMove 8s ease-in-out infinite" }}
-            />
-            <path 
-              d="M0,300 Q300,250 600,300 T1200,300 T1800,300" 
-              fill="none" 
-              stroke="url(#waveGrad1)" 
-              strokeWidth="1.5"
-              opacity="0.3"
-              style={{ animation: "waveMove 10s ease-in-out infinite reverse" }}
-            />
-            <path 
-              d="M0,400 Q200,350 400,400 T800,400 T1200,400 T1600,400" 
-              fill="none" 
-              stroke="url(#waveGrad1)" 
-              strokeWidth="1"
-              opacity="0.25"
-              style={{ animation: "waveMove 12s ease-in-out infinite", animationDelay: "2s" }}
-            />
+            {/* Horizontal flowing lines */}
+            <line x1="0" y1="20%" x2="100%" y2="20%" stroke="url(#electricGrad)" strokeWidth="1" opacity="0.3" strokeDasharray="20,40" style={{ animation: "dashMove 20s linear infinite" }} />
+            <line x1="0" y1="50%" x2="100%" y2="55%" stroke="url(#electricGrad)" strokeWidth="1.5" opacity="0.4" strokeDasharray="30,50" style={{ animation: "dashMove 15s linear infinite reverse" }} />
+            <line x1="0" y1="80%" x2="100%" y2="75%" stroke="url(#electricGrad)" strokeWidth="1" opacity="0.25" strokeDasharray="15,35" style={{ animation: "dashMove 25s linear infinite" }} />
             
-            {/* Network lines with glow */}
-            <g filter="url(#glow)">
-              <line x1="5%" y1="15%" x2="25%" y2="30%" stroke="url(#networkGrad)" strokeWidth="1.5" className="animate-pulse" />
-              <line x1="25%" y1="30%" x2="45%" y2="20%" stroke="url(#networkGrad)" strokeWidth="1.5" style={{ animationDelay: "0.5s" }} className="animate-pulse" />
-              <line x1="45%" y1="20%" x2="70%" y2="35%" stroke="url(#networkGrad)" strokeWidth="1.5" style={{ animationDelay: "1s" }} className="animate-pulse" />
-              <line x1="15%" y1="55%" x2="35%" y2="45%" stroke="url(#networkGrad)" strokeWidth="1.5" style={{ animationDelay: "0.3s" }} className="animate-pulse" />
-              <line x1="35%" y1="45%" x2="55%" y2="60%" stroke="url(#networkGrad)" strokeWidth="1.5" style={{ animationDelay: "0.8s" }} className="animate-pulse" />
-              <line x1="25%" y1="30%" x2="35%" y2="45%" stroke="url(#networkGrad)" strokeWidth="0.75" style={{ animationDelay: "0.2s" }} className="animate-pulse" />
-              <line x1="10%" y1="70%" x2="30%" y2="80%" stroke="url(#networkGrad)" strokeWidth="1.5" style={{ animationDelay: "0.4s" }} className="animate-pulse" />
-              <line x1="30%" y1="80%" x2="50%" y2="75%" stroke="url(#networkGrad)" strokeWidth="1.5" style={{ animationDelay: "0.9s" }} className="animate-pulse" />
+            {/* Network connections with glow */}
+            <g filter="url(#electricGlow)">
+              <line x1="5%" y1="15%" x2="25%" y2="30%" stroke="url(#electricGrad)" strokeWidth="2" className="animate-pulse" />
+              <line x1="25%" y1="30%" x2="45%" y2="20%" stroke="url(#electricGrad)" strokeWidth="2" style={{ animationDelay: "0.5s" }} className="animate-pulse" />
+              <line x1="45%" y1="20%" x2="70%" y2="35%" stroke="url(#electricGrad)" strokeWidth="2" style={{ animationDelay: "1s" }} className="animate-pulse" />
+              <line x1="15%" y1="55%" x2="35%" y2="45%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.3s" }} className="animate-pulse" />
+              <line x1="35%" y1="45%" x2="55%" y2="60%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.8s" }} className="animate-pulse" />
+              <line x1="10%" y1="70%" x2="30%" y2="80%" stroke="url(#electricGrad)" strokeWidth="2" style={{ animationDelay: "0.4s" }} className="animate-pulse" />
+              <line x1="60%" y1="70%" x2="85%" y2="60%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.6s" }} className="animate-pulse" />
             </g>
             
-            {/* Network nodes with enhanced glow */}
-            <g filter="url(#glow)">
-              <circle cx="5%" cy="15%" r="5" fill="hsl(216, 83%, 56%)" opacity="0.7" className="animate-pulse" />
-              <circle cx="25%" cy="30%" r="6" fill="hsl(186, 100%, 50%)" opacity="0.6" style={{ animationDelay: "0.3s" }} className="animate-pulse" />
-              <circle cx="45%" cy="20%" r="5" fill="hsl(216, 83%, 56%)" opacity="0.7" style={{ animationDelay: "0.6s" }} className="animate-pulse" />
-              <circle cx="70%" cy="35%" r="7" fill="hsl(186, 100%, 50%)" opacity="0.6" style={{ animationDelay: "0.9s" }} className="animate-pulse" />
-              <circle cx="15%" cy="55%" r="5" fill="hsl(186, 100%, 50%)" opacity="0.6" style={{ animationDelay: "0.2s" }} className="animate-pulse" />
-              <circle cx="35%" cy="45%" r="6" fill="hsl(216, 83%, 56%)" opacity="0.7" style={{ animationDelay: "0.5s" }} className="animate-pulse" />
-              <circle cx="55%" cy="60%" r="5" fill="hsl(186, 100%, 50%)" opacity="0.6" style={{ animationDelay: "0.8s" }} className="animate-pulse" />
-              <circle cx="10%" cy="70%" r="4" fill="hsl(186, 100%, 50%)" opacity="0.6" style={{ animationDelay: "0.4s" }} className="animate-pulse" />
-              <circle cx="30%" cy="80%" r="5" fill="hsl(216, 83%, 56%)" opacity="0.7" style={{ animationDelay: "0.7s" }} className="animate-pulse" />
-              <circle cx="50%" cy="75%" r="6" fill="hsl(186, 100%, 50%)" opacity="0.6" style={{ animationDelay: "1s" }} className="animate-pulse" />
+            {/* Glowing nodes - Energy points */}
+            <g filter="url(#electricGlow)">
+              <circle cx="5%" cy="15%" r="6" fill="hsl(186, 100%, 60%)" opacity="0.9" className="animate-pulse" />
+              <circle cx="25%" cy="30%" r="8" fill="hsl(160, 84%, 50%)" opacity="0.8" style={{ animationDelay: "0.3s" }} className="animate-pulse" />
+              <circle cx="45%" cy="20%" r="6" fill="hsl(186, 100%, 60%)" opacity="0.9" style={{ animationDelay: "0.6s" }} className="animate-pulse" />
+              <circle cx="70%" cy="35%" r="10" fill="hsl(186, 100%, 55%)" opacity="0.7" style={{ animationDelay: "0.9s" }} className="animate-pulse" />
+              <circle cx="15%" cy="55%" r="5" fill="hsl(160, 84%, 55%)" opacity="0.8" style={{ animationDelay: "0.2s" }} className="animate-pulse" />
+              <circle cx="35%" cy="45%" r="7" fill="hsl(186, 100%, 60%)" opacity="0.9" style={{ animationDelay: "0.5s" }} className="animate-pulse" />
+              <circle cx="55%" cy="60%" r="6" fill="hsl(216, 83%, 60%)" opacity="0.8" style={{ animationDelay: "0.8s" }} className="animate-pulse" />
+              <circle cx="10%" cy="70%" r="5" fill="hsl(160, 84%, 50%)" opacity="0.7" style={{ animationDelay: "0.4s" }} className="animate-pulse" />
+              <circle cx="85%" cy="60%" r="8" fill="hsl(186, 100%, 55%)" opacity="0.85" style={{ animationDelay: "1s" }} className="animate-pulse" />
             </g>
           </svg>
           
-          {/* Floating energy particles */}
+          {/* Floating energy particles - Electric theme */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(12)].map((_, i) => (
+            {[...Array(20)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 h-1 rounded-full bg-gradient-to-r from-primary to-cyan-400"
+                className="absolute rounded-full"
                 style={{
-                  left: `${10 + (i * 7)}%`,
-                  top: `${20 + (i % 4) * 20}%`,
-                  animation: `floatParticle ${3 + (i % 3)}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.3}s`,
-                  opacity: 0.4 + (i % 3) * 0.2,
+                  width: `${2 + (i % 4)}px`,
+                  height: `${2 + (i % 4)}px`,
+                  left: `${5 + (i * 4.5)}%`,
+                  top: `${15 + (i % 5) * 18}%`,
+                  background: i % 3 === 0 
+                    ? 'linear-gradient(135deg, hsl(186, 100%, 60%), hsl(160, 84%, 50%))' 
+                    : i % 3 === 1
+                    ? 'linear-gradient(135deg, hsl(216, 83%, 60%), hsl(186, 100%, 50%))'
+                    : 'linear-gradient(135deg, hsl(160, 84%, 50%), hsl(186, 100%, 60%))',
+                  boxShadow: `0 0 ${6 + (i % 3) * 4}px hsl(186, 100%, 60%)`,
+                  animation: `floatParticle ${3 + (i % 4)}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.2}s`,
+                  opacity: 0.6 + (i % 3) * 0.15,
                 }}
               />
             ))}
           </div>
 
-          {/* Grid Pattern */}
+          {/* Hexagonal Grid Pattern - Sustainable energy theme */}
           <div
-            className="absolute inset-0 opacity-[0.02]"
+            className="absolute inset-0 opacity-[0.06]"
             style={{
-              backgroundImage: `
-                linear-gradient(to right, hsl(216 83% 56%) 1px, transparent 1px),
-                linear-gradient(to bottom, hsl(216 83% 56%) 1px, transparent 1px)
-              `,
-              backgroundSize: "80px 80px",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 15v22L30 52 0 37V15z' fill='none' stroke='%2300C6FF' stroke-width='0.5'/%3E%3C/svg%3E")`,
+              backgroundSize: "60px 52px",
             }}
           />
+          
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628]/90 via-[#0a1628]/70 to-transparent md:to-[#0a1628]/30"></div>
         </div>
 
         {/* Floating animated icons */}
@@ -286,26 +278,26 @@ const Home = () => {
               <div className="relative z-20 w-full md:w-[50%] lg:w-[48%] xl:w-[45%] md:ml-8 lg:ml-12 space-y-4 md:space-y-6 text-center md:text-left">
                 {/* Badge */}
                 <div 
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/25 backdrop-blur-sm shadow-lg"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border border-cyan-400/40 backdrop-blur-sm shadow-lg"
                   style={{ 
                     animation: "slideUp 0.6s ease-out both",
-                    boxShadow: "0 0 20px rgba(38, 116, 236, 0.15), inset 0 0 20px rgba(38, 116, 236, 0.05)"
+                    boxShadow: "0 0 25px rgba(0, 198, 255, 0.25), inset 0 0 20px rgba(16, 185, 129, 0.1)"
                   }}
                 >
                   <img src={logomark} alt="A+ Charge" className="w-4 h-4" />
-                  <span className="text-xs font-bold text-primary tracking-wide">Northeast India's Leading EV Network</span>
+                  <span className="text-xs font-bold text-cyan-300 tracking-wide">Northeast India's Leading EV Network</span>
                 </div>
 
-                {/* Main Heading with typing effect style */}
-                <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight">
+                {/* Main Heading - Two lines */}
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight">
                   <span 
-                    className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent"
+                    className="block bg-gradient-to-r from-cyan-300 via-white to-emerald-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,198,255,0.5)]"
                     style={{ animation: "slideUp 0.6s ease-out 0.1s both, textGlow 3s ease-in-out infinite" }}
                   >
                     Northeast India's Largest
                   </span>
                   <span 
-                    className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-600 bg-clip-text text-transparent"
+                    className="block bg-gradient-to-r from-emerald-300 via-cyan-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(16,185,129,0.4)]"
                     style={{ animation: "slideUp 0.6s ease-out 0.2s both, textGlow 3s ease-in-out 0.5s infinite" }}
                   >
                     & Most Trusted EV Network
@@ -314,7 +306,7 @@ const Home = () => {
 
                 {/* Description */}
                 <p 
-                  className="text-sm md:text-base lg:text-lg text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24"
+                  className="text-sm md:text-base lg:text-lg text-white/70 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24"
                   style={{ animation: "slideUp 0.6s ease-out 0.3s both" }}
                 >
                   Powering your journey across the hills and plains with smart, high-speed charging solutions. From daily commutes to highway adventures, we keep you moving.
@@ -358,15 +350,15 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Right - Illustration - Positioned higher and larger */}
+              {/* Right - Illustration - Larger and prominent */}
               <div
-                className="absolute right-[-8%] top-[35%] -translate-y-1/2 w-[60%] md:w-[55%] lg:w-[58%] xl:w-[62%] hidden md:block"
+                className="absolute right-[-5%] top-[38%] -translate-y-1/2 w-[65%] md:w-[60%] lg:w-[65%] xl:w-[70%] hidden md:block"
                 style={{ animation: "scaleIn 0.8s ease-out 0.3s both" }}
               >
                 <img
                   src={heroEvCharging}
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
-                  className="relative w-full h-auto object-contain object-right drop-shadow-2xl scale-110"
+                  className="relative w-full h-auto object-contain object-right drop-shadow-[0_20px_60px_rgba(0,198,255,0.3)] scale-125"
                   loading="eager"
                 />
               </div>
@@ -526,7 +518,7 @@ const Home = () => {
                 <div className="w-16 h-1 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Interactive Service Pointers - 2x3 on mobile, narrower on tablet/desktop */}
+              {/* Interactive Service Pointers - 2x3 on mobile, fixed height to prevent layout shift */}
               <div className="grid grid-cols-2 md:grid-cols-2 gap-1.5 md:gap-2 md:max-w-md">
                 {servicePointers.map((service, index) => {
                   const Icon = service.icon;
@@ -534,7 +526,7 @@ const Home = () => {
                   return (
                     <div
                       key={index}
-                      className={`group relative p-2 md:p-2 lg:p-3 rounded-lg cursor-pointer transition-all duration-300 overflow-hidden min-h-[44px] sm:min-h-[48px] md:min-h-[52px] ${
+                      className={`group relative p-2 md:p-2 lg:p-3 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden h-[44px] sm:h-[48px] md:h-[52px] ${
                         isActive 
                           ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-md' 
                           : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30'
@@ -552,15 +544,15 @@ const Home = () => {
                           <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
                         <div className="flex-1 flex flex-col justify-center overflow-hidden">
-                          <h3 className={`font-semibold transition-all duration-300 leading-snug ${
-                            isActive ? 'text-white text-[8px] sm:text-[9px] md:text-[10px] whitespace-nowrap' : 'text-foreground text-[9px] sm:text-[10px] md:text-xs'
+                          <h3 className={`font-semibold leading-snug text-[8px] sm:text-[9px] md:text-[10px] ${
+                            isActive ? 'text-white' : 'text-foreground'
                           }`}>
                             {service.title}
                           </h3>
-                          <p className={`text-[7px] sm:text-[8px] md:text-[9px] leading-tight transition-all duration-300 overflow-hidden ${
-                            isActive ? 'text-white/90 opacity-100 max-h-12 mt-0.5' : 'opacity-0 max-h-0'
+                          <p className={`text-[6px] sm:text-[7px] md:text-[8px] leading-tight transition-opacity duration-300 ${
+                            isActive ? 'text-white/90 opacity-100' : 'opacity-0'
                           }`}>
-                            {service.description}
+                            {service.description.slice(0, 40)}...
                           </p>
                         </div>
                       </div>
@@ -571,13 +563,16 @@ const Home = () => {
             </div>
           </div>
           
-          {/* Mobile Image - Appears below stats with 50% crop from left */}
-          <div className="w-full md:hidden flex justify-end relative mt-4 sm:mt-6 overflow-hidden">
+          {/* Mobile Image - Full width, edge to edge, cropped from left */}
+          <div className="w-screen md:hidden relative mt-4 sm:mt-6 -mx-4 overflow-hidden">
             <img
               src={chargingStationIllustration}
               alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-              className="w-[150%] max-w-none object-cover object-right -mr-4"
-              style={{ clipPath: 'inset(0 0 0 40%)' }}
+              className="w-[180%] max-w-none object-cover object-right"
+              style={{ 
+                clipPath: 'inset(0 0 0 45%)',
+                marginLeft: '-40%'
+              }}
             />
           </div>
         </div>
