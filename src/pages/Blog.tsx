@@ -112,6 +112,7 @@ const Blog = () => {
         <StorytellingSection 
           title="Stories That Power Change"
           description="Every article we share is part of our mission to educate, inspire, and accelerate the adoption of electric mobility across Northeast India."
+          backgroundImage={brahmaputraSunset}
         />
       </div>
     </div>

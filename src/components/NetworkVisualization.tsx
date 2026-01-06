@@ -70,6 +70,7 @@ const NetworkVisualization = () => {
   const [clickedNode, setClickedNode] = useState<number | null>(null);
   const [particles, setParticles] = useState<{id: number; x: number; y: number; angle: number; color: string}[]>([]);
   const [trailParticles, setTrailParticles] = useState<{id: number; x: number; y: number; opacity: number}[]>([]);
+  const [connectionLine, setConnectionLine] = useState<{nodeIndex: number; progress: number; color: string} | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [nodeOffsets, setNodeOffsets] = useState<{x: number; y: number}[]>(features.map(() => ({ x: 0, y: 0 })));
@@ -154,7 +155,7 @@ const NetworkVisualization = () => {
     };
   });
 
-  // Handle node click for particle burst
+  // Handle node click for particle burst and connection line animation
   const handleNodeClick = (index: number, x: number, y: number) => {
     setClickedNode(index);
     const newParticles = Array.from({ length: 12 }, (_, i) => ({
@@ -165,6 +166,25 @@ const NetworkVisualization = () => {
       color: features[index].color
     }));
     setParticles(prev => [...prev, ...newParticles]);
+    
+    // Trigger connection line animation to center
+    setConnectionLine({ nodeIndex: index, progress: 0, color: features[index].color });
+    
+    // Animate the connection line
+    let progress = 0;
+    const animateConnection = () => {
+      progress += 0.03;
+      if (progress <= 1) {
+        setConnectionLine({ nodeIndex: index, progress, color: features[index].color });
+        requestAnimationFrame(animateConnection);
+      } else {
+        // Hold at center briefly then fade
+        setTimeout(() => {
+          setConnectionLine(null);
+        }, 300);
+      }
+    };
+    requestAnimationFrame(animateConnection);
     
     setTimeout(() => {
       setClickedNode(null);
@@ -253,6 +273,14 @@ const NetworkVisualization = () => {
                   <feMergeNode in="SourceGraphic"/>
                 </feMerge>
               </filter>
+              <filter id="connectionGlow">
+                <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
             </defs>
             
             {/* Connection lines from each node to center */}
@@ -310,6 +338,50 @@ const NetworkVisualization = () => {
               );
             })}
           </svg>
+
+          {/* Animated Connection Line from clicked node to center */}
+          {connectionLine && nodePositions[connectionLine.nodeIndex] && (
+            <svg 
+              className="absolute inset-0 w-full h-full pointer-events-none z-25"
+              style={{ overflow: 'visible' }}
+            >
+              {/* Glowing connection line */}
+              <line
+                x1={nodePositions[connectionLine.nodeIndex].x}
+                y1={nodePositions[connectionLine.nodeIndex].y}
+                x2={nodePositions[connectionLine.nodeIndex].x + (centerX - nodePositions[connectionLine.nodeIndex].x) * connectionLine.progress}
+                y2={nodePositions[connectionLine.nodeIndex].y + (centerY - nodePositions[connectionLine.nodeIndex].y) * connectionLine.progress}
+                stroke={connectionLine.color}
+                strokeWidth="4"
+                strokeLinecap="round"
+                filter="url(#connectionGlow)"
+                style={{ opacity: 1 - (connectionLine.progress > 0.8 ? (connectionLine.progress - 0.8) * 5 : 0) }}
+              />
+              {/* Energy pulse dot traveling along the line */}
+              <circle
+                cx={nodePositions[connectionLine.nodeIndex].x + (centerX - nodePositions[connectionLine.nodeIndex].x) * connectionLine.progress}
+                cy={nodePositions[connectionLine.nodeIndex].y + (centerY - nodePositions[connectionLine.nodeIndex].y) * connectionLine.progress}
+                r={6 + Math.sin(connectionLine.progress * Math.PI) * 4}
+                fill={connectionLine.color}
+                filter="url(#connectionGlow)"
+                style={{ opacity: connectionLine.progress < 0.95 ? 1 : 0 }}
+              />
+              {/* Trail effect */}
+              {connectionLine.progress > 0.1 && (
+                <line
+                  x1={nodePositions[connectionLine.nodeIndex].x + (centerX - nodePositions[connectionLine.nodeIndex].x) * Math.max(0, connectionLine.progress - 0.15)}
+                  y1={nodePositions[connectionLine.nodeIndex].y + (centerY - nodePositions[connectionLine.nodeIndex].y) * Math.max(0, connectionLine.progress - 0.15)}
+                  x2={nodePositions[connectionLine.nodeIndex].x + (centerX - nodePositions[connectionLine.nodeIndex].x) * connectionLine.progress}
+                  y2={nodePositions[connectionLine.nodeIndex].y + (centerY - nodePositions[connectionLine.nodeIndex].y) * connectionLine.progress}
+                  stroke={connectionLine.color}
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  filter="url(#connectionGlow)"
+                  style={{ opacity: 0.5 }}
+                />
+              )}
+            </svg>
+          )}
 
           {/* Particle Burst Effects */}
           {particles.map(particle => (
