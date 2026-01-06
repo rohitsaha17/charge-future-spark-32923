@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { FileText, Calendar, ArrowRight } from 'lucide-react';
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
+import brahmaputraSunset from "@/assets/brahmaputra-sunset.jpg";
 
 const Blog = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
