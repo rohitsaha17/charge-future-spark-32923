@@ -492,19 +492,23 @@ const Home = () => {
       {/* Live Stats Section - Redesigned with Full-Width Illustration and Service Pointers */}
       <section
         ref={statsSection.ref}
-        className={`py-8 sm:py-10 md:py-12 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-10 sm:py-12 md:py-16 lg:py-20 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Full-Width Illustration - Pinned to Right for desktop/tablet */}
-        <div className="absolute inset-0 hidden md:flex items-end justify-end overflow-hidden pointer-events-none">
+        {/* Full-Width Illustration - Pinned to Right for desktop/tablet - FIXED CROPPING */}
+        <div className="absolute inset-0 hidden md:flex items-center justify-end overflow-hidden pointer-events-none">
           <img
             src={chargingStationIllustration}
             alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-            className="relative h-full w-auto max-w-none object-cover object-right -mr-[5%]"
-            style={{ objectPosition: '75% bottom', clipPath: 'inset(0 0 0 50%)' }}
+            className="relative h-[120%] w-auto max-w-none object-contain"
+            style={{ 
+              objectPosition: 'center right',
+              marginRight: '-5%',
+              transform: 'translateY(-5%)'
+            }}
           />
-          {/* Fade on top and left only, full visibility on right and bottom */}
+          {/* Fade on left only, keep right and bottom fully visible */}
           <div className="absolute inset-0 pointer-events-none" style={{
-            background: 'linear-gradient(to right, white 0%, white 30%, rgba(255,255,255,0.6) 50%, transparent 70%), linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, transparent 30%)'
+            background: 'linear-gradient(to right, white 0%, white 20%, rgba(255,255,255,0.8) 35%, rgba(255,255,255,0.4) 50%, transparent 65%)'
           }}></div>
         </div>
 
@@ -512,33 +516,33 @@ const Home = () => {
         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/5 to-cyan-500/5 rounded-full blur-3xl z-0"></div>
 
         <div className="container mx-auto px-4 relative z-20">
-          <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6 max-w-full md:max-w-[60%] lg:max-w-[55%] md:ml-0">
+          <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8 max-w-full md:max-w-[65%] lg:max-w-[60%] xl:max-w-[55%] md:ml-0">
             {/* Left Side - Heading and Service Pointers */}
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-6">
               {/* Heading */}
-              <div className="space-y-2">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+              <div className="space-y-3">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
                   <span className="bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent">
                     FAST & RELIABLE
                   </span>
                   <br />
                   <span className="text-foreground">EV CHARGING SOLUTION!</span>
                 </h2>
-                <div className="w-20 h-1 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
+                <div className="w-24 h-1.5 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Interactive Service Pointers - 2x3 on mobile, fixed height to prevent layout shift */}
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-1.5 md:gap-2 md:max-w-md">
+              {/* Interactive Service Pointers - Responsive Grid: 2x3 mobile, 2x3 tablet, 3x2 desktop */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:max-w-2xl">
                 {servicePointers.map((service, index) => {
                   const Icon = service.icon;
                   const isActive = activeService === index;
                   return (
                     <div
                       key={index}
-                      className={`group relative p-2 md:p-2 lg:p-3 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden h-[44px] sm:h-[48px] md:h-[52px] ${
+                      className={`group relative p-3 md:p-4 rounded-xl cursor-pointer transition-all duration-300 overflow-hidden min-h-[60px] sm:min-h-[70px] md:min-h-[80px] ${
                         isActive 
-                          ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-md' 
-                          : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30'
+                          ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg shadow-primary/30' 
+                          : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30 hover:shadow-md'
                       }`}
                       style={{
                         animation: statsSection.isVisible ? `slideUp 0.5s ease-out ${index * 0.1}s both` : 'none'
@@ -548,20 +552,20 @@ const Home = () => {
                       onClick={() => microFeedback({ vibratePattern: [12, 40, 12], frequencyHz: 720 })}
                       onTouchStart={() => microFeedback({ vibratePattern: 16, frequencyHz: 720 })}
                     >
-                      <div className="flex items-center gap-1.5 h-full">
-                        <div className={`p-1 sm:p-1.5 rounded-md flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
-                          <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 ${isActive ? 'text-white' : 'text-primary'}`} />
+                      <div className="flex items-start gap-2 md:gap-3 h-full">
+                        <div className={`p-1.5 md:p-2 rounded-lg flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
+                          <Icon className={`w-4 h-4 md:w-5 md:h-5 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
-                        <div className="flex-1 flex flex-col justify-center overflow-hidden">
-                          <h3 className={`font-semibold leading-snug text-[8px] sm:text-[9px] md:text-[10px] ${
+                        <div className="flex-1 flex flex-col justify-center overflow-hidden min-w-0">
+                          <h3 className={`font-semibold leading-snug text-[10px] sm:text-xs md:text-sm transition-all duration-300 ${
                             isActive ? 'text-white' : 'text-foreground'
                           }`}>
                             {service.title}
                           </h3>
-                          <p className={`text-[6px] sm:text-[7px] md:text-[8px] leading-tight transition-opacity duration-300 ${
-                            isActive ? 'text-white/90 opacity-100' : 'opacity-0'
+                          <p className={`text-[8px] sm:text-[9px] md:text-xs leading-tight mt-1 transition-all duration-300 line-clamp-2 ${
+                            isActive ? 'text-white/90 opacity-100 max-h-20' : 'text-muted-foreground opacity-0 max-h-0'
                           }`}>
-                            {service.description.slice(0, 40)}...
+                            {service.description}
                           </p>
                         </div>
                       </div>
@@ -573,7 +577,7 @@ const Home = () => {
           </div>
           
           {/* Mobile Image - Full width, edge to edge */}
-          <div className="w-full md:hidden relative mt-4 sm:mt-6 overflow-hidden">
+          <div className="w-full md:hidden relative mt-6 sm:mt-8 overflow-hidden">
             <div className="relative w-full">
               <img
                 src={chargingStationIllustration}
