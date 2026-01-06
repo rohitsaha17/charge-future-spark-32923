@@ -3,6 +3,7 @@ import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import LocationPickerMap from "@/components/LocationPickerMap";
 import { Play, MapPin } from "lucide-react";
+import trustBg from "@/assets/trust-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -449,6 +450,7 @@ const Partner = () => {
         <StorytellingSection 
           title="Your Success Is Our Mission"
           description="Join Northeast India's fastest-growing charging network. Together, we'll power the future of clean mobility while creating sustainable income for you. Let's build something extraordinary."
+          backgroundImage={trustBg}
         />
 
         <GradientDivider />
