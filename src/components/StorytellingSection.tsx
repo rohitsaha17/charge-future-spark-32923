@@ -19,7 +19,7 @@ const StorytellingSection = ({
 }: StorytellingSectionProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [parallaxOffset, setParallaxOffset] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,10 +31,9 @@ const StorytellingSection = ({
           setIsVisible(true);
         }
 
-        // Calculate parallax offset based on scroll position
-        const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
-        const clampedProgress = Math.max(0, Math.min(1, scrollProgress));
-        setParallaxOffset(clampedProgress * 50 - 25); // -25 to 25 range for subtle effect
+        // Calculate scroll progress for parallax (0 to 1 as section scrolls through viewport)
+        const progress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + rect.height)));
+        setScrollProgress(progress);
       }
     };
 
@@ -44,20 +43,26 @@ const StorytellingSection = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Parallax offset: moves background slower than scroll
+  const parallaxOffset = (scrollProgress - 0.5) * 80; // -40 to 40 range
+
   return (
     <section
       ref={sectionRef}
-      className={`relative min-h-[35vh] md:h-[35vh] flex items-center justify-center overflow-hidden -my-px ${className ?? ''}`}
+      className={`relative w-full min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
+      style={{ margin: 0, padding: 0 }}
     >
-      {/* Parallax Background - Responsive sizing */}
+      {/* Full-page parallax background with visible edges */}
       {backgroundImage && (
         <div 
-          className="absolute inset-0 transition-transform duration-100 ease-out"
+          className="absolute inset-0 w-full h-full"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            transform: `translateY(${parallaxOffset}px) scale(1.1)`,
+            backgroundRepeat: 'no-repeat',
+            transform: `translateY(${parallaxOffset}px) scale(1.15)`,
+            transition: 'transform 0.1s ease-out',
           }}
         />
       )}
@@ -66,20 +71,20 @@ const StorytellingSection = ({
       <div 
         className="absolute inset-0 z-[1]"
         style={{
-          background: 'linear-gradient(to bottom, hsl(217 91% 60% / 0.85) 0%, hsl(217 91% 60% / 0.5) 40%, transparent 100%)'
+          background: 'linear-gradient(to bottom, hsl(217 91% 60% / 0.9) 0%, hsl(217 91% 60% / 0.7) 30%, hsl(217 91% 60% / 0.4) 60%, transparent 100%)'
         }}
       />
 
       {/* Content */}
       <div 
-        className={`relative z-10 container mx-auto px-4 py-8 md:py-0 text-center transition-all duration-1000 ${
+        className={`relative z-10 container mx-auto px-4 sm:px-6 py-12 md:py-16 lg:py-20 text-center transition-all duration-1000 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-white drop-shadow-2xl">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 text-white drop-shadow-2xl leading-tight">
           {title}
         </h2>
-        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/95 max-w-4xl mx-auto leading-relaxed drop-shadow-lg font-medium">
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed drop-shadow-lg font-medium">
           {description}
         </p>
       </div>
@@ -88,4 +93,3 @@ const StorytellingSection = ({
 };
 
 export default StorytellingSection;
-
