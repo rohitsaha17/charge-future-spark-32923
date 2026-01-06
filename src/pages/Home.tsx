@@ -82,23 +82,23 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section - Interactive & Creative */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Enhanced Electric/Energetic Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628] via-[#0d2847] to-[#0a1628]">
-          {/* Animated Electric Gradient Orbs */}
+        {/* Light Theme Background with Electric Energy Accents */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/30 to-cyan-50/20">
+          {/* Subtle Electric Gradient Orbs */}
           <div
-            className="absolute top-[-10%] right-[-5%] w-[700px] h-[700px] bg-gradient-to-br from-primary/40 to-cyan-400/30 rounded-full blur-[100px]"
+            className="absolute top-[-10%] right-[-5%] w-[700px] h-[700px] bg-gradient-to-br from-primary/15 to-cyan-400/10 rounded-full blur-[100px]"
             style={{
               animation: "orbFloat 8s ease-in-out infinite",
             }}
           ></div>
           <div
-            className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-cyan-500/30 to-blue-600/25 rounded-full blur-[80px]"
+            className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-cyan-500/10 to-blue-600/10 rounded-full blur-[80px]"
             style={{
               animation: "orbFloat 10s ease-in-out infinite reverse",
             }}
           ></div>
           <div
-            className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-gradient-to-r from-emerald-500/20 to-cyan-400/15 rounded-full blur-[60px]"
+            className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-gradient-to-r from-emerald-500/8 to-cyan-400/8 rounded-full blur-[60px]"
             style={{
               animation: "orbFloat 12s ease-in-out infinite",
               animationDelay: "2s"
@@ -106,17 +106,12 @@ const Home = () => {
           ></div>
 
           {/* Electric Circuit Lines */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-60" xmlns="http://www.w3.org/2000/svg">
+          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="electricGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="hsl(186, 100%, 50%)" stopOpacity="0.8" />
-                <stop offset="50%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.8" />
+                <stop offset="50%" stopColor="hsl(191, 100%, 50%)" stopOpacity="0.6" />
                 <stop offset="100%" stopColor="hsl(160, 84%, 39%)" stopOpacity="0.4" />
-              </linearGradient>
-              <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="hsl(186, 100%, 60%)" stopOpacity="0" />
-                <stop offset="50%" stopColor="hsl(186, 100%, 70%)" stopOpacity="1" />
-                <stop offset="100%" stopColor="hsl(186, 100%, 60%)" stopOpacity="0" />
               </linearGradient>
               <filter id="electricGlow">
                 <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -125,102 +120,108 @@ const Home = () => {
                   <feMergeNode in="SourceGraphic"/>
                 </feMerge>
               </filter>
+              {/* Electric Pulse Animation */}
+              <filter id="electricPulse">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0.5  0 0 1 0 1  0 0 0 18 -7"/>
+                <feBlend in="SourceGraphic" in2="blur"/>
+              </filter>
             </defs>
             
             {/* Horizontal flowing lines */}
-            <line x1="0" y1="20%" x2="100%" y2="20%" stroke="url(#electricGrad)" strokeWidth="1" opacity="0.3" strokeDasharray="20,40" style={{ animation: "dashMove 20s linear infinite" }} />
-            <line x1="0" y1="50%" x2="100%" y2="55%" stroke="url(#electricGrad)" strokeWidth="1.5" opacity="0.4" strokeDasharray="30,50" style={{ animation: "dashMove 15s linear infinite reverse" }} />
-            <line x1="0" y1="80%" x2="100%" y2="75%" stroke="url(#electricGrad)" strokeWidth="1" opacity="0.25" strokeDasharray="15,35" style={{ animation: "dashMove 25s linear infinite" }} />
+            <line x1="0" y1="20%" x2="100%" y2="20%" stroke="url(#electricGrad)" strokeWidth="1" opacity="0.2" strokeDasharray="20,40" style={{ animation: "dashMove 20s linear infinite" }} />
+            <line x1="0" y1="50%" x2="100%" y2="55%" stroke="url(#electricGrad)" strokeWidth="1.5" opacity="0.25" strokeDasharray="30,50" style={{ animation: "dashMove 15s linear infinite reverse" }} />
+            <line x1="0" y1="80%" x2="100%" y2="75%" stroke="url(#electricGrad)" strokeWidth="1" opacity="0.15" strokeDasharray="15,35" style={{ animation: "dashMove 25s linear infinite" }} />
             
             {/* Network connections with glow */}
             <g filter="url(#electricGlow)">
-              <line x1="5%" y1="15%" x2="25%" y2="30%" stroke="url(#electricGrad)" strokeWidth="2" className="animate-pulse" />
-              <line x1="25%" y1="30%" x2="45%" y2="20%" stroke="url(#electricGrad)" strokeWidth="2" style={{ animationDelay: "0.5s" }} className="animate-pulse" />
-              <line x1="45%" y1="20%" x2="70%" y2="35%" stroke="url(#electricGrad)" strokeWidth="2" style={{ animationDelay: "1s" }} className="animate-pulse" />
-              <line x1="15%" y1="55%" x2="35%" y2="45%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.3s" }} className="animate-pulse" />
-              <line x1="35%" y1="45%" x2="55%" y2="60%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.8s" }} className="animate-pulse" />
-              <line x1="10%" y1="70%" x2="30%" y2="80%" stroke="url(#electricGrad)" strokeWidth="2" style={{ animationDelay: "0.4s" }} className="animate-pulse" />
-              <line x1="60%" y1="70%" x2="85%" y2="60%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.6s" }} className="animate-pulse" />
+              <line x1="5%" y1="15%" x2="25%" y2="30%" stroke="url(#electricGrad)" strokeWidth="1.5" className="animate-pulse" />
+              <line x1="25%" y1="30%" x2="45%" y2="20%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.5s" }} className="animate-pulse" />
+              <line x1="45%" y1="20%" x2="70%" y2="35%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "1s" }} className="animate-pulse" />
+              <line x1="15%" y1="55%" x2="35%" y2="45%" stroke="url(#electricGrad)" strokeWidth="1" style={{ animationDelay: "0.3s" }} className="animate-pulse" />
+              <line x1="35%" y1="45%" x2="55%" y2="60%" stroke="url(#electricGrad)" strokeWidth="1" style={{ animationDelay: "0.8s" }} className="animate-pulse" />
+              <line x1="10%" y1="70%" x2="30%" y2="80%" stroke="url(#electricGrad)" strokeWidth="1.5" style={{ animationDelay: "0.4s" }} className="animate-pulse" />
+              <line x1="60%" y1="70%" x2="85%" y2="60%" stroke="url(#electricGrad)" strokeWidth="1" style={{ animationDelay: "0.6s" }} className="animate-pulse" />
             </g>
             
-            {/* Glowing nodes - Energy points */}
-            <g filter="url(#electricGlow)">
-              <circle cx="5%" cy="15%" r="6" fill="hsl(186, 100%, 60%)" opacity="0.9" className="animate-pulse" />
-              <circle cx="25%" cy="30%" r="8" fill="hsl(160, 84%, 50%)" opacity="0.8" style={{ animationDelay: "0.3s" }} className="animate-pulse" />
-              <circle cx="45%" cy="20%" r="6" fill="hsl(186, 100%, 60%)" opacity="0.9" style={{ animationDelay: "0.6s" }} className="animate-pulse" />
-              <circle cx="70%" cy="35%" r="10" fill="hsl(186, 100%, 55%)" opacity="0.7" style={{ animationDelay: "0.9s" }} className="animate-pulse" />
-              <circle cx="15%" cy="55%" r="5" fill="hsl(160, 84%, 55%)" opacity="0.8" style={{ animationDelay: "0.2s" }} className="animate-pulse" />
-              <circle cx="35%" cy="45%" r="7" fill="hsl(186, 100%, 60%)" opacity="0.9" style={{ animationDelay: "0.5s" }} className="animate-pulse" />
-              <circle cx="55%" cy="60%" r="6" fill="hsl(216, 83%, 60%)" opacity="0.8" style={{ animationDelay: "0.8s" }} className="animate-pulse" />
-              <circle cx="10%" cy="70%" r="5" fill="hsl(160, 84%, 50%)" opacity="0.7" style={{ animationDelay: "0.4s" }} className="animate-pulse" />
-              <circle cx="85%" cy="60%" r="8" fill="hsl(186, 100%, 55%)" opacity="0.85" style={{ animationDelay: "1s" }} className="animate-pulse" />
+            {/* Glowing nodes with Electric Pulse */}
+            <g filter="url(#electricPulse)">
+              <circle cx="5%" cy="15%" r="6" fill="hsl(216, 83%, 56%)" opacity="0.7" style={{ animation: "electricPulseAnim 2s ease-in-out infinite" }} />
+              <circle cx="25%" cy="30%" r="8" fill="hsl(160, 84%, 50%)" opacity="0.6" style={{ animation: "electricPulseAnim 2s ease-in-out 0.3s infinite" }} />
+              <circle cx="45%" cy="20%" r="6" fill="hsl(191, 100%, 50%)" opacity="0.7" style={{ animation: "electricPulseAnim 2s ease-in-out 0.6s infinite" }} />
+              <circle cx="70%" cy="35%" r="10" fill="hsl(216, 83%, 56%)" opacity="0.5" style={{ animation: "electricPulseAnim 2s ease-in-out 0.9s infinite" }} />
+              <circle cx="15%" cy="55%" r="5" fill="hsl(160, 84%, 55%)" opacity="0.6" style={{ animation: "electricPulseAnim 2s ease-in-out 0.2s infinite" }} />
+              <circle cx="35%" cy="45%" r="7" fill="hsl(191, 100%, 50%)" opacity="0.7" style={{ animation: "electricPulseAnim 2s ease-in-out 0.5s infinite" }} />
+              <circle cx="55%" cy="60%" r="6" fill="hsl(216, 83%, 60%)" opacity="0.6" style={{ animation: "electricPulseAnim 2s ease-in-out 0.8s infinite" }} />
+              <circle cx="10%" cy="70%" r="5" fill="hsl(160, 84%, 50%)" opacity="0.5" style={{ animation: "electricPulseAnim 2s ease-in-out 0.4s infinite" }} />
+              <circle cx="85%" cy="60%" r="8" fill="hsl(216, 83%, 55%)" opacity="0.6" style={{ animation: "electricPulseAnim 2s ease-in-out 1s infinite" }} />
             </g>
           </svg>
           
-          {/* Floating energy particles - Electric theme */}
+          {/* Floating energy particles - Subtle for light theme */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(20)].map((_, i) => (
+            {[...Array(15)].map((_, i) => (
               <div
                 key={i}
                 className="absolute rounded-full"
                 style={{
-                  width: `${2 + (i % 4)}px`,
-                  height: `${2 + (i % 4)}px`,
-                  left: `${5 + (i * 4.5)}%`,
+                  width: `${2 + (i % 3)}px`,
+                  height: `${2 + (i % 3)}px`,
+                  left: `${5 + (i * 6)}%`,
                   top: `${15 + (i % 5) * 18}%`,
                   background: i % 3 === 0 
-                    ? 'linear-gradient(135deg, hsl(186, 100%, 60%), hsl(160, 84%, 50%))' 
+                    ? 'hsl(216, 83%, 56%)' 
                     : i % 3 === 1
-                    ? 'linear-gradient(135deg, hsl(216, 83%, 60%), hsl(186, 100%, 50%))'
-                    : 'linear-gradient(135deg, hsl(160, 84%, 50%), hsl(186, 100%, 60%))',
-                  boxShadow: `0 0 ${6 + (i % 3) * 4}px hsl(186, 100%, 60%)`,
+                    ? 'hsl(191, 100%, 50%)'
+                    : 'hsl(160, 84%, 50%)',
+                  boxShadow: `0 0 ${4 + (i % 3) * 3}px hsl(216, 83%, 56%)`,
                   animation: `floatParticle ${3 + (i % 4)}s ease-in-out infinite`,
                   animationDelay: `${i * 0.2}s`,
-                  opacity: 0.6 + (i % 3) * 0.15,
+                  opacity: 0.4 + (i % 3) * 0.1,
                 }}
               />
             ))}
           </div>
 
-          {/* Hexagonal Grid Pattern - Sustainable energy theme */}
+          {/* Hexagonal Grid Pattern */}
           <div
-            className="absolute inset-0 opacity-[0.06]"
+            className="absolute inset-0 opacity-[0.03]"
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 15v22L30 52 0 37V15z' fill='none' stroke='%2300C6FF' stroke-width='0.5'/%3E%3C/svg%3E")`,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 15v22L30 52 0 37V15z' fill='none' stroke='%232674EC' stroke-width='0.5'/%3E%3C/svg%3E")`,
               backgroundSize: "60px 52px",
             }}
           />
           
           {/* Gradient overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628]/90 via-[#0a1628]/70 to-transparent md:to-[#0a1628]/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/50 to-transparent"></div>
         </div>
 
         {/* Floating animated icons */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div 
-            className="absolute top-[20%] left-[10%] text-primary/20"
+            className="absolute top-[20%] left-[10%] text-primary/15"
             style={{ animation: "floatIcon 5s ease-in-out infinite" }}
           >
             <Zap className="w-8 h-8 md:w-12 md:h-12" />
           </div>
           <div 
-            className="absolute top-[60%] left-[5%] text-cyan-500/20"
+            className="absolute top-[60%] left-[5%] text-cyan-500/15"
             style={{ animation: "floatIcon 7s ease-in-out infinite", animationDelay: "1s" }}
           >
             <MapPin className="w-6 h-6 md:w-10 md:h-10" />
           </div>
           <div 
-            className="absolute top-[15%] right-[25%] text-blue-400/15 hidden md:block"
+            className="absolute top-[15%] right-[25%] text-blue-400/10 hidden md:block"
             style={{ animation: "floatIcon 6s ease-in-out infinite", animationDelay: "2s" }}
           >
             <Zap className="w-16 h-16" />
           </div>
           <div 
-            className="absolute bottom-[25%] left-[15%] w-4 h-4 bg-gradient-to-r from-primary to-cyan-500 rounded-full opacity-30"
+            className="absolute bottom-[25%] left-[15%] w-4 h-4 bg-gradient-to-r from-primary to-cyan-500 rounded-full opacity-20"
             style={{ animation: "floatIcon 4s ease-in-out infinite" }}
           />
           <div 
-            className="absolute top-[40%] left-[8%] w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-25"
+            className="absolute top-[40%] left-[8%] w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-15"
             style={{ animation: "floatIcon 5s ease-in-out infinite", animationDelay: "0.5s" }}
           />
         </div>
@@ -239,27 +240,33 @@ const Home = () => {
             75% { transform: translateY(-25px) translateX(5px); }
           }
           @keyframes floatIcon {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
-            50% { transform: translateY(-15px) rotate(5deg); opacity: 0.35; }
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.15; }
+            50% { transform: translateY(-15px) rotate(5deg); opacity: 0.3; }
           }
           @keyframes floatParticle {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-            25% { transform: translateY(-30px) translateX(15px); opacity: 0.6; }
-            50% { transform: translateY(-15px) translateX(-10px); opacity: 0.4; }
-            75% { transform: translateY(-40px) translateX(5px); opacity: 0.5; }
-          }
-          @keyframes waveMove {
-            0%, 100% { transform: translateX(0) translateY(0); }
-            25% { transform: translateX(-20px) translateY(-10px); }
-            50% { transform: translateX(0) translateY(-20px); }
-            75% { transform: translateX(20px) translateY(-10px); }
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.2; }
+            25% { transform: translateY(-30px) translateX(15px); opacity: 0.5; }
+            50% { transform: translateY(-15px) translateX(-10px); opacity: 0.3; }
+            75% { transform: translateY(-40px) translateX(5px); opacity: 0.4; }
           }
           @keyframes dashMove {
             to { stroke-dashoffset: -200; }
           }
+          @keyframes electricPulseAnim {
+            0%, 100% { 
+              transform: scale(1); 
+              opacity: 0.5;
+              filter: drop-shadow(0 0 4px currentColor);
+            }
+            50% { 
+              transform: scale(1.4); 
+              opacity: 0.9;
+              filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 20px currentColor);
+            }
+          }
           @keyframes textGlow {
-            0%, 100% { filter: drop-shadow(0 0 8px rgba(38, 116, 236, 0.3)); }
-            50% { filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.5)); }
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(38, 116, 236, 0.2)); }
+            50% { filter: drop-shadow(0 0 16px rgba(38, 116, 236, 0.4)); }
           }
           @keyframes slideUp {
             0% { opacity: 0; transform: translateY(30px); }
@@ -278,26 +285,25 @@ const Home = () => {
               <div className="relative z-20 w-full md:w-[50%] lg:w-[48%] xl:w-[45%] md:ml-8 lg:ml-12 space-y-4 md:space-y-6 text-center md:text-left">
                 {/* Badge */}
                 <div 
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border border-cyan-400/40 backdrop-blur-sm shadow-lg"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-cyan-500/10 border border-primary/30 backdrop-blur-sm shadow-md"
                   style={{ 
-                    animation: "slideUp 0.6s ease-out both",
-                    boxShadow: "0 0 25px rgba(0, 198, 255, 0.25), inset 0 0 20px rgba(16, 185, 129, 0.1)"
+                    animation: "slideUp 0.6s ease-out both"
                   }}
                 >
                   <img src={logomark} alt="A+ Charge" className="w-4 h-4" />
-                  <span className="text-xs font-bold text-cyan-300 tracking-wide">Northeast India's Leading EV Network</span>
+                  <span className="text-xs font-bold text-primary tracking-wide">Northeast India's Leading EV Network</span>
                 </div>
 
                 {/* Main Heading - Two lines */}
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight">
                   <span 
-                    className="block bg-gradient-to-r from-cyan-300 via-white to-emerald-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,198,255,0.5)]"
+                    className="block bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent"
                     style={{ animation: "slideUp 0.6s ease-out 0.1s both, textGlow 3s ease-in-out infinite" }}
                   >
                     Northeast India's Largest
                   </span>
                   <span 
-                    className="block bg-gradient-to-r from-emerald-300 via-cyan-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(16,185,129,0.4)]"
+                    className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-700 bg-clip-text text-transparent"
                     style={{ animation: "slideUp 0.6s ease-out 0.2s both, textGlow 3s ease-in-out 0.5s infinite" }}
                   >
                     & Most Trusted EV Network
@@ -306,7 +312,7 @@ const Home = () => {
 
                 {/* Description */}
                 <p 
-                  className="text-sm md:text-base lg:text-lg text-white/70 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24"
+                  className="text-sm md:text-base lg:text-lg text-foreground/70 leading-relaxed max-w-3xl mx-auto md:mx-0 md:pr-16 lg:pr-24"
                   style={{ animation: "slideUp 0.6s ease-out 0.3s both" }}
                 >
                   Powering your journey across the hills and plains with smart, high-speed charging solutions. From daily commutes to highway adventures, we keep you moving.
@@ -350,15 +356,15 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Right - Illustration - Larger and prominent */}
+              {/* Right - Illustration - Larger and prominent, shifted up */}
               <div
-                className="absolute right-[-5%] top-[38%] -translate-y-1/2 w-[65%] md:w-[60%] lg:w-[65%] xl:w-[70%] hidden md:block"
+                className="absolute right-[-5%] top-[30%] -translate-y-1/2 w-[70%] md:w-[65%] lg:w-[70%] xl:w-[75%] hidden md:block"
                 style={{ animation: "scaleIn 0.8s ease-out 0.3s both" }}
               >
                 <img
                   src={heroEvCharging}
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
-                  className="relative w-full h-auto object-contain object-right drop-shadow-[0_20px_60px_rgba(0,198,255,0.3)] scale-125"
+                  className="relative w-full h-auto object-contain object-right drop-shadow-[0_20px_60px_rgba(38,116,236,0.25)] scale-130"
                   loading="eager"
                 />
               </div>
@@ -496,7 +502,10 @@ const Home = () => {
             className="relative h-full w-auto max-w-none object-cover object-right -mr-[5%]"
             style={{ objectPosition: '75% bottom', clipPath: 'inset(0 0 0 50%)' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/20 pointer-events-none"></div>
+          {/* Fade on top and left only, full visibility on right and bottom */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'linear-gradient(to right, white 0%, white 30%, rgba(255,255,255,0.6) 50%, transparent 70%), linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, transparent 30%)'
+          }}></div>
         </div>
 
         {/* Background decorative elements */}
@@ -508,14 +517,14 @@ const Home = () => {
             <div className="w-full space-y-4">
               {/* Heading */}
               <div className="space-y-2">
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                   <span className="bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent">
                     FAST & RELIABLE
                   </span>
                   <br />
                   <span className="text-foreground">EV CHARGING SOLUTION!</span>
                 </h2>
-                <div className="w-16 h-1 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
+                <div className="w-20 h-1 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
               {/* Interactive Service Pointers - 2x3 on mobile, fixed height to prevent layout shift */}
@@ -563,17 +572,19 @@ const Home = () => {
             </div>
           </div>
           
-          {/* Mobile Image - Full width, edge to edge, cropped from left */}
-          <div className="w-screen md:hidden relative mt-4 sm:mt-6 -mx-4 overflow-hidden">
-            <img
-              src={chargingStationIllustration}
-              alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-              className="w-[180%] max-w-none object-cover object-right"
-              style={{ 
-                clipPath: 'inset(0 0 0 45%)',
-                marginLeft: '-40%'
-              }}
-            />
+          {/* Mobile Image - Full width, edge to edge */}
+          <div className="w-full md:hidden relative mt-4 sm:mt-6 overflow-hidden">
+            <div className="relative w-full">
+              <img
+                src={chargingStationIllustration}
+                alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
+                className="w-full h-auto object-cover"
+              />
+              {/* Fade on top only */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, transparent 25%)'
+              }}></div>
+            </div>
           </div>
         </div>
       </section>
