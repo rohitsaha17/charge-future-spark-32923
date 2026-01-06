@@ -4,6 +4,7 @@ import StorytellingSection from "@/components/StorytellingSection";
 import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Youtube } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
+import trustBg from "@/assets/trust-bg.jpg";
 import ctoPortrait from "@/assets/team/cto-portrait.jpg";
 import operationsPortrait from "@/assets/team/operations-portrait.jpg";
 import bdPortrait from "@/assets/team/bd-portrait.jpg";
@@ -120,10 +121,10 @@ const About = () => {
     const { count, ref } = useCountUp({ end: value, duration: 2000, startOnView: false });
     return (
       <div ref={ref} className="text-center">
-        <div className="text-5xl md:text-6xl font-bold text-foreground mb-2">
+        <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-2">
           {count.toLocaleString()}{suffix}
         </div>
-        <div className="text-muted-foreground">{label}</div>
+        <div className="text-sm md:text-base text-muted-foreground">{label}</div>
       </div>
     );
   };
@@ -131,7 +132,7 @@ const About = () => {
   return (
     <div className="min-h-screen pb-20">
       {/* Full-Width Hero Section - Enhanced */}
-      <section id="hero" className="text-center mb-24 relative overflow-hidden">
+      <section id="hero" className="text-center mb-16 md:mb-24 relative overflow-hidden">
         {/* Background Image with Gradient Blue to White Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -151,18 +152,18 @@ const About = () => {
         </div>
         
         {/* Content */}
-        <div className="relative z-10 py-32 md:py-48 px-4">
+        <div className="relative z-10 py-24 md:py-32 lg:py-48 px-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
             <Zap className="w-4 h-4 text-cyan-300" />
-            <span className="text-sm font-semibold text-white/90">Powering Tomorrow's Mobility</span>
+            <span className="text-xs sm:text-sm font-semibold text-white/90">Powering Tomorrow's Mobility</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-2xl">
             From Vision to <span className="text-cyan-300">Reality</span><br />
             <span className="text-white/95 drop-shadow-2xl">
               Electrifying Northeast India
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
             Born in Assam, built for the Northeast. We're not just installing chargers - we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
           </p>
         </div>
@@ -170,38 +171,13 @@ const About = () => {
 
       <div className="container mx-auto px-4 max-w-6xl">
 
-        {/* Stats Section */}
-        <section id="stats" className="mb-24 scroll-mt-24">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {stats.map((stat, index) => (
-              <StatsCounter key={index} {...stat} />
-            ))}
-          </div>
-        </section>
-
-        {/* Trusted By Section */}
-        <section id="partners" className="mb-24 scroll-mt-24 -mx-4 px-4 py-12 bg-gradient-to-b from-muted/30 via-muted/10 to-transparent rounded-2xl">
-          <div className="text-center mb-8">
-            <p className="text-sm text-muted-foreground uppercase tracking-wider mb-6">Trusted by teams at</p>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-              {partners.map((partner, index) => (
-                <div key={index} className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300">
-                  <img src={partner.logo} alt={partner.name} className="h-8 md:h-10 object-contain" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <GradientDivider />
-
-        {/* Story Section */}
-        <section id="story" className="mb-24 scroll-mt-24">
+        {/* 1. The Mission Section */}
+        <section id="mission" className="mb-16 md:mb-24 scroll-mt-24">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 md:mb-8">
               The Mission
             </h2>
-            <div className="space-y-6 text-muted-foreground leading-relaxed">
+            <div className="space-y-4 md:space-y-6 text-sm md:text-base text-muted-foreground leading-relaxed">
               <p>
                 Rooted in the heart of Guwahati and branching across the Seven Sisters with brother Sikkim and West Bengal, 
                 A Plus Charge (AlternatEV Solutions) was founded to solve a critical challenge: the EV infrastructure gap 
@@ -227,60 +203,84 @@ const About = () => {
 
         <GradientDivider />
 
-        <StorytellingSection 
-          title="The Roadmap: Scaling with Impact"
-          description="Strategic Expansion: We are on a fast-track to activate 100+ marquee locations by 2026, turning the Northeast into one of India's most EV-friendly zones. A Greener Horizon: Our eyes are set on 10,000+ EV stations by 2030."
-        />
-
-        <GradientDivider />
-
-        {/* What We Believe In */}
-        <section id="values" className="mb-24 scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What We Believe In</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {values.map((value, index) => {
-              const Icon = value.icon;
-              return (
-                <Card key={index} className="p-8 text-center hover:shadow-lg transition-shadow">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                    <Icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{value.title}</h3>
-                  <p className="text-muted-foreground">{value.description}</p>
-                </Card>
-              );
-            })}
+        {/* 2. Stats Section - Network at a Glance */}
+        <section id="stats" className="mb-16 md:mb-24 scroll-mt-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
+            Our Network at a Glance
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 lg:gap-12">
+            {stats.map((stat, index) => (
+              <StatsCounter key={index} {...stat} />
+            ))}
           </div>
         </section>
 
         <GradientDivider />
 
-        {/* Founder Section */}
-        <section id="team" className="mb-24 scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+        {/* 3. Mission & Vision Section */}
+        <section id="mission-vision" className="mb-16 md:mb-24 scroll-mt-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">Our Mission & Vision</h2>
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+            <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 md:mb-6">
+                <Target className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+              </div>
+              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Our Mission</h3>
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                To accelerate Northeast India's transition to electric mobility by building the region's most reliable, accessible, and user-friendly charging infrastructure. We're committed to eliminating range anxiety and making EV ownership a seamless experience for every driver.
+              </p>
+            </Card>
+            <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 md:mb-6">
+                <Eye className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+              </div>
+              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Our Vision</h3>
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                To create a sustainable future where every corner of Northeast India is powered by clean energy. We envision a region where EV charging is as convenient as fueling traditional vehicles, driving economic growth while preserving our beautiful landscapes for generations to come.
+              </p>
+            </Card>
+          </div>
+        </section>
+
+        <GradientDivider />
+      </div>
+
+      {/* 4. The Roadmap: Scaling with Impact - Full width storytelling with background */}
+      <StorytellingSection 
+        title="The Roadmap: Scaling with Impact"
+        description="Strategic Expansion: We are on a fast-track to activate 100+ marquee locations by 2026, turning the Northeast into one of India's most EV-friendly zones. A Greener Horizon: Our eyes are set on 10,000+ EV stations by 2030."
+        backgroundImage={trustBg}
+      />
+
+      <div className="container mx-auto px-4 max-w-6xl">
+        <GradientDivider />
+
+        {/* 5. Meet the Founder Section */}
+        <section id="team" className="mb-16 md:mb-24 scroll-mt-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 md:mb-4">
             Meet the Founder
           </h2>
-          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-sm md:text-base text-muted-foreground mb-8 md:mb-12 max-w-2xl mx-auto">
             The visionary behind Northeast India's most reliable EV charging network
           </p>
           <div className="max-w-4xl mx-auto">
             <Card className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-2 gap-0">
-                <div className="relative h-96 md:h-auto overflow-hidden">
+                <div className="relative h-64 sm:h-80 md:h-auto overflow-hidden">
                   <img 
                     src={team[0].image} 
                     alt={team[0].name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-8 md:p-12 flex flex-col justify-center">
-                  <h3 className="text-3xl font-bold mb-2">{team[0].name}</h3>
-                  <p className="text-primary font-semibold mb-4">{team[0].role}</p>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                <div className="p-6 md:p-8 lg:p-12 flex flex-col justify-center">
+                  <h3 className="text-2xl md:text-3xl font-bold mb-2">{team[0].name}</h3>
+                  <p className="text-primary font-semibold mb-3 md:mb-4">{team[0].role}</p>
+                  <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 leading-relaxed">
                     {team[0].story}
                   </p>
-                  <div className="border-l-4 border-primary pl-4 mb-6">
-                    <p className="text-sm font-semibold text-foreground">{team[0].highlight}</p>
+                  <div className="border-l-4 border-primary pl-4 mb-4 md:mb-6">
+                    <p className="text-xs md:text-sm font-semibold text-foreground">{team[0].highlight}</p>
                   </div>
                   <div className="flex gap-4">
                     <a 
@@ -308,39 +308,35 @@ const About = () => {
           </div>
         </section>
 
-        {/* Mission & Vision Section */}
-        <section id="mission-vision" className="mb-24 scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Mission & Vision</h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <Card className="p-8 hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-                <Target className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                To accelerate Northeast India's transition to electric mobility by building the region's most reliable, accessible, and user-friendly charging infrastructure. We're committed to eliminating range anxiety and making EV ownership a seamless experience for every driver.
-              </p>
-            </Card>
-            <Card className="p-8 hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-                <Eye className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                To create a sustainable future where every corner of Northeast India is powered by clean energy. We envision a region where EV charging is as convenient as fueling traditional vehicles, driving economic growth while preserving our beautiful landscapes for generations to come.
-              </p>
-            </Card>
+        <GradientDivider />
+
+        {/* 6. What We Believe In */}
+        <section id="values" className="mb-16 md:mb-24 scroll-mt-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">What We Believe In</h2>
+          <div className="grid md:grid-cols-3 gap-4 md:gap-8">
+            {values.map((value, index) => {
+              const Icon = value.icon;
+              return (
+                <Card key={index} className="p-6 md:p-8 text-center hover:shadow-lg transition-shadow">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 md:mb-6">
+                    <Icon className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3">{value.title}</h3>
+                  <p className="text-sm md:text-base text-muted-foreground">{value.description}</p>
+                </Card>
+              );
+            })}
           </div>
         </section>
 
         <GradientDivider />
 
-        {/* Journey Timeline Section */}
-        <section id="journey" className="mb-24 scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+        {/* 7. Journey Timeline Section */}
+        <section id="journey" className="mb-16 md:mb-24 scroll-mt-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 md:mb-4">
             A Plus Charge's Journey to EV Charging Leadership
           </h2>
-          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-sm md:text-base text-muted-foreground mb-8 md:mb-12 max-w-2xl mx-auto">
             From ideation to market leadership - our milestones in transforming Northeast India's EV landscape
           </p>
           <JourneyTimeline />
@@ -348,12 +344,29 @@ const About = () => {
 
         <GradientDivider />
 
-        {/* Testimonials Section */}
-        <section id="testimonials" className="mb-24 scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+        {/* 8. Clientele / Partners Section */}
+        <section id="partners" className="mb-16 md:mb-24 scroll-mt-24 -mx-4 px-4 py-8 md:py-12 bg-gradient-to-b from-muted/30 via-muted/10 to-transparent rounded-2xl">
+          <div className="text-center mb-6 md:mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Our Clientele</h2>
+            <p className="text-sm md:text-base text-muted-foreground uppercase tracking-wider mb-6">Trusted by industry leaders</p>
+            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-12">
+              {partners.map((partner, index) => (
+                <div key={index} className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300">
+                  <img src={partner.logo} alt={partner.name} className="h-6 md:h-8 lg:h-10 object-contain" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <GradientDivider />
+
+        {/* 9. Testimonials Section */}
+        <section id="testimonials" className="mb-16 md:mb-24 scroll-mt-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 md:mb-4">
             Proven by People Who Use It
           </h2>
-          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-sm md:text-base text-muted-foreground mb-8 md:mb-12 max-w-2xl mx-auto">
             Hear from EV drivers who trust our network every day
           </p>
           <TestimonialsCarousel />
@@ -362,18 +375,18 @@ const About = () => {
         <GradientDivider />
 
         {/* FAQ Section */}
-        <section id="faq" className="mb-24 scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+        <section id="faq" className="mb-16 md:mb-24 scroll-mt-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto">
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, index) => (
                 <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger className="text-left">
+                  <AccordionTrigger className="text-left text-sm md:text-base">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">
+                  <AccordionContent className="text-sm md:text-base text-muted-foreground">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>

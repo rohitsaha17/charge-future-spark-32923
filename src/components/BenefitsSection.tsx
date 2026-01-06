@@ -40,17 +40,17 @@ const BenefitsSection = () => {
   return <section className="py-20 relative overflow-hidden bg-gradient-to-b from-background via-content-highlight to-background">
       <div className="container mx-auto px-4">
         {/* Header Section */}
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
+        <div className="text-center mb-10 md:mb-16 space-y-3 md:space-y-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
             Why Choose Electric Charging Device?
           </h2>
-          <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto">
+          <p className="text-sm md:text-lg lg:text-xl text-foreground/70 max-w-3xl mx-auto">
             Experience the future of sustainable transportation with our cutting-edge charging solutions
           </p>
         </div>
 
-        {/* Benefits Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        {/* Benefits Grid - 2x3 on mobile */}
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
           {benefits.map((benefit, index) => {
           const Icon = benefit.icon;
           // Alternate between different blue-themed gradients
@@ -62,26 +62,26 @@ const BenefitsSection = () => {
             "from-[#e8f4ff] via-[#f0f9ff] to-white border-blue-400/20 hover:border-blue-400/50",
             "from-white via-[#f0f9ff] to-[#e8f4ff] border-sky-400/20 hover:border-sky-400/50",
           ];
-          return <div key={index} className={`group relative p-8 rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border-2 bg-gradient-to-br ${cardGradients[index]} shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(38,116,236,0.3)]`} style={{
+          return <div key={index} className={`group relative p-4 sm:p-6 md:p-8 rounded-xl md:rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border-2 bg-gradient-to-br ${cardGradients[index]} shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(38,116,236,0.3)]`} style={{
             animationDelay: `${index * 0.1}s`
           }}>
                 {/* Icon Container - Enhanced with blue theme */}
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2674EC] to-[#00C6FF] p-0.5 flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-[0_8px_20px_-5px_rgba(38,116,236,0.4)]`}>
-                  <div className="w-full h-full bg-white rounded-2xl flex items-center justify-center">
-                    <Icon className="w-8 h-8 text-[#2674EC]" />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-[#2674EC] to-[#00C6FF] p-0.5 flex items-center justify-center mb-3 md:mb-6 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-[0_8px_20px_-5px_rgba(38,116,236,0.4)]`}>
+                  <div className="w-full h-full bg-white rounded-xl md:rounded-2xl flex items-center justify-center">
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-[#2674EC]" />
                   </div>
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-[#2674EC] transition-colors duration-300">
+                <h3 className="text-sm sm:text-base md:text-xl font-bold mb-1 md:mb-3 text-foreground group-hover:text-[#2674EC] transition-colors duration-300">
                   {benefit.title}
                 </h3>
-                <p className="text-foreground/70 leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
+                <p className="text-xs sm:text-sm md:text-base text-foreground/70 leading-relaxed group-hover:text-foreground/80 transition-colors duration-300 line-clamp-3 md:line-clamp-none">
                   {benefit.description}
                 </p>
 
                 {/* Decorative Glow Effect - Blue themed */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#2674EC]/0 via-[#00C6FF]/0 to-[#2674EC]/0 group-hover:from-[#2674EC]/5 group-hover:via-transparent group-hover:to-[#00C6FF]/5 transition-all duration-500 pointer-events-none"></div>
+                <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-gradient-to-br from-[#2674EC]/0 via-[#00C6FF]/0 to-[#2674EC]/0 group-hover:from-[#2674EC]/5 group-hover:via-transparent group-hover:to-[#00C6FF]/5 transition-all duration-500 pointer-events-none"></div>
               </div>;
         })}
         </div>
