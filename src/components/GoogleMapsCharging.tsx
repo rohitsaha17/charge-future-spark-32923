@@ -4,7 +4,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { MapPin, Zap, Navigation } from 'lucide-react';
 
 type Station = {
@@ -35,7 +34,6 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
   const [stations, setStations] = useState<Station[]>([]);
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -45,7 +43,6 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
   // Fetch stations once
   useEffect(() => {
     const fetchStations = async () => {
-      setIsLoading(true);
       const { data, error } = await supabase
         .from('charging_stations')
         .select('*')
@@ -54,12 +51,10 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
 
       if (error) {
         console.error('Error fetching stations:', error);
-        setIsLoading(false);
         return;
       }
 
       setStations((data || []) as Station[]);
-      setIsLoading(false);
     };
 
     fetchStations();
@@ -218,29 +213,6 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
       });
     }
   }, [selectedStationId, stations]);
-
-  // Loading skeleton
-  if (isLoading) {
-    return (
-      <div className="w-full h-[500px] md:h-[600px] rounded-2xl shadow-elegant border border-border overflow-hidden relative">
-        <Skeleton className="w-full h-full" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-primary/20 animate-pulse flex items-center justify-center">
-            <MapPin className="w-8 h-8 text-primary animate-bounce" />
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <Skeleton className="h-4 w-48" />
-            <Skeleton className="h-3 w-32" />
-          </div>
-          <div className="flex gap-2 mt-4">
-            <Skeleton className="h-8 w-8 rounded-full" />
-            <Skeleton className="h-8 w-8 rounded-full" />
-            <Skeleton className="h-8 w-8 rounded-full" />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
