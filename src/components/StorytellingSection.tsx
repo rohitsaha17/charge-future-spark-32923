@@ -49,7 +49,7 @@ const StorytellingSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`relative w-full min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
+      className={`relative w-full min-h-[25vh] md:min-h-[30vh] lg:min-h-[35vh] flex items-center justify-center overflow-hidden snap-start snap-always ${className ?? ''}`}
       style={{ margin: 0, padding: 0 }}
     >
       {/* Full-page parallax background with visible edges */}
@@ -77,14 +77,14 @@ const StorytellingSection = ({
 
       {/* Content */}
       <div 
-        className={`relative z-10 container mx-auto px-4 sm:px-6 py-12 md:py-16 lg:py-20 text-center transition-all duration-1000 ${
+        className={`relative z-10 container mx-auto px-4 sm:px-6 py-8 md:py-10 lg:py-12 text-center transition-all duration-1000 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 text-white drop-shadow-2xl leading-tight">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-white drop-shadow-2xl leading-tight">
           {title}
         </h2>
-        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed drop-shadow-lg font-medium">
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/95 max-w-3xl mx-auto leading-relaxed drop-shadow-lg font-medium">
           {description}
         </p>
       </div>
