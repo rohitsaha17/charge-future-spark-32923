@@ -496,14 +496,14 @@ const Home = () => {
         ref={statsSection.ref}
         className={`py-8 sm:py-10 md:py-12 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Full-Width Illustration - Pinned to Right, positioned lower */}
-        <div className="absolute inset-0 hidden lg:flex items-end justify-end overflow-visible pointer-events-none">
+        {/* Full-Width Illustration - Pinned to Right, positioned to avoid cropping */}
+        <div className="absolute inset-0 hidden lg:flex items-center justify-end overflow-visible pointer-events-none">
           <img
             src={chargingStationIllustration}
             alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-            className="relative w-[80%] max-w-none object-contain object-right-bottom translate-y-24 translate-x-8"
+            className="relative w-[70%] max-w-none object-contain object-right translate-x-4"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-white/30 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-white/40 pointer-events-none"></div>
         </div>
 
         {/* Background decorative elements */}
@@ -525,15 +525,15 @@ const Home = () => {
                 <div className="w-16 h-1 bg-gradient-to-r from-primary to-cyan-500 rounded-full"></div>
               </div>
 
-              {/* Interactive Service Pointers - Compact with hover reveal, text aligned to one line */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {/* Interactive Service Pointers - Compact with hover reveal */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                 {servicePointers.map((service, index) => {
                   const Icon = service.icon;
                   const isActive = activeService === index;
                   return (
                     <div
                       key={index}
-                      className={`group relative p-3 md:p-4 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden h-auto min-h-[56px] sm:min-h-[64px] ${
+                      className={`group relative p-2 md:p-3 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden h-auto min-h-[48px] sm:min-h-[52px] ${
                         isActive 
                           ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-md' 
                           : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30'
@@ -543,18 +543,18 @@ const Home = () => {
                       onClick={() => microFeedback({ vibratePattern: [12, 40, 12], frequencyHz: 720 })}
                       onTouchStart={() => microFeedback({ vibratePattern: 16, frequencyHz: 720 })}
                     >
-                      <div className="flex items-start gap-3 h-full">
-                        <div className={`p-2 rounded-lg flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
-                          <Icon className={`w-4 h-4 md:w-5 md:h-5 ${isActive ? 'text-white' : 'text-primary'}`} />
+                      <div className="flex items-center gap-2 h-full">
+                        <div className={`p-1.5 rounded-md flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
+                          <Icon className={`w-3.5 h-3.5 md:w-4 md:h-4 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
                         <div className="flex-1 flex flex-col justify-center overflow-hidden">
                           <h3 className={`font-semibold transition-all duration-300 leading-snug whitespace-nowrap ${
-                            isActive ? 'text-white text-[10px] md:text-xs' : 'text-foreground text-xs md:text-sm'
+                            isActive ? 'text-white text-[9px] md:text-[10px]' : 'text-foreground text-[10px] md:text-xs'
                           }`}>
                             {service.title}
                           </h3>
-                          <p className={`text-[9px] md:text-[10px] leading-tight transition-all duration-300 overflow-hidden ${
-                            isActive ? 'text-white/90 opacity-100 max-h-16 mt-1' : 'opacity-0 max-h-0'
+                          <p className={`text-[8px] md:text-[9px] leading-tight transition-all duration-300 overflow-hidden ${
+                            isActive ? 'text-white/90 opacity-100 max-h-12 mt-0.5' : 'opacity-0 max-h-0'
                           }`}>
                             {service.description}
                           </p>
