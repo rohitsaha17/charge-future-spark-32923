@@ -292,7 +292,7 @@ const Partner = () => {
                     value={tariff}
                     onValueChange={setTariff}
                     min={chargerData[chargerType].type === "DC" ? 18 : 8}
-                    max={chargerData[chargerType].type === "DC" ? 26 : 15}
+                    max={30}
                     step={1}
                     className="mt-2"
                   />

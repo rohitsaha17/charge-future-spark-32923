@@ -154,7 +154,7 @@ const NetworkVisualization = () => {
   const sectionRef = useScrollReveal();
 
   return (
-    <section ref={sectionRef.ref} className={`relative w-full py-16 md:py-24 overflow-hidden transition-all duration-1000 ${sectionRef.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+    <section ref={sectionRef.ref} className={`relative w-full py-12 md:py-16 lg:py-24 overflow-hidden transition-all duration-1000 ${sectionRef.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div 
@@ -169,25 +169,48 @@ const NetworkVisualization = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-8">
-          <span className="inline-block px-4 py-2 bg-white/10 rounded-full text-cyan-400 text-sm font-semibold mb-4 backdrop-blur-sm border border-white/10">
+        <div className="text-center mb-6 md:mb-8">
+          <span className="inline-block px-3 py-1.5 md:px-4 md:py-2 bg-white/10 rounded-full text-cyan-400 text-xs md:text-sm font-semibold mb-3 md:mb-4 backdrop-blur-sm border border-white/10">
             ✨ Why Partner With Us
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 md:mb-4 text-white">
             The A Plus{" "}
             <span className="bg-gradient-to-r from-primary via-cyan-400 to-primary bg-clip-text text-transparent">
               Advantage
             </span>
           </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+          <p className="text-sm md:text-base lg:text-lg text-white/70 max-w-2xl mx-auto px-4">
             A connected ecosystem of excellence powering Northeast India's EV revolution
           </p>
         </div>
 
-        {/* Network Visualization */}
+        {/* Mobile/Tablet Grid Layout */}
+        <div className="lg:hidden grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={index}
+                className="group p-3 md:p-4 rounded-xl bg-slate-800/60 border border-white/10 hover:border-white/30 transition-all duration-300"
+                style={{ animation: `slideUp 0.5s ease-out ${index * 0.1}s both` }}
+              >
+                <div 
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center mb-2 md:mb-3 transition-all duration-300"
+                  style={{ backgroundColor: `${feature.color}20`, borderColor: feature.color }}
+                >
+                  <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" style={{ color: feature.color }} />
+                </div>
+                <h4 className="text-xs md:text-sm font-semibold text-white mb-1">{feature.title}</h4>
+                <p className="text-[10px] md:text-xs text-white/60 leading-snug">{feature.description}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop Network Visualization */}
         <div 
           ref={containerRef}
-          className="relative mx-auto max-w-4xl"
+          className="relative mx-auto max-w-4xl hidden lg:block"
           style={{ height: dimensions.height }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -425,11 +448,22 @@ const NetworkVisualization = () => {
           />
         </div>
 
-        {/* CTA */}
-        <div className="text-center mt-8">
+        {/* CTA - Desktop Only for Network viz */}
+        <div className="text-center mt-6 md:mt-8 hidden lg:block">
           <Link
             to="/partner"
             className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-cyan-500 text-white rounded-xl font-semibold shadow-[0_0_30px_rgba(38,116,236,0.4)] hover:shadow-[0_0_50px_rgba(0,198,255,0.6)] transition-all duration-300 hover:scale-105"
+          >
+            <span>Start Your Partnership</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {/* Mobile CTA */}
+        <div className="text-center mt-6 lg:hidden">
+          <Link
+            to="/partner"
+            className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-cyan-500 text-white rounded-xl font-semibold text-sm shadow-[0_0_20px_rgba(38,116,236,0.3)] hover:shadow-[0_0_40px_rgba(0,198,255,0.5)] transition-all duration-300 hover:scale-105"
           >
             <span>Start Your Partnership</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

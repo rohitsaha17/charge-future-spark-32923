@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
-import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Instagram } from "lucide-react";
+import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Youtube } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
 import ctoPortrait from "@/assets/team/cto-portrait.jpg";
@@ -35,8 +35,8 @@ const About = () => {
   ];
 
   const values = [
-    { icon: Zap, title: "Reliability First", description: "99%+ uptime guaranteed across all stations" },
-    { icon: Users, title: "Customer Obsessed", description: "24/7 support in local languages" },
+    { icon: Zap, title: "Reliability First", description: "97%+ uptime guaranteed across all stations" },
+    { icon: Users, title: "Customer Obsessed", description: "24/7 support, local language help whenever you need it" },
     { icon: Leaf, title: "Sustainability", description: "Clean energy for a greener Northeast" },
   ];
 
@@ -53,7 +53,7 @@ const About = () => {
   const faqs = [
     {
       question: "What makes A Plus Charge different?",
-      answer: "We're the only EV charging network built specifically for Northeast India's unique terrain, weather, and power grid challenges. Our systems are optimized for monsoons, hill stations, and local language support."
+      answer: "We're the best CPO from North East India built specifically for Northeast India's unique terrain, weather, and power grid challenges. Our systems are optimized for monsoons, hill stations, and local language support."
     },
     {
       question: "How reliable are your charging stations?",
@@ -77,7 +77,7 @@ const About = () => {
       story: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge - Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
       highlight: "PG in Entrepreneurship, Amity University | 10+ years in clean energy",
       linkedin: "https://in.linkedin.com/in/samyak-jain-alternatev",
-      instagram: "https://www.instagram.com/samyakjain_it_is/"
+      youtube: "https://www.youtube.com/@evboy_samyak"
     },
     {
       name: "Priya Sharma",
@@ -290,13 +290,13 @@ const About = () => {
                       <span className="text-sm">LinkedIn</span>
                     </a>
                     <a 
-                      href={team[0].instagram} 
+                      href={team[0].youtube} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                     >
-                      <Instagram className="w-5 h-5" />
-                      <span className="text-sm">Instagram</span>
+                      <Youtube className="w-5 h-5" />
+                      <span className="text-sm">YouTube</span>
                     </a>
                   </div>
                 </div>
