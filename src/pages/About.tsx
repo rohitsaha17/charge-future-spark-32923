@@ -171,32 +171,65 @@ const About = () => {
 
       <div className="container mx-auto px-4 max-w-6xl">
 
-        {/* 1. The Mission Section */}
+        {/* 1. Our Story Section - Split Layout */}
         <section id="mission" className="mb-16 md:mb-24 scroll-mt-24">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 md:mb-8">
-              The Mission
-            </h2>
-            <div className="space-y-4 md:space-y-6 text-sm md:text-base text-muted-foreground leading-relaxed">
-              <p>
-                Rooted in the heart of Guwahati and branching across the Seven Sisters with brother Sikkim and West Bengal, 
-                A Plus Charge (AlternatEV Solutions) was founded to solve a critical challenge: the EV infrastructure gap 
-                in East and North-East India.
-              </p>
-              <p>
-                We are here to pioneer a lifestyle shift. By replacing traditional fuel stops with smart, high-speed 
-                charging hubs, we are making electric mobility the new standard for our region.
-              </p>
-              <p>
-                <strong>Our Edge: Mastery of the Terrain.</strong> Local Expertise, Global Standards. While the geography 
-                of the Northeast can be a barrier for many, it is our home turf. From the high-altitude airstrips of 
-                Shillong to the remote roads of Upper Assam, we deploy technology that thrives in our unique landscape.
-              </p>
-              <p>
-                <strong>Community-First Growth:</strong> We are powered by local talent. By engaging regional workforces 
-                and understanding local needs, we ensure the EV revolution creates jobs and economic value right here 
-                in our communities.
-              </p>
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
+            {/* Left - The Story */}
+            <div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 bg-gradient-to-r from-primary to-cyan-600 bg-clip-text text-transparent">
+                Powering the Change
+              </h2>
+              <div className="space-y-4 md:space-y-6 text-sm md:text-base text-muted-foreground leading-relaxed">
+                <p>
+                  Rooted in the heart of Guwahati and branching across the Seven Sisters with brother Sikkim and West Bengal, 
+                  A Plus Charge (AlternatEV Solutions) was founded to solve a critical challenge: the EV infrastructure gap 
+                  in East and North-East India.
+                </p>
+                <p>
+                  We are here to pioneer a lifestyle shift. By replacing traditional fuel stops with smart, high-speed 
+                  charging hubs, we are making electric mobility the new standard for our region.
+                </p>
+                <p>
+                  <strong className="text-foreground">Our Edge: Mastery of the Terrain.</strong> Local Expertise, Global Standards. While the geography 
+                  of the Northeast can be a barrier for many, it is our home turf. From the high-altitude airstrips of 
+                  Shillong to the remote roads of Upper Assam, we deploy technology that thrives in our unique landscape.
+                </p>
+                <p>
+                  <strong className="text-foreground">Community-First Growth:</strong> We are powered by local talent. By engaging regional workforces 
+                  and understanding local needs, we ensure the EV revolution creates jobs and economic value right here 
+                  in our communities.
+                </p>
+              </div>
+            </div>
+            
+            {/* Right - Vision & Mission Cards */}
+            <div className="space-y-6">
+              <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow border-l-4 border-l-primary">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Target className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Our Mission</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      To accelerate Northeast India's transition to electric mobility by building the region's most reliable, accessible, and user-friendly charging infrastructure.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow border-l-4 border-l-cyan-500">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+                    <Eye className="w-6 h-6 text-cyan-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Our Vision</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      To create a sustainable future where every corner of Northeast India is powered by clean energy, driving economic growth while preserving our beautiful landscapes.
+                    </p>
+                  </div>
+                </div>
+              </Card>
             </div>
           </div>
         </section>
@@ -242,7 +275,6 @@ const About = () => {
           </div>
         </section>
 
-        <GradientDivider />
       </div>
 
       {/* 4. The Roadmap: Scaling with Impact - Full width storytelling with background */}
@@ -351,8 +383,8 @@ const About = () => {
             <p className="text-sm md:text-base text-muted-foreground uppercase tracking-wider mb-6">Trusted by industry leaders</p>
             <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-12">
               {partners.map((partner, index) => (
-                <div key={index} className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300">
-                  <img src={partner.logo} alt={partner.name} className="h-6 md:h-8 lg:h-10 object-contain" />
+                <div key={index} className="grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-all duration-300 bg-transparent">
+                  <img src={partner.logo} alt={partner.name} className="h-8 md:h-10 lg:h-12 w-auto object-contain mix-blend-multiply" />
                 </div>
               ))}
             </div>
