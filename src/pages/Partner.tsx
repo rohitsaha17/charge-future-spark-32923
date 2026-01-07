@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import LocationPickerMap from "@/components/LocationPickerMap";
-import { Play, MapPin } from "lucide-react";
+import { Play, MapPin, Sparkles } from "lucide-react";
 import trustBg from "@/assets/trust-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,60 +11,82 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, TrendingDown } from "lucide-react";
+import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, TrendingDown, Award } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+// Charger data matching Services page pricing
+const chargerDataConfig: Record<string, { investment: number; units: { low: number; base: number; aggressive: number }; platformFee: number; defaultTariff: number; type: string; displayName: string }> = {
+  "l1-3.3kw": { 
+    investment: 15000, 
+    units: { low: 100, base: 200, aggressive: 350 }, 
+    platformFee: 1.5,
+    defaultTariff: 10,
+    type: "AC",
+    displayName: "L1 - 3.3 kW Plug Point"
+  },
+  "l2-7.4kw": { 
+    investment: 60000, 
+    units: { low: 250, base: 500, aggressive: 800 }, 
+    platformFee: 1.5,
+    defaultTariff: 10,
+    type: "AC",
+    displayName: "L2 - 7.4 kW AC Charger"
+  },
+  "l2-9.9kw": { 
+    investment: 55000, 
+    units: { low: 300, base: 600, aggressive: 900 }, 
+    platformFee: 1.5,
+    defaultTariff: 10,
+    type: "AC",
+    displayName: "L2 - 9.9 kW (3 Plug Points)"
+  },
+  "l3-30kw": { 
+    investment: 549800, 
+    units: { low: 3000, base: 6000, aggressive: 9000 }, 
+    platformFee: 3.0,
+    defaultTariff: 22,
+    type: "DC",
+    displayName: "L3 - 30 kW DC Fast Charger"
+  },
+  "l3-60kw": { 
+    investment: 797500, 
+    units: { low: 6000, base: 12000, aggressive: 18000 }, 
+    platformFee: 3.0,
+    defaultTariff: 22,
+    type: "DC",
+    displayName: "L3 - 60 kW DC Fast Charger"
+  }
+};
+
 const Partner = () => {
-  const [chargerType, setChargerType] = useState("residential-3.3kw");
+  const [searchParams] = useSearchParams();
+  const [chargerType, setChargerType] = useState("l2-7.4kw");
   const [utilization, setUtilization] = useState("base");
   const [tariff, setTariff] = useState([10]);
   const [electricityCost, setElectricityCost] = useState("");
 
-  const chargerData: Record<string, any> = {
-    "residential-3.3kw": { 
-      investment: 40000, 
-      units: { low: 150, base: 300, aggressive: 500 }, 
-      platformFee: 1.5,
-      defaultTariff: 10,
-      type: "AC"
-    },
-    "residential-7.4kw": { 
-      investment: 65000, 
-      units: { low: 250, base: 500, aggressive: 800 }, 
-      platformFee: 1.5,
-      defaultTariff: 10,
-      type: "AC"
-    },
-    "ac-public": { 
-      investment: 150000, 
-      units: { low: 800, base: 1600, aggressive: 2400 }, 
-      platformFee: 1.5,
-      defaultTariff: 10,
-      type: "AC"
-    },
-    "dc-30kw": { 
-      investment: 800000, 
-      units: { low: 3000, base: 6000, aggressive: 9000 }, 
-      platformFee: 3.0,
-      defaultTariff: 22,
-      type: "DC"
-    },
-    "dc-60kw": { 
-      investment: 1500000, 
-      units: { low: 6000, base: 12000, aggressive: 18000 }, 
-      platformFee: 3.0,
-      defaultTariff: 22,
-      type: "DC"
-    },
-    "dc-120kw": { 
-      investment: 2500000, 
-      units: { low: 10000, base: 20000, aggressive: 30000 }, 
-      platformFee: 3.0,
-      defaultTariff: 22,
-      type: "DC"
+  // Handle URL parameters from Services page
+  useEffect(() => {
+    const chargerParam = searchParams.get('charger');
+    const investmentParam = searchParams.get('investment');
+    
+    if (chargerParam) {
+      // Find matching charger by name or investment
+      const matchedKey = Object.entries(chargerDataConfig).find(([key, data]) => {
+        if (investmentParam && data.investment === parseInt(investmentParam)) {
+          return true;
+        }
+        return data.displayName.toLowerCase().includes(chargerParam.toLowerCase().substring(0, 10));
+      });
+      
+      if (matchedKey) {
+        setChargerType(matchedKey[0]);
+        setTariff([chargerDataConfig[matchedKey[0]].defaultTariff]);
+        toast.success(`${chargerDataConfig[matchedKey[0]].displayName} selected for ROI calculation`);
+      }
     }
-  };
+  }, [searchParams]);
 
   const calculateROI = () => {
     if (!electricityCost) {
@@ -71,8 +94,8 @@ const Partner = () => {
       return null;
     }
 
-    const data = chargerData[chargerType];
-    const units = data.units[utilization];
+    const data = chargerDataConfig[chargerType];
+    const units = data.units[utilization as keyof typeof data.units];
     const grossRevenue = units * tariff[0];
     const electricityExpense = units * parseFloat(electricityCost);
     const platformFees = units * data.platformFee;
@@ -128,7 +151,7 @@ const Partner = () => {
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
     const email = formData.get('email') as string;
-    const chargerType = formData.get('siteType') as string;
+    const chargerTypeForm = formData.get('siteType') as string;
     const message = `Power Load: ${formData.get('powerLoad')}kW, Ownership Model: ${formData.get('ownershipModel')}, Pin Code: ${formData.get('pincode')}, Address: ${formData.get('address')}`;
 
     try {
@@ -138,7 +161,7 @@ const Partner = () => {
           name,
           phone,
           email,
-          charger_type: chargerType,
+          charger_type: chargerTypeForm,
           message,
           location_lat: selectedLocation.lat,
           location_lng: selectedLocation.lng,
@@ -159,33 +182,50 @@ const Partner = () => {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
-      <div className="absolute inset-0" style={{ background: 'var(--gradient-radial)', opacity: 0.2 }}></div>
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12 relative">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm mb-6">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">Partnership Opportunities</span>
+    <div className="min-h-screen pb-20">
+      {/* Enhanced Hero Section */}
+      <section className="relative py-32 md:py-40 mb-12 overflow-hidden bg-gradient-to-br from-primary via-blue-600 to-cyan-600">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+        {/* Electric circuit pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="circuit" patternUnits="userSpaceOnUse" width="100" height="100">
+              <path d="M 0 50 L 40 50 L 50 40 L 60 50 L 100 50" stroke="white" strokeWidth="1" fill="none"/>
+              <path d="M 50 0 L 50 40 M 50 60 L 50 100" stroke="white" strokeWidth="1" fill="none"/>
+              <circle cx="50" cy="50" r="4" fill="white"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#circuit)"/>
+        </svg>
+        
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
+            <Sparkles className="w-4 h-4 text-cyan-300" />
+            <span className="text-sm font-semibold text-white/90">Partnership Opportunities</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-blue-500 to-cyan-500 bg-clip-text text-transparent">
-            Grow With <span className="text-foreground">Us</span>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
+            Grow With <span className="text-cyan-300">Us</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
             Join India's fastest-growing EV charging network. Calculate your ROI and start your partnership journey.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-8">
-            <div className="px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
-              <span className="text-2xl font-bold text-primary">15-20%</span>
-              <span className="text-sm text-muted-foreground ml-2">Expected ROI</span>
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <TrendingUp className="w-5 h-5 text-cyan-300" />
+              <span className="text-white font-medium">15-20% Expected ROI</span>
             </div>
-            <div className="px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
-              <span className="text-2xl font-bold text-primary">₹0</span>
-              <span className="text-sm text-muted-foreground ml-2">Partnership Fee</span>
+            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <Award className="w-5 h-5 text-cyan-300" />
+              <span className="text-white font-medium">₹0 Partnership Fee</span>
             </div>
           </div>
         </div>
+      </section>
 
+      <div className="container mx-auto px-4 relative z-10">
         {/* Explanatory Video Section */}
         <div className="mb-20">
           <Card className="p-8 glass-card max-w-5xl mx-auto">
@@ -206,7 +246,6 @@ const Partner = () => {
                 Your browser does not support the video tag.
               </video>
               
-              {/* Optional: Custom play button overlay - only shown before video starts */}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <div className="w-20 h-20 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm">
                   <Play className="w-10 h-10 text-white ml-1" />
@@ -249,8 +288,7 @@ const Partner = () => {
                     value={chargerType} 
                     onValueChange={(value) => {
                       setChargerType(value);
-                      // Automatically set tariff based on charger type
-                      const selectedCharger = chargerData[value];
+                      const selectedCharger = chargerDataConfig[value];
                       setTariff([selectedCharger.defaultTariff]);
                     }}
                   >
@@ -258,16 +296,15 @@ const Partner = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="residential-3.3kw">Residential 3.3 kW</SelectItem>
-                      <SelectItem value="residential-7.4kw">Residential 7.4 kW</SelectItem>
-                      <SelectItem value="ac-public">AC Public (7.4-22 kW)</SelectItem>
-                      <SelectItem value="dc-30kw">DC Fast 30 kW</SelectItem>
-                      <SelectItem value="dc-60kw">DC Fast 60 kW</SelectItem>
-                      <SelectItem value="dc-120kw">DC Fast 120 kW</SelectItem>
+                      {Object.entries(chargerDataConfig).map(([key, data]) => (
+                        <SelectItem key={key} value={key}>
+                          {data.displayName} (₹{data.investment.toLocaleString('en-IN')})
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground mt-2">
-                    {chargerData[chargerType].type === "DC" 
+                    {chargerDataConfig[chargerType].type === "DC" 
                       ? "DC chargers automatically use ₹22/kWh tariff" 
                       : "AC chargers automatically use ₹10/kWh tariff"}
                   </p>
@@ -292,13 +329,13 @@ const Partner = () => {
                   <Slider
                     value={tariff}
                     onValueChange={setTariff}
-                    min={chargerData[chargerType].type === "DC" ? 18 : 8}
+                    min={chargerDataConfig[chargerType].type === "DC" ? 18 : 8}
                     max={30}
                     step={1}
                     className="mt-2"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Default: ₹{chargerData[chargerType].defaultTariff}/kWh (Adjustable based on market conditions)
+                    Default: ₹{chargerDataConfig[chargerType].defaultTariff}/kWh (Adjustable based on market conditions)
                   </p>
                 </div>
 
@@ -315,7 +352,7 @@ const Partner = () => {
 
                 <div className="pt-4">
                   <div className="text-sm text-muted-foreground mb-2">
-                    Investment Cost: ₹{chargerData[chargerType].investment.toLocaleString('en-IN')}
+                    Investment Cost: ₹{chargerDataConfig[chargerType].investment.toLocaleString('en-IN')}
                   </div>
                   <Button onClick={handleCalculate} className="w-full glow-effect">
                     Calculate ROI
@@ -399,19 +436,7 @@ const Partner = () => {
                     <div>
                       <h4 className="font-semibold mb-1">Complete Support</h4>
                       <p className="text-sm text-muted-foreground">
-                        End-to-end installation, maintenance, and 24/7 technical support included
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <TrendingUp className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-1">Guaranteed Returns</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Transparent revenue sharing with monthly payouts and detailed analytics
+                        24/7 technical support and comprehensive O&M services
                       </p>
                     </div>
                   </div>
@@ -421,23 +446,23 @@ const Partner = () => {
                       <Headphones className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Marketing & Branding</h4>
+                      <h4 className="font-semibold mb-1">Local Expertise</h4>
                       <p className="text-sm text-muted-foreground">
-                        Your location featured on our app, maps, and marketing materials at no extra cost
+                        Regional team with deep understanding of Northeast India
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-8 p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                    <p className="text-center text-sm text-muted-foreground mb-2">
-                      Average Partner Earnings
-                    </p>
-                    <p className="text-center text-3xl font-bold text-primary mb-1">
-                      ₹25,000 - ₹1,50,000
-                    </p>
-                    <p className="text-center text-xs text-muted-foreground">
-                      per month (based on charger type and utilization)
-                    </p>
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">High ROI</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Industry-leading returns with transparent platform fee model
+                      </p>
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -447,184 +472,123 @@ const Partner = () => {
 
         <GradientDivider />
 
-        <StorytellingSection 
-          title="Your Success Is Our Mission"
-          description="Join Northeast India's fastest-growing charging network. Together, we'll power the future of clean mobility while creating sustainable income for you. Let's build something extraordinary."
-          backgroundImage={trustBg}
-        />
+        {/* Partnership Enquiry Form */}
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-center mb-4">Partnership Enquiry</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            Fill out the form below and our team will get back to you within 24 hours
+          </p>
 
-        <GradientDivider />
-
-        {/* Enquiry Form */}
-        <div className="max-w-4xl mx-auto">
-          <Card className="p-8 glass-card">
-            <h2 className="text-2xl font-bold mb-2">Partner Enquiry Form</h2>
-            <p className="text-muted-foreground mb-6">Fill in your details and we'll get back to you within 24 hours</p>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-8">
               {/* Contact Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Contact Information</h3>
-                <div className="grid md:grid-cols-3 gap-4">
+              <Card className="p-6 glass-card">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  Contact Information
+                </h3>
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Name *</Label>
-                    <Input 
-                      id="name"
-                      name="name"
-                      required 
-                      placeholder="Your full name" 
-                      maxLength={100}
-                    />
+                    <Label>Full Name *</Label>
+                    <Input name="name" required placeholder="Your full name" />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Phone *</Label>
-                    <Input 
-                      id="phone"
-                      name="phone"
-                      required 
-                      type="tel" 
-                      placeholder="10-digit mobile number"
-                      pattern="[0-9]{10}"
-                      maxLength={10}
-                    />
+                    <Label>Phone Number *</Label>
+                    <Input name="phone" required type="tel" placeholder="Your phone number" />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input 
-                      id="email"
-                      name="email"
-                      required 
-                      type="email" 
-                      placeholder="your@email.com"
-                      maxLength={255}
-                    />
+                    <Label>Email Address *</Label>
+                    <Input name="email" required type="email" placeholder="your@email.com" />
                   </div>
                 </div>
-              </div>
-
-              {/* Site Location */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Site Location</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="pincode">Pin Code *</Label>
-                    <Input 
-                      id="pincode"
-                      name="pincode"
-                      required 
-                      placeholder="Enter 6-digit pin code"
-                      pattern="[0-9]{6}"
-                      maxLength={6}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="address">Full Address *</Label>
-                    <Input 
-                      id="address"
-                      name="address"
-                      required 
-                      placeholder="Street, Area, City"
-                      maxLength={200}
-                    />
-                  </div>
-                </div>
-                
-                {/* Interactive Location Map */}
-                <div className="space-y-3">
-                  <Label className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-primary" />
-                    Mark Your Exact Location on Map *
-                  </Label>
-                  <LocationPickerMap 
-                    onLocationSelect={handleLocationSelect}
-                    initialLat={26.1445}
-                    initialLng={91.7362}
-                  />
-                  {selectedLocation && (
-                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                      <p className="text-sm font-medium text-foreground mb-1">Selected Location:</p>
-                      <p className="text-xs text-foreground/70">
-                        Latitude: {selectedLocation.lat.toFixed(6)}, Longitude: {selectedLocation.lng.toFixed(6)}
-                      </p>
-                      {selectedLocation.address && (
-                        <p className="text-xs text-foreground/60 mt-1">
-                          {selectedLocation.address}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
+              </Card>
 
               {/* Site Details */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Site Details</h3>
-                <div className="grid md:grid-cols-2 gap-4">
+              <Card className="p-6 glass-card">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-primary" />
+                  Site Details
+                </h3>
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="siteType">Type of Site *</Label>
-                    <Select name="siteType" required>
-                      <SelectTrigger id="siteType">
+                    <Label>Site Type</Label>
+                    <Select name="siteType">
+                      <SelectTrigger>
                         <SelectValue placeholder="Select site type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="highway">Highway</SelectItem>
-                        <SelectItem value="office">Office Complex</SelectItem>
-                        <SelectItem value="mall">Shopping Mall</SelectItem>
-                        <SelectItem value="airport">Airport</SelectItem>
-                        <SelectItem value="residential">Residential Society</SelectItem>
+                        <SelectItem value="residential">Residential</SelectItem>
+                        <SelectItem value="commercial">Commercial Complex</SelectItem>
+                        <SelectItem value="hotel">Hotel / Restaurant</SelectItem>
+                        <SelectItem value="fuel-station">Fuel Station</SelectItem>
+                        <SelectItem value="highway">Highway Location</SelectItem>
+                        <SelectItem value="parking">Parking Facility</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-
                   <div>
-                    <Label htmlFor="powerLoad">Available Power Load (kW) *</Label>
-                    <Input 
-                      id="powerLoad"
-                      name="powerLoad"
-                      required
-                      type="number" 
-                      placeholder="e.g., 50"
-                      min="1"
-                      max="1000"
-                    />
+                    <Label>Available Power Load (kW)</Label>
+                    <Input name="powerLoad" type="number" placeholder="e.g., 30" />
+                  </div>
+                  <div>
+                    <Label>Ownership Model</Label>
+                    <Select name="ownershipModel">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select model" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="capex">CAPEX (You own the charger)</SelectItem>
+                        <SelectItem value="opex">OPEX (We install, you earn)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-              </div>
+              </Card>
+            </div>
 
-              {/* Ownership Model */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Partnership Model</h3>
+            {/* Location Section */}
+            <Card className="p-6 glass-card mt-8">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-primary" />
+                Site Location
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Click on the map to mark your proposed charging station location
+              </p>
+              <div className="h-[400px] rounded-lg overflow-hidden mb-4">
+                <LocationPickerMap onLocationSelect={handleLocationSelect} />
+              </div>
+              {selectedLocation && (
+                <p className="text-sm text-primary">
+                  ✓ Location marked: {selectedLocation.address || `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`}
+                </p>
+              )}
+              <div className="grid md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="ownershipModel">Ownership Model *</Label>
-                  <Select name="ownershipModel" required>
-                    <SelectTrigger id="ownershipModel">
-                      <SelectValue placeholder="Select ownership model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="capex">
-                        <div className="py-1">
-                          <div className="font-semibold">CAPEX (Own Infrastructure)</div>
-                          <div className="text-xs text-muted-foreground">You invest in chargers, we manage operations</div>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="opex">
-                        <div className="py-1">
-                          <div className="font-semibold">OPEX (Revenue Sharing)</div>
-                          <div className="text-xs text-muted-foreground">We invest, you provide space & power</div>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label>Pin Code</Label>
+                  <Input name="pincode" placeholder="Enter pin code" />
+                </div>
+                <div>
+                  <Label>Full Address</Label>
+                  <Input name="address" placeholder="Street address" />
                 </div>
               </div>
+            </Card>
 
-              <Button type="submit" className="w-full glow-effect" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit Partnership Enquiry"}
+            <div className="mt-8 text-center">
+              <Button type="submit" size="lg" className="glow-effect px-12" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Enquiry"}
               </Button>
-            </form>
-          </Card>
+            </div>
+          </form>
         </div>
       </div>
+
+      <StorytellingSection 
+        title="Building Northeast India's EV Future Together"
+        description="Partner with us to be part of the electric revolution. From installation to maintenance, we've got you covered."
+        backgroundImage={trustBg}
+      />
     </div>
   );
 };

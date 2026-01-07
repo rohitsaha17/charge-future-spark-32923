@@ -35,39 +35,61 @@ const ChargingStationsMap = () => {
   }, []);
 
   useEffect(() => {
-    if (!map.current || stations.length === 0) return;
+    if (!map.current) return;
 
+    // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    const bounds = new maplibregl.LngLatBounds();
+    if (stations.length === 0) return;
 
-    stations.forEach((station) => {
-      const markerElement = createCustomMarker(station);
-      
-      // Add click event to open Google Maps
-      markerElement.addEventListener('click', () => {
-        openInGoogleMaps(station.latitude, station.longitude, station.name);
+    // Wait for map to be ready
+    const addMarkers = () => {
+      const bounds = new maplibregl.LngLatBounds();
+
+      stations.forEach((station) => {
+        const markerElement = createCustomMarker(station);
+        
+        // Add click event to open Google Maps
+        markerElement.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openInGoogleMaps(station.latitude, station.longitude, station.name);
+        });
+        
+        const marker = new maplibregl.Marker({ 
+          element: markerElement,
+          anchor: 'bottom'
+        })
+          .setLngLat([station.longitude, station.latitude])
+          .setPopup(
+            new maplibregl.Popup({ 
+              offset: 25,
+              className: 'custom-popup',
+              maxWidth: '320px'
+            }).setHTML(createPopupContent(station))
+          )
+          .addTo(map.current!);
+
+        markers.current.push(marker);
+        bounds.extend([station.longitude, station.latitude]);
       });
-      
-      const marker = new maplibregl.Marker({ element: markerElement })
-        .setLngLat([station.longitude, station.latitude])
-        .setPopup(
-          new maplibregl.Popup({ 
-            offset: 25,
-            className: 'custom-popup',
-            maxWidth: '320px'
-          }).setHTML(createPopupContent(station))
-        )
-        .addTo(map.current!);
 
-      markers.current.push(marker);
-      bounds.extend([station.longitude, station.latitude]);
-    });
+      if (stations.length > 0 && bounds.getNorthEast() && bounds.getSouthWest()) {
+        map.current!.fitBounds(bounds, { padding: 80, maxZoom: 12 });
+      }
+    };
 
-    if (stations.length > 0) {
-      map.current.fitBounds(bounds, { padding: 80, maxZoom: 12 });
+    if (map.current.loaded()) {
+      addMarkers();
+    } else {
+      map.current.on('load', addMarkers);
     }
+
+    return () => {
+      if (map.current) {
+        map.current.off('load', addMarkers);
+      }
+    };
   }, [stations]);
 
   const openInGoogleMaps = (lat: number, lng: number, name: string) => {
