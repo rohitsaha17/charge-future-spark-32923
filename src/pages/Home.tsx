@@ -330,7 +330,7 @@ const Home = () => {
 
                 {/* Description */}
                 <p 
-                  className="text-base md:text-lg lg:text-xl text-foreground/75 leading-relaxed max-w-xl mx-auto md:mx-0"
+                  className="text-base md:text-lg lg:text-xl text-foreground/75 leading-relaxed max-w-xl mx-auto md:mx-0 relative z-10 bg-gradient-to-r from-background/90 via-background/70 to-transparent py-2 pr-4 rounded-lg"
                   style={{ animation: "slideUp 0.6s ease-out 0.3s both" }}
                 >
                   Powering your journey across the hills and plains with smart, high-speed charging solutions. From daily commutes to highway adventures.

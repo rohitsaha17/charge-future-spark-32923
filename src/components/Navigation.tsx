@@ -1,22 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { isPageVisible, loading } = useSiteSettings();
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About Us", path: "/about" },
-    { name: "Services", path: "/services" },
-    { name: "Blogs", path: "/blog" },
-    { name: "Find a Charger", path: "/find-charger" },
-    { name: "Become Our Partner", path: "/partner" },
-    { name: "Invest in APlus", path: "/invest" },
+  // All possible nav links with their visibility keys
+  const allNavLinks = [
+    { name: "Home", path: "/", visibilityKey: null }, // Always visible
+    { name: "About Us", path: "/about", visibilityKey: "about" as const },
+    { name: "Services", path: "/services", visibilityKey: "services" as const },
+    { name: "Blogs", path: "/blog", visibilityKey: "blog" as const },
+    { name: "Find a Charger", path: "/find-charger", visibilityKey: null }, // Always visible
+    { name: "Become Our Partner", path: "/partner", visibilityKey: "partner" as const },
+    { name: "Invest in APlus", path: "/invest", visibilityKey: "invest" as const },
   ];
+
+  // Filter nav links based on visibility settings
+  const navLinks = allNavLinks.filter(link => {
+    if (link.visibilityKey === null) return true; // Always show Home and Find a Charger
+    return isPageVisible(link.visibilityKey);
+  });
 
   const isActive = (path: string) => location.pathname === path;
 
