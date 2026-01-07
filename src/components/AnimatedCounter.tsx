@@ -1,4 +1,4 @@
-import { motion, useInView, useSpring, useTransform } from 'framer-motion';
+import { motion, useSpring } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 
 interface AnimatedCounterProps {
@@ -19,7 +19,7 @@ const AnimatedCounter = ({
   className = ''
 }: AnimatedCounterProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [isInView, setIsInView] = useState(false);
   const [displayValue, setDisplayValue] = useState(0);
 
   const spring = useSpring(0, {
@@ -27,6 +27,25 @@ const AnimatedCounter = ({
     damping: 30,
     duration: duration * 1000
   });
+
+  // Use IntersectionObserver instead of Framer Motion's useInView to avoid forced reflows
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '-100px', threshold: 0 }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (isInView) {
@@ -42,20 +61,16 @@ const AnimatedCounter = ({
   }, [spring]);
 
   return (
-    <motion.div 
+    <div 
       ref={ref}
       className={`text-center ${className}`}
-      initial={{ opacity: 0, scale: 0.5 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      style={{ willChange: isInView ? 'auto' : 'transform, opacity' }}
     >
       <motion.div 
         className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-2"
-        initial={{ y: 20 }}
-        whileInView={{ y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        initial={{ opacity: 0, scale: 0.5, y: 20 }}
+        animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <span className="tabular-nums">
           {prefix}{displayValue.toLocaleString()}{suffix}
@@ -64,13 +79,12 @@ const AnimatedCounter = ({
       <motion.div 
         className="text-sm md:text-base text-muted-foreground"
         initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
+        animate={isInView ? { opacity: 1 } : {}}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         {label}
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ReactNode, useRef } from 'react';
+import { ReactNode, useRef, useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 
 interface AnimatedCardProps {
@@ -17,6 +17,28 @@ const AnimatedCard = ({
   direction = 'up',
   hoverEffect = true
 }: AnimatedCardProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  // Use native IntersectionObserver instead of Framer Motion's whileInView to avoid forced reflows
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '-50px', threshold: 0 }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   const getInitialPosition = () => {
     switch (direction) {
       case 'up': return { y: 40, x: 0 };
@@ -31,9 +53,9 @@ const AnimatedCard = ({
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, ...initial }}
-      whileInView={{ opacity: 1, y: 0, x: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      animate={isInView ? { opacity: 1, y: 0, x: 0 } : {}}
       transition={{
         duration: 0.6,
         delay,
@@ -43,6 +65,7 @@ const AnimatedCard = ({
         y: -8,
         transition: { duration: 0.3 }
       } : undefined}
+      style={{ willChange: isInView ? 'auto' : 'transform, opacity' }}
     >
       <Card className={`transition-shadow duration-300 ${hoverEffect ? 'hover:shadow-xl' : ''} ${className}`}>
         {children}
