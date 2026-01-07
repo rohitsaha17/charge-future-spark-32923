@@ -762,9 +762,9 @@ const Home = () => {
                 .map((partner, index) => (
                   <div
                     key={index}
-                    className="flex-shrink-0 mx-12 transition-all duration-300 opacity-90 hover:opacity-100 hover:scale-105 bg-transparent"
+                    className="flex-shrink-0 mx-12 transition-all duration-300 opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] bg-transparent"
                   >
-                    <img src={partner.src} alt={partner.alt} className="h-16 lg:h-20 w-auto object-contain mix-blend-multiply" />
+                    <img src={partner.src} alt={partner.alt} className="h-16 lg:h-20 w-auto object-contain mix-blend-multiply" width="120" height="80" />
                   </div>
                 ))}
             </div>
