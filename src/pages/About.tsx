@@ -1,7 +1,10 @@
 import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
+import AnimatedCard from "@/components/AnimatedCard";
+import AnimatedCounter from "@/components/AnimatedCounter";
 import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Youtube, MapPin, Clock } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
@@ -20,7 +23,6 @@ import imperiaVistaLogo from "@/assets/partners/imperia-vista-logo.png";
 import osmLogo from "@/assets/partners/osm-logo.png";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { JourneyTimeline } from "@/components/JourneyTimeline";
-import { useCountUp } from "@/hooks/useCountUp";
 import {
   Accordion,
   AccordionContent,
@@ -118,18 +120,6 @@ const About = () => {
     }
   ];
 
-  const StatsCounter = ({ value, label, suffix }: { value: number; label: string; suffix: string }) => {
-    const { count, ref } = useCountUp({ end: value, duration: 2000, startOnView: false });
-    return (
-      <div ref={ref} className="text-center">
-        <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-2">
-          {count.toLocaleString()}{suffix}
-        </div>
-        <div className="text-sm md:text-base text-muted-foreground">{label}</div>
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen pb-20">
       {/* Enhanced Hero Section */}
@@ -183,32 +173,46 @@ const About = () => {
             
             {/* Right - Vision & Mission Cards */}
             <div className="space-y-6">
-              <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow border-l-4 border-l-primary">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Target className="w-6 h-6 text-primary" />
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow border-l-4 border-l-primary">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Target className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">Our Mission</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        To accelerate Northeast India's transition to electric mobility by building the region's most reliable, accessible, and user-friendly charging infrastructure.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Our Mission</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      To accelerate Northeast India's transition to electric mobility by building the region's most reliable, accessible, and user-friendly charging infrastructure.
-                    </p>
+                </Card>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.15 }}
+              >
+                <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow border-l-4 border-l-cyan-500">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+                      <Eye className="w-6 h-6 text-cyan-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">Our Vision</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        To create a sustainable future where every corner of Northeast India is powered by clean energy, driving economic growth while preserving our beautiful landscapes.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Card>
-              <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow border-l-4 border-l-cyan-500">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
-                    <Eye className="w-6 h-6 text-cyan-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Our Vision</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      To create a sustainable future where every corner of Northeast India is powered by clean energy, driving economic growth while preserving our beautiful landscapes.
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -217,12 +221,23 @@ const About = () => {
 
         {/* 2. Stats Section - Network at a Glance */}
         <section id="stats" className="mb-16 md:mb-24 scroll-mt-24">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
+          <motion.h2 
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             Our Network at a Glance
-          </h2>
+          </motion.h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 lg:gap-12">
             {stats.map((stat, index) => (
-              <StatsCounter key={index} {...stat} />
+              <AnimatedCounter 
+                key={index} 
+                value={stat.value}
+                suffix={stat.suffix}
+                label={stat.label}
+              />
             ))}
           </div>
         </section>
@@ -296,18 +311,26 @@ const About = () => {
 
         {/* 6. What We Believe In */}
         <section id="values" className="mb-16 md:mb-24 scroll-mt-24">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">What We Believe In</h2>
+          <motion.h2 
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            What We Believe In
+          </motion.h2>
           <div className="grid md:grid-cols-3 gap-4 md:gap-8">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
-                <Card key={index} className="p-6 md:p-8 text-center hover:shadow-lg transition-shadow">
+                <AnimatedCard key={index} delay={index * 0.1} className="p-6 md:p-8 text-center">
                   <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 md:mb-6">
                     <Icon className="w-6 h-6 md:w-8 md:h-8 text-primary" />
                   </div>
                   <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3">{value.title}</h3>
                   <p className="text-sm md:text-base text-muted-foreground">{value.description}</p>
-                </Card>
+                </AnimatedCard>
               );
             })}
           </div>
