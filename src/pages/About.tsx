@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
-import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Youtube } from "lucide-react";
+import EnhancedPageHeader from "@/components/EnhancedPageHeader";
+import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Youtube, MapPin, Clock } from "lucide-react";
 import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
 import trustBg from "@/assets/trust-bg.jpg";
@@ -131,43 +132,21 @@ const About = () => {
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Full-Width Hero Section - Enhanced */}
-      <section id="hero" className="text-center mb-16 md:mb-24 relative overflow-hidden">
-        {/* Background Image with Gradient Blue to White Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroBackground} 
-            alt="A Plus Charge Station Launch" 
-            className="w-full h-full object-cover object-center"
-          />
-          {/* Blue to white gradient overlay for smooth merging */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background" />
-          {/* Animated particles effect */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '0s' }} />
-            <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-            <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-            <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-cyan-200 rounded-full animate-pulse" style={{ animationDelay: '1.5s' }} />
-          </div>
-        </div>
-        
-        {/* Content */}
-        <div className="relative z-10 py-24 md:py-32 lg:py-48 px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-            <Zap className="w-4 h-4 text-cyan-300" />
-            <span className="text-xs sm:text-sm font-semibold text-white/90">Powering Tomorrow's Mobility</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-2xl">
-            From Vision to <span className="text-cyan-300">Reality</span><br />
-            <span className="text-white/95 drop-shadow-2xl">
-              Electrifying Northeast India
-            </span>
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 font-medium max-w-3xl mx-auto mb-8 drop-shadow-xl">
-            Born in Assam, built for the Northeast. We're not just installing chargers - we're building the backbone of sustainable mobility across seven sister states, one charging station at a time.
-          </p>
-        </div>
-      </section>
+      {/* Enhanced Hero Section */}
+      <EnhancedPageHeader
+        title="From Vision to"
+        titleHighlight="Reality"
+        subtitle="Powering Tomorrow's Mobility"
+        description="Born in Assam, built for the Northeast. We're not just installing chargers - we're building the backbone of sustainable mobility across seven sister states."
+        backgroundImage={heroBackground}
+        icon={<Zap className="w-4 h-4" />}
+        badges={[
+          { icon: <MapPin className="w-4 h-4" />, text: "9 States Covered" },
+          { icon: <Zap className="w-4 h-4" />, text: "45+ Live Stations" },
+          { icon: <Clock className="w-4 h-4" />, text: "97% Uptime" },
+        ]}
+        theme="electric"
+      />
 
       <div className="container mx-auto px-4 max-w-6xl">
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
+import EnhancedPageHeader from "@/components/EnhancedPageHeader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Home, Building2, Zap, Rocket, Shield, TrendingUp, CheckCircle, Users, Plug, CreditCard, Clock, BarChart3, Wrench, Phone, ArrowRight, IndianRupee, Award, Calculator, Table, LayoutGrid, FileText } from "lucide-react";
@@ -125,45 +126,20 @@ const Services = () => {
   return (
     <div className="min-h-screen pb-20">
       {/* Enhanced Hero Section */}
-      <section 
-        className="relative py-32 md:py-40 mb-12 overflow-hidden"
-        style={{
-          backgroundImage: `url(${chargingStationLaunch})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background"></div>
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" />
-          <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-        <div className="relative z-10 container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-            <Zap className="w-4 h-4 text-cyan-300" />
-            <span className="text-sm font-semibold text-white/90">Complete Charging Solutions</span>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
-            EV Charger <span className="text-cyan-300">Price List</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
-            Premium EV charging hardware with comprehensive warranty and AMC packages. 
-            Built for Northeast India's unique requirements.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-white font-medium">3.3kW - 60kW Range</span>
-            </div>
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-white font-medium">GST Inclusive Pricing</span>
-            </div>
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <span className="text-white font-medium">Connectivity Enabled</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <EnhancedPageHeader
+        title="EV Charger"
+        titleHighlight="Price List"
+        subtitle="Complete Charging Solutions"
+        description="Premium EV charging hardware with comprehensive warranty and AMC packages. Built for Northeast India's unique requirements."
+        backgroundImage={chargingStationLaunch}
+        icon={<Zap className="w-4 h-4" />}
+        badges={[
+          { text: "3.3kW - 60kW Range" },
+          { text: "GST Inclusive Pricing" },
+          { text: "Connectivity Enabled" },
+        ]}
+        theme="gradient"
+      />
 
       <div className="container mx-auto px-4 relative z-10">
 

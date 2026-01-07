@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import EnhancedPageHeader from "@/components/EnhancedPageHeader";
 import { TrendingUp, Award, Shield, Target, Users, Zap } from "lucide-react";
 import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
@@ -67,53 +68,22 @@ const Invest = () => {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
-      {/* Enhanced Hero */}
-      <section 
-        className="relative py-32 md:py-40 mb-20 overflow-hidden"
-        style={{
-          backgroundImage: `url(${energyFlow})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/70 to-background"></div>
-        <div className="absolute inset-0" style={{ background: 'var(--gradient-radial)', opacity: 0.3 }}></div>
-        {/* Animated particles */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" />
-          <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-        <div className="relative z-10 container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-            <TrendingUp className="w-4 h-4 text-cyan-300" />
-            <span className="text-sm font-semibold text-white/90">Investment Opportunity</span>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
-            Why <span className="text-cyan-300">Invest?</span><br />
-            <span className="text-white/95">The Strategic Thesis</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
-            The Regional Vacuum: East and Northeast India represent a massive untapped market with only 1-2% EV station penetration. We own the "First-Mover" advantage.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <Award className="w-5 h-5 text-cyan-300" />
-              <span className="text-white font-medium">DPIIT Certified</span>
-            </div>
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <Shield className="w-5 h-5 text-cyan-300" />
-              <span className="text-white font-medium">97% Network Uptime</span>
-            </div>
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <TrendingUp className="w-5 h-5 text-cyan-300" />
-              <span className="text-white font-medium">10,000+ Stations by 2030</span>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen pb-20">
+      {/* Enhanced Hero Section */}
+      <EnhancedPageHeader
+        title="Why"
+        titleHighlight="Invest?"
+        subtitle="Investment Opportunity"
+        description="The Regional Vacuum: East and Northeast India represent a massive untapped market with only 1-2% EV station penetration. We own the 'First-Mover' advantage."
+        backgroundImage={energyFlow}
+        icon={<TrendingUp className="w-4 h-4" />}
+        badges={[
+          { icon: <Award className="w-4 h-4" />, text: "DPIIT Certified" },
+          { icon: <Shield className="w-4 h-4" />, text: "97% Network Uptime" },
+          { icon: <TrendingUp className="w-4 h-4" />, text: "10,000+ Stations by 2030" },
+        ]}
+        theme="aurora"
+      />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Why Invest */}
