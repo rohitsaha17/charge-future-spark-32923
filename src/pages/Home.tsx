@@ -572,17 +572,21 @@ const Home = () => {
                       onTouchStart={() => microFeedback({ vibratePattern: 16, frequencyHz: 720 })}
                     >
                       <div className="flex items-start gap-2 md:gap-3 h-full">
-                        <div className={`p-1.5 md:p-2 rounded-lg flex-shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'} transition-colors`}>
+                        <div className={`p-1.5 md:p-2 rounded-lg flex-shrink-0 transition-all duration-300 ${isActive ? 'bg-white/20 scale-90' : 'bg-primary/10'}`}>
                           <Icon className={`w-4 h-4 md:w-5 md:h-5 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
-                        <div className="flex-1 flex flex-col justify-center overflow-hidden min-w-0">
-                          <h3 className={`font-semibold leading-snug text-[10px] sm:text-xs md:text-sm transition-all duration-300 ${
-                            isActive ? 'text-white' : 'text-foreground'
+                        <div className="flex-1 flex flex-col overflow-hidden min-w-0 relative h-full">
+                          <h3 className={`font-semibold leading-snug transition-all duration-300 origin-top-left ${
+                            isActive 
+                              ? 'text-white text-[8px] sm:text-[9px] md:text-[10px] translate-y-0' 
+                              : 'text-foreground text-[10px] sm:text-xs md:text-sm translate-y-2'
                           }`}>
                             {service.title}
                           </h3>
-                          <p className={`text-[8px] sm:text-[9px] md:text-xs leading-tight mt-1 transition-all duration-300 line-clamp-2 ${
-                            isActive ? 'text-white/90 opacity-100 max-h-20' : 'text-muted-foreground opacity-0 max-h-0'
+                          <p className={`text-[8px] sm:text-[9px] md:text-xs leading-tight transition-all duration-300 ${
+                            isActive 
+                              ? 'text-white/90 opacity-100 translate-y-0 mt-1' 
+                              : 'text-muted-foreground opacity-0 translate-y-2 mt-0'
                           }`}>
                             {service.description}
                           </p>
