@@ -6,35 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { MapPin, FileText, LogOut, MessageSquare, Settings, Eye, EyeOff } from 'lucide-react';
-
-// Page visibility settings stored in localStorage for demo
-// In production, this would be stored in database
-const DEFAULT_VISIBILITY = {
-  pages: {
-    services: true,
-    blog: true,
-    partner: true,
-    invest: true,
-    about: true,
-  },
-  sections: {
-    home_map: true,
-    home_benefits: true,
-    home_testimonials: true,
-    home_faq: true,
-    home_app_download: true,
-    about_team: true,
-    about_timeline: true,
-  }
-};
+import { MapPin, FileText, LogOut, MessageSquare, Settings, Eye, EyeOff, Save, Loader2 } from 'lucide-react';
+import { VisibilitySettings, DEFAULT_VISIBILITY } from '@/hooks/useSiteSettings';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [visibility, setVisibility] = useState(DEFAULT_VISIBILITY);
+  const [visibility, setVisibility] = useState<VisibilitySettings>(DEFAULT_VISIBILITY);
+  const [originalVisibility, setOriginalVisibility] = useState<VisibilitySettings>(DEFAULT_VISIBILITY);
   const [showVisibilitySettings, setShowVisibilitySettings] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -59,11 +42,8 @@ const AdminDashboard = () => {
         return;
       }
 
-      // Load visibility settings from localStorage
-      const savedVisibility = localStorage.getItem('site_visibility');
-      if (savedVisibility) {
-        setVisibility(JSON.parse(savedVisibility));
-      }
+      // Load visibility settings from database
+      await fetchVisibilitySettings();
 
       setIsAdmin(true);
       setLoading(false);
@@ -71,6 +51,29 @@ const AdminDashboard = () => {
 
     checkAdmin();
   }, [navigate]);
+
+  const fetchVisibilitySettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('setting_key', 'visibility')
+        .single();
+
+      if (error) {
+        console.error('Error fetching visibility settings:', error);
+        return;
+      }
+
+      if (data?.setting_value) {
+        const settings = data.setting_value as unknown as VisibilitySettings;
+        setVisibility(settings);
+        setOriginalVisibility(settings);
+      }
+    } catch (error) {
+      console.error('Error fetching visibility settings:', error);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -84,8 +87,7 @@ const AdminDashboard = () => {
       pages: { ...visibility.pages, [page]: visible }
     };
     setVisibility(newVisibility);
-    localStorage.setItem('site_visibility', JSON.stringify(newVisibility));
-    toast.success(`${page} page ${visible ? 'shown' : 'hidden'}`);
+    setHasChanges(JSON.stringify(newVisibility) !== JSON.stringify(originalVisibility));
   };
 
   const updateSectionVisibility = (section: string, visible: boolean) => {
@@ -94,12 +96,42 @@ const AdminDashboard = () => {
       sections: { ...visibility.sections, [section]: visible }
     };
     setVisibility(newVisibility);
-    localStorage.setItem('site_visibility', JSON.stringify(newVisibility));
-    toast.success(`Section ${visible ? 'shown' : 'hidden'}`);
+    setHasChanges(JSON.stringify(newVisibility) !== JSON.stringify(originalVisibility));
+  };
+
+  const saveVisibilitySettings = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .update({ setting_value: visibility as any })
+        .eq('setting_key', 'visibility');
+
+      if (error) throw error;
+
+      setOriginalVisibility(visibility);
+      setHasChanges(false);
+      toast.success('Visibility settings saved successfully! Changes are now live.');
+    } catch (error) {
+      console.error('Error saving visibility settings:', error);
+      toast.error('Failed to save settings. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const discardChanges = () => {
+    setVisibility(originalVisibility);
+    setHasChanges(false);
+    toast.info('Changes discarded');
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   if (!isAdmin) {
@@ -132,15 +164,45 @@ const AdminDashboard = () => {
         {showVisibilitySettings && (
           <Card className="mb-8 border-primary/20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Eye className="w-5 h-5" />
-                Page & Section Visibility Controls
-              </CardTitle>
-              <CardDescription>
-                Control which pages and sections are visible on the website
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="w-5 h-5" />
+                    Page & Section Visibility Controls
+                  </CardTitle>
+                  <CardDescription>
+                    Control which pages and sections are visible on the website. Changes require saving.
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  {hasChanges && (
+                    <Button variant="outline" onClick={discardChanges} size="sm">
+                      Discard
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={saveVisibilitySettings} 
+                    disabled={!hasChanges || isSaving}
+                    className="gap-2"
+                  >
+                    {isSaving ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
+              {hasChanges && (
+                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800 font-medium">
+                    ⚠️ You have unsaved changes. Click "Save Changes" to apply them to the live site.
+                  </p>
+                </div>
+              )}
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Page Controls */}
                 <div>
@@ -182,16 +244,18 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
-                ⚠️ Note: Visibility changes are stored locally. For production use, these settings should be stored in the database.
-              </p>
+              <div className="mt-6 p-3 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-sm text-green-800">
+                  ✓ Settings are stored in the database and persist permanently. Changes will be reflected site-wide once saved.
+                </p>
+              </div>
             </CardContent>
           </Card>
         )}
 
         <div className="grid md:grid-cols-3 gap-6">
           <Link to="/admin/charging-stations">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full hover:-translate-y-1 duration-300">
               <CardHeader>
                 <MapPin className="w-12 h-12 text-blue-600 mb-4" />
                 <CardTitle>Charging Stations</CardTitle>
@@ -206,7 +270,7 @@ const AdminDashboard = () => {
           </Link>
 
           <Link to="/admin/blogs">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full hover:-translate-y-1 duration-300">
               <CardHeader>
                 <FileText className="w-12 h-12 text-green-600 mb-4" />
                 <CardTitle>Blog Posts</CardTitle>
@@ -221,7 +285,7 @@ const AdminDashboard = () => {
           </Link>
 
           <Link to="/admin/enquiries">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full hover:-translate-y-1 duration-300">
               <CardHeader>
                 <MessageSquare className="w-12 h-12 text-purple-600 mb-4" />
                 <CardTitle>Enquiries</CardTitle>

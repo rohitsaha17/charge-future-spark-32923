@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
+import AnimatedCard from "@/components/AnimatedCard";
 import { TrendingUp, Award, Shield, Target, Users, Zap } from "lucide-react";
 import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
@@ -88,19 +90,28 @@ const Invest = () => {
       <div className="container mx-auto px-4 relative z-10">
         {/* Why Invest */}
         <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Invest in A Plus Charge?</h2>
+          <motion.h2 
+            className="text-3xl font-bold text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            Why Invest in A Plus Charge?
+          </motion.h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {highlights.map((item, index) => {
               const Icon = item.icon;
               return (
-                <Card 
+                <AnimatedCard 
                   key={index} 
-                  className="p-6 hover:scale-105 hover:glow-effect transition-all duration-300 glass-card"
+                  delay={index * 0.1}
+                  className="p-6 glass-card"
                 >
                   <Icon className="w-10 h-10 text-primary mb-4" />
                   <h3 className="font-semibold mb-2">{item.title}</h3>
                   <p className="text-sm text-muted-foreground">{item.description}</p>
-                </Card>
+                </AnimatedCard>
               );
             })}
           </div>
