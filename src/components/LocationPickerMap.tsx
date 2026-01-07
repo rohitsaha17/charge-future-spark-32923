@@ -29,50 +29,67 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
       marker.current.remove();
     }
 
-    // Create custom marker element
+    // Create custom marker element with inline styles for reliability
     const el = document.createElement('div');
-    el.className = 'location-marker-pin';
-    el.style.cssText = `
-      width: 40px;
-      height: 50px;
-      cursor: grab;
+    el.style.width = '44px';
+    el.style.height = '54px';
+    el.style.cursor = 'grab';
+    el.style.position = 'relative';
+    el.style.zIndex = '1000';
+    
+    // Create marker pin
+    const pinContainer = document.createElement('div');
+    pinContainer.style.cssText = `
+      position: relative;
+      width: 44px;
+      height: 54px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     `;
-    el.innerHTML = `
-      <div style="
-        position: relative;
-        width: 40px;
-        height: 50px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      ">
-        <div style="
-          width: 40px;
-          height: 40px;
-          background: linear-gradient(135deg, #2674EC, #00E5FF);
-          border-radius: 50% 50% 50% 0;
-          transform: rotate(-45deg);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 12px rgba(38, 116, 236, 0.4);
-          position: relative;
-        ">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(45deg);">
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-        </div>
-        <div style="
-          width: 16px;
-          height: 6px;
-          background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3), transparent);
-          border-radius: 50%;
-          position: absolute;
-          bottom: 0;
-        "></div>
-      </div>
+    
+    const pin = document.createElement('div');
+    pin.style.cssText = `
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #2674EC, #00E5FF);
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(38, 116, 236, 0.5);
+      position: relative;
+      border: 3px solid white;
     `;
+    
+    // Add SVG icon
+    pin.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(45deg);">
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+    `;
+    
+    // Shadow element
+    const shadow = document.createElement('div');
+    shadow.style.cssText = `
+      width: 20px;
+      height: 8px;
+      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.35), transparent);
+      border-radius: 50%;
+      position: absolute;
+      bottom: 0;
+    `;
+    
+    pinContainer.appendChild(pin);
+    pinContainer.appendChild(shadow);
+    el.appendChild(pinContainer);
+    
+    // Add animation class after a small delay
+    setTimeout(() => {
+      el.style.animation = 'markerBounce 0.6s ease-out';
+    }, 50);
 
     setSelectedLocation({ lat, lng });
     setSelectedAddress(address || `${lat.toFixed(6)}, ${lng.toFixed(6)}`);
@@ -304,54 +321,55 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
       />
       
       <style>{`
-        .location-marker-pin {
-          cursor: grab;
-          animation: markerDrop 0.5s ease-out;
-        }
-
-        .location-marker-pin:active {
-          cursor: grabbing;
-        }
-        
-        @keyframes markerDrop {
+        @keyframes markerBounce {
           0% {
-            transform: translateY(-100px);
+            transform: translateY(-80px) scale(0.8);
             opacity: 0;
           }
-          60% {
+          50% {
+            transform: translateY(10px) scale(1.05);
             opacity: 1;
           }
+          70% {
+            transform: translateY(-5px) scale(0.98);
+          }
           100% {
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
           }
         }
         
         .maplibregl-ctrl-bottom-right {
-          bottom: 80px !important;
-          right: 10px !important;
+          bottom: 90px !important;
+          right: 12px !important;
         }
         
         .maplibregl-ctrl-group {
           background: white !important;
           border-radius: 12px !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
           overflow: hidden;
+          border: 1px solid rgba(38, 116, 236, 0.15) !important;
         }
         
         .maplibregl-ctrl-group button {
-          width: 36px !important;
-          height: 36px !important;
+          width: 38px !important;
+          height: 38px !important;
+        }
+        
+        .maplibregl-ctrl-group button:hover {
+          background: rgba(38, 116, 236, 0.1) !important;
         }
         
         .maplibregl-popup-content {
           border-radius: 12px !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18) !important;
           padding: 0 !important;
+          border: 1px solid rgba(38, 116, 236, 0.1) !important;
         }
         
         .maplibregl-popup-close-button {
-          font-size: 18px !important;
-          padding: 4px 8px !important;
+          font-size: 20px !important;
+          padding: 6px 10px !important;
           color: #666 !important;
         }
         
