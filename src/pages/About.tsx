@@ -248,33 +248,6 @@ const About = () => {
           </div>
         </section>
 
-        <GradientDivider />
-
-        {/* 3. Mission & Vision Section */}
-        <section id="mission-vision" className="mb-16 md:mb-24 scroll-mt-24">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">Our Mission & Vision</h2>
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
-            <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 md:mb-6">
-                <Target className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-              </div>
-              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Our Mission</h3>
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                To accelerate Northeast India's transition to electric mobility by building the region's most reliable, accessible, and user-friendly charging infrastructure. We're committed to eliminating range anxiety and making EV ownership a seamless experience for every driver.
-              </p>
-            </Card>
-            <Card className="p-6 md:p-8 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 md:mb-6">
-                <Eye className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-              </div>
-              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Our Vision</h3>
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                To create a sustainable future where every corner of Northeast India is powered by clean energy. We envision a region where EV charging is as convenient as fueling traditional vehicles, driving economic growth while preserving our beautiful landscapes for generations to come.
-              </p>
-            </Card>
-          </div>
-        </section>
-
       </div>
 
       {/* 4. The Roadmap: Scaling with Impact - Full width storytelling with background */}
