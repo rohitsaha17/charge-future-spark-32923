@@ -61,7 +61,9 @@ const AdminDashboard = () => {
         .single();
 
       if (error) {
-        console.error('Error fetching visibility settings:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error fetching visibility settings:', error);
+        }
         return;
       }
 
@@ -71,7 +73,9 @@ const AdminDashboard = () => {
         setOriginalVisibility(settings);
       }
     } catch (error) {
-      console.error('Error fetching visibility settings:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching visibility settings:', error);
+      }
     }
   };
 
@@ -113,7 +117,9 @@ const AdminDashboard = () => {
       setHasChanges(false);
       toast.success('Visibility settings saved successfully! Changes are now live.');
     } catch (error) {
-      console.error('Error saving visibility settings:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error saving visibility settings:', error);
+      }
       toast.error('Failed to save settings. Please try again.');
     } finally {
       setIsSaving(false);

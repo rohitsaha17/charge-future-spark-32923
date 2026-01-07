@@ -56,7 +56,9 @@ export const useSiteSettings = () => {
         .single();
 
       if (error) {
-        console.error('Error fetching site settings:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error fetching site settings:', error);
+        }
         return;
       }
 
@@ -64,7 +66,9 @@ export const useSiteSettings = () => {
         setVisibility(data.setting_value as unknown as VisibilitySettings);
       }
     } catch (error) {
-      console.error('Error fetching site settings:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching site settings:', error);
+      }
     } finally {
       setLoading(false);
     }
