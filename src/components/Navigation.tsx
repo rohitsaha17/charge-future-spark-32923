@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import logo from "@/assets/logo.png";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -46,24 +47,34 @@ const Navigation = () => {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => {
-                  if (link.path === '/' && location.pathname === '/') {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }
-                }}
-                className={`text-sm font-medium transition-all duration-200 px-4 py-2 rounded-lg ${
-                  isActive(link.path)
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {navLinks.map((link) => (
+                <motion.div
+                  key={link.path}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                  layout
+                >
+                  <Link
+                    to={link.path}
+                    onClick={() => {
+                      if (link.path === '/' && location.pathname === '/') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }
+                    }}
+                    className={`text-sm font-medium transition-all duration-200 px-4 py-2 rounded-lg block ${
+                      isActive(link.path)
+                        ? "text-primary border-b-2 border-primary"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
 
           {/* Mobile Menu Button */}
@@ -76,26 +87,43 @@ const Navigation = () => {
         </div>
 
         {/* Mobile Menu */}
-        {isOpen && (
-          <div className="lg:hidden mt-4 nav-glass rounded-2xl p-6">
-            <div className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    isActive(link.path)
-                      ? "text-primary"
-                      : "text-foreground/80"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div 
+              className="lg:hidden mt-4 nav-glass rounded-2xl p-6"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex flex-col space-y-4">
+                <AnimatePresence mode="popLayout">
+                  {navLinks.map((link, index) => (
+                    <motion.div
+                      key={link.path}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2, delay: index * 0.05 }}
+                    >
+                      <Link
+                        to={link.path}
+                        onClick={() => setIsOpen(false)}
+                        className={`text-sm font-medium transition-colors hover:text-primary block ${
+                          isActive(link.path)
+                            ? "text-primary"
+                            : "text-foreground/80"
+                        }`}
+                      >
+                        {link.name}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );

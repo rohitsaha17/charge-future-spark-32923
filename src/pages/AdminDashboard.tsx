@@ -250,7 +250,47 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="mt-6 p-3 bg-green-50 rounded-lg border border-green-200">
+
+              {/* Navigation Preview */}
+              <div className="mt-6 p-4 bg-slate-800 rounded-lg border border-slate-700">
+                <h5 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  Navigation Preview
+                </h5>
+                <div className="flex flex-wrap gap-2">
+                  {['Home', 'About Us', 'Services', 'Blogs', 'Find a Charger', 'Become Our Partner', 'Invest in APlus'].map((pageName) => {
+                    const pageKey = pageName === 'Home' || pageName === 'Find a Charger' 
+                      ? null 
+                      : pageName === 'About Us' ? 'about'
+                      : pageName === 'Blogs' ? 'blog'
+                      : pageName === 'Become Our Partner' ? 'partner'
+                      : pageName === 'Invest in APlus' ? 'invest'
+                      : 'services';
+                    const isVisible = pageKey === null || visibility.pages[pageKey as keyof typeof visibility.pages];
+                    
+                    return (
+                      <span
+                        key={pageName}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                          isVisible 
+                            ? 'bg-primary/20 text-primary-foreground border border-primary/30' 
+                            : 'bg-slate-700/50 text-slate-500 line-through border border-slate-600/30'
+                        }`}
+                      >
+                        {pageName}
+                        {(pageName === 'Home' || pageName === 'Find a Charger') && (
+                          <span className="ml-1 text-[10px] opacity-60">(always visible)</span>
+                        )}
+                      </span>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-slate-400 mt-3">
+                  This shows how the navigation will appear after saving. Crossed-out items are hidden from visitors.
+                </p>
+              </div>
+
+              <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
                 <p className="text-sm text-green-800">
                   ✓ Settings are stored in the database and persist permanently. Changes will be reflected site-wide once saved.
                 </p>
