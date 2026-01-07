@@ -358,7 +358,7 @@ const About = () => {
             <p className="text-sm md:text-base text-muted-foreground uppercase tracking-wider mb-6">Trusted by industry leaders</p>
             <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-12">
               {partners.map((partner, index) => (
-                <div key={index} className="grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-all duration-300 bg-transparent">
+                <div key={index} className="opacity-90 hover:opacity-100 hover:scale-105 transition-all duration-300 bg-transparent">
                   <img src={partner.logo} alt={partner.name} className="h-8 md:h-10 lg:h-12 w-auto object-contain mix-blend-multiply" />
                 </div>
               ))}
