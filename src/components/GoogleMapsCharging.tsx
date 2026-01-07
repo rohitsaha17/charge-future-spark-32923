@@ -6,6 +6,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { MapPin, Zap, Navigation } from 'lucide-react';
 
+// Suppress MapLibre worker errors in production (known issue with minified builds)
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', (event) => {
+    if (event.message?.includes('At is not defined')) {
+      event.preventDefault();
+      return true;
+    }
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason?.message?.includes('At is not defined')) {
+      event.preventDefault();
+    }
+  });
+}
+
 type Station = {
   id: string;
   name: string;

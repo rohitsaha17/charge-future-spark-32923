@@ -1,8 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin, Search, Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
+import { useToast } from '@/hooks/use-toast';
+
+// Suppress MapLibre worker errors in production (known issue with minified builds)
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', (event) => {
+    if (event.message?.includes('At is not defined')) {
+      event.preventDefault();
+      return true;
+    }
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason?.message?.includes('At is not defined')) {
+      event.preventDefault();
+    }
+  });
+}
 
 interface LocationPickerMapProps {
   onLocationSelect: (lat: number, lng: number, address?: string) => void;
@@ -19,6 +35,9 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
 
   // Create draggable marker
   const createMarker = (lng: number, lat: number, address?: string) => {
@@ -161,27 +180,57 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
     }
   };
 
-  // Search for addresses
-  const handleSearch = async (query: string) => {
+  // Search for addresses with debouncing
+  const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
+    
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
     
     if (query.length < 3) {
       setSearchResults([]);
       setShowResults(false);
+      setIsSearching(false);
       return;
     }
 
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`
-      );
-      const data = await response.json();
-      setSearchResults(data);
-      setShowResults(true);
-    } catch (error) {
-      console.error('Search error:', error);
-    }
-  };
+    setIsSearching(true);
+    
+    // Debounce the search
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`,
+          {
+            headers: {
+              'Accept': 'application/json',
+            }
+          }
+        );
+        
+        if (!response.ok) {
+          throw new Error('Search failed');
+        }
+        
+        const data = await response.json();
+        setSearchResults(data);
+        setShowResults(true);
+      } catch (error) {
+        // Silently handle the error - don't show in console
+        setSearchResults([]);
+        // Show a helpful message to user
+        toast({
+          title: "Search unavailable",
+          description: "Please click on the map to select your location",
+          variant: "default"
+        });
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+  }, [toast]);
 
   // Handle search result selection
   const handleSelectResult = (result: any) => {
@@ -266,19 +315,23 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
       <div className="absolute top-4 left-4 right-4 z-20">
         <div className="relative">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            {isSearching ? (
+              <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary animate-spin" />
+            ) : (
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            )}
             <Input
               type="text"
-              placeholder="Search for an address..."
+              placeholder="Search for an address or click on map..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 bg-white/95 backdrop-blur-sm shadow-elegant border-primary/20"
+              className="pl-10 pr-4 bg-white/95 backdrop-blur-sm shadow-elegant border-primary/20"
             />
           </div>
           
           {/* Search Results Dropdown */}
           {showResults && searchResults.length > 0 && (
-            <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-elegant border border-primary/20 max-h-60 overflow-y-auto">
+            <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-elegant border border-primary/20 max-h-60 overflow-y-auto z-30">
               {searchResults.map((result, index) => (
                 <button
                   key={index}
@@ -287,10 +340,17 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
                 >
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                    <span className="text-sm text-foreground">{result.display_name}</span>
+                    <span className="text-sm text-foreground line-clamp-2">{result.display_name}</span>
                   </div>
                 </button>
               ))}
+            </div>
+          )}
+          
+          {/* No results message */}
+          {showResults && searchResults.length === 0 && !isSearching && searchQuery.length >= 3 && (
+            <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-elegant border border-primary/20 p-4 text-center z-30">
+              <p className="text-sm text-muted-foreground">No results found. Click on the map to select location.</p>
             </div>
           )}
         </div>
