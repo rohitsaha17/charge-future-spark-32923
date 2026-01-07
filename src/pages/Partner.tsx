@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import LocationPickerMap from "@/components/LocationPickerMap";
+import EnhancedPageHeader from "@/components/EnhancedPageHeader";
 import { Play, MapPin, Sparkles } from "lucide-react";
 import trustBg from "@/assets/trust-bg.jpg";
 import { Button } from "@/components/ui/button";
@@ -184,46 +185,18 @@ const Partner = () => {
   return (
     <div className="min-h-screen pb-20">
       {/* Enhanced Hero Section */}
-      <section className="relative py-32 md:py-40 mb-12 overflow-hidden bg-gradient-to-br from-primary via-blue-600 to-cyan-600">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-        {/* Electric circuit pattern */}
-        <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="circuit" patternUnits="userSpaceOnUse" width="100" height="100">
-              <path d="M 0 50 L 40 50 L 50 40 L 60 50 L 100 50" stroke="white" strokeWidth="1" fill="none"/>
-              <path d="M 50 0 L 50 40 M 50 60 L 50 100" stroke="white" strokeWidth="1" fill="none"/>
-              <circle cx="50" cy="50" r="4" fill="white"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#circuit)"/>
-        </svg>
-        
-        <div className="relative z-10 container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-            <Sparkles className="w-4 h-4 text-cyan-300" />
-            <span className="text-sm font-semibold text-white/90">Partnership Opportunities</span>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
-            Grow With <span className="text-cyan-300">Us</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
-            Join India's fastest-growing EV charging network. Calculate your ROI and start your partnership journey.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <TrendingUp className="w-5 h-5 text-cyan-300" />
-              <span className="text-white font-medium">15-20% Expected ROI</span>
-            </div>
-            <div className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-              <Award className="w-5 h-5 text-cyan-300" />
-              <span className="text-white font-medium">₹0 Partnership Fee</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <EnhancedPageHeader
+        title="Grow With"
+        titleHighlight="Us"
+        subtitle="Partnership Opportunities"
+        description="Join India's fastest-growing EV charging network. Calculate your ROI and start your partnership journey."
+        icon={<Sparkles className="w-4 h-4" />}
+        badges={[
+          { icon: <TrendingUp className="w-4 h-4" />, text: "15-20% Expected ROI" },
+          { icon: <Award className="w-4 h-4" />, text: "₹0 Partnership Fee" },
+        ]}
+        theme="mesh"
+      />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Explanatory Video Section */}
