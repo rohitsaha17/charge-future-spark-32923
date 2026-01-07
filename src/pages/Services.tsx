@@ -4,7 +4,7 @@ import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Home, Building2, Zap, Rocket, Shield, TrendingUp, CheckCircle, Users, Plug, CreditCard, Clock, BarChart3, Wrench, Phone, ArrowRight, IndianRupee, Award, Calculator, Table, LayoutGrid } from "lucide-react";
+import { Home, Building2, Zap, Rocket, Shield, TrendingUp, CheckCircle, Users, Plug, CreditCard, Clock, BarChart3, Wrench, Phone, ArrowRight, IndianRupee, Award, Calculator, Table, LayoutGrid, FileText } from "lucide-react";
 import chargingStationLaunch from "@/assets/charging-station-launch.jpg";
 import l1PlugPoint from "@/assets/chargers/l1-plug-point.jpg";
 import dcFastCharger from "@/assets/chargers/dc-fast-charger.jpg";
@@ -259,15 +259,25 @@ const Services = () => {
                       ))}
                     </ul>
 
-                    {/* Calculate ROI Button */}
-                    <Button
-                      onClick={() => handleCalculateROI(charger)}
-                      variant="outline"
-                      className="w-full gap-2 hover:bg-primary hover:text-white transition-colors"
-                    >
-                      <Calculator className="w-4 h-4" />
-                      Calculate ROI
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleCalculateROI(charger)}
+                        variant="outline"
+                        className="flex-1 gap-2 hover:bg-primary hover:text-white transition-colors"
+                      >
+                        <Calculator className="w-4 h-4" />
+                        Calculate ROI
+                      </Button>
+                      <Button
+                        onClick={() => window.location.href = `/partner?charger=${encodeURIComponent(charger.name)}&quote=true`}
+                        variant="default"
+                        className="flex-1 gap-2"
+                      >
+                        <Phone className="w-4 h-4" />
+                        Get Quote
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -370,10 +380,9 @@ const Services = () => {
           </div>
         </div>
 
-        <GradientDivider />
       </div>
 
-      <StorytellingSection 
+      <StorytellingSection
         title="Powering Northeast India's Electric Dreams"
         description="From the hills of Shillong to the plains of Guwahati, we're building infrastructure that doesn't just charge vehicles - it transforms communities and creates sustainable futures."
         backgroundImage={northeastHillsLandscape}
