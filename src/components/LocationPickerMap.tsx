@@ -22,6 +22,8 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
 
   // Create draggable marker
   const createMarker = (lng: number, lat: number, address?: string) => {
+    if (!map.current) return;
+    
     // Remove existing marker if any
     if (marker.current) {
       marker.current.remove();
@@ -30,15 +32,45 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
     // Create custom marker element
     const el = document.createElement('div');
     el.className = 'location-marker-pin';
+    el.style.cssText = `
+      width: 40px;
+      height: 50px;
+      cursor: grab;
+    `;
     el.innerHTML = `
-      <div class="pin-container">
-        <div class="pin-head">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <div style="
+        position: relative;
+        width: 40px;
+        height: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      ">
+        <div style="
+          width: 40px;
+          height: 40px;
+          background: linear-gradient(135deg, #2674EC, #00E5FF);
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(38, 116, 236, 0.4);
+          position: relative;
+        ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(45deg);">
             <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
             <circle cx="12" cy="10" r="3"></circle>
           </svg>
         </div>
-        <div class="pin-shadow"></div>
+        <div style="
+          width: 16px;
+          height: 6px;
+          background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3), transparent);
+          border-radius: 50%;
+          position: absolute;
+          bottom: 0;
+        "></div>
       </div>
     `;
 
@@ -55,20 +87,22 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
     `;
 
     const popup = new maplibregl.Popup({
-      offset: 25,
+      offset: [0, -40],
       closeButton: true,
       closeOnClick: false,
-      maxWidth: '300px'
+      maxWidth: '300px',
+      anchor: 'bottom'
     }).setHTML(popupContent);
 
-    // Add new draggable marker with popup
+    // Add new draggable marker with popup - anchor at bottom for correct positioning
     marker.current = new maplibregl.Marker({ 
       element: el,
-      draggable: true 
+      draggable: true,
+      anchor: 'bottom'
     })
       .setLngLat([lng, lat])
       .setPopup(popup)
-      .addTo(map.current!);
+      .addTo(map.current);
 
     // Handle marker drag events
     marker.current.on('dragend', async () => {
@@ -180,8 +214,8 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
       zoom: 12,
     });
 
-    // Add navigation controls
-    map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
+    // Add navigation controls - positioned at bottom-right to avoid search panel overlap
+    map.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
 
     // Add click event to map
     map.current.on('click', async (e) => {
@@ -272,19 +306,19 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
       <style>{`
         .location-marker-pin {
           cursor: grab;
-          animation: drop 0.5s ease-out;
+          animation: markerDrop 0.5s ease-out;
         }
 
         .location-marker-pin:active {
           cursor: grabbing;
         }
         
-        @keyframes drop {
+        @keyframes markerDrop {
           0% {
-            transform: translateY(-200px);
+            transform: translateY(-100px);
             opacity: 0;
           }
-          50% {
+          60% {
             opacity: 1;
           }
           100% {
@@ -292,62 +326,38 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
           }
         }
         
-        .pin-container {
-          position: relative;
-          width: 40px;
-          height: 50px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .maplibregl-ctrl-bottom-right {
+          bottom: 80px !important;
+          right: 10px !important;
         }
         
-        .pin-head {
-          width: 40px;
-          height: 40px;
-          background: linear-gradient(135deg, #2674EC, #00E5FF);
-          border-radius: 50% 50% 50% 0;
-          transform: rotate(-45deg);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 12px rgba(38, 116, 236, 0.4);
-          position: relative;
-          animation: bounce 2s ease-in-out infinite;
+        .maplibregl-ctrl-group {
+          background: white !important;
+          border-radius: 12px !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+          overflow: hidden;
         }
         
-        .pin-head svg {
-          transform: rotate(45deg);
-          color: white;
+        .maplibregl-ctrl-group button {
+          width: 36px !important;
+          height: 36px !important;
         }
         
-        @keyframes bounce {
-          0%, 100% {
-            transform: rotate(-45deg) translateY(0);
-          }
-          50% {
-            transform: rotate(-45deg) translateY(-10px);
-          }
+        .maplibregl-popup-content {
+          border-radius: 12px !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+          padding: 0 !important;
         }
         
-        .pin-shadow {
-          width: 24px;
-          height: 8px;
-          background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3), transparent);
-          border-radius: 50%;
-          position: absolute;
-          bottom: -5px;
-          animation: shadow-pulse 2s ease-in-out infinite;
+        .maplibregl-popup-close-button {
+          font-size: 18px !important;
+          padding: 4px 8px !important;
+          color: #666 !important;
         }
         
-        @keyframes shadow-pulse {
-          0%, 100% {
-            transform: scale(1);
-            opacity: 0.3;
-          }
-          50% {
-            transform: scale(0.8);
-            opacity: 0.5;
-          }
+        .maplibregl-popup-close-button:hover {
+          color: #333 !important;
+          background: transparent !important;
         }
       `}</style>
     </div>
