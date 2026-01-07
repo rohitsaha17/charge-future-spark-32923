@@ -308,24 +308,24 @@ const Home = () => {
                 </div>
 
                 {/* Main Heading - Bold Two Lines */}
-                <h1 className="text-3xl sm:text-4xl md:text-[2.75rem] lg:text-5xl xl:text-[3.5rem] font-bold leading-[1.1] tracking-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-bold leading-[1.15] tracking-tight md:pr-0 md:-mr-8 lg:-mr-12">
                   <span 
-                    className="block bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent pb-1"
+                    className="block bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent pb-1 whitespace-nowrap"
                     style={{ 
                       animation: "slideUp 0.6s ease-out 0.1s both, textGlow 3s ease-in-out infinite",
                       backgroundSize: "200% auto"
                     }}
                   >
-                    Northeast India's Largest
+                    Northeast India's Largest &
                   </span>
                   <span 
-                    className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-700 bg-clip-text text-transparent"
+                    className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-700 bg-clip-text text-transparent whitespace-nowrap"
                     style={{ 
                       animation: "slideUp 0.6s ease-out 0.2s both, textGlow 3s ease-in-out 0.5s infinite",
                       backgroundSize: "200% auto"
                     }}
                   >
-                    & Most Trusted EV Network
+                    Most Trusted EV Network
                   </span>
                 </h1>
 
