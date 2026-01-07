@@ -175,7 +175,9 @@ const Partner = () => {
       (e.target as HTMLFormElement).reset();
       setSelectedLocation(null);
     } catch (error) {
-      console.error('Error submitting enquiry:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error submitting enquiry:', error);
+      }
       toast.error("Failed to submit enquiry. Please try again.");
     } finally {
       setIsSubmitting(false);

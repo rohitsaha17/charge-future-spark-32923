@@ -62,7 +62,9 @@ const Invest = () => {
       toast.success("Thank you for your interest! Our team will contact you shortly.");
       (e.target as HTMLFormElement).reset();
     } catch (error) {
-      console.error('Error submitting enquiry:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error submitting enquiry:', error);
+      }
       toast.error("Failed to submit enquiry. Please try again.");
     } finally {
       setIsSubmitting(false);

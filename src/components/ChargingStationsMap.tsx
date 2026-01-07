@@ -188,7 +188,9 @@ const ChargingStationsMap = () => {
       .order('name');
 
     if (error) {
-      console.error('Error fetching stations:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching stations:', error);
+      }
       return;
     }
 
