@@ -297,20 +297,19 @@ const Home = () => {
               <div className="relative z-20 w-full md:w-[48%] lg:w-[45%] md:ml-6 lg:ml-10 space-y-5 md:space-y-7 text-center md:text-left">
                 {/* Badge with shimmer */}
                 <div 
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/40 backdrop-blur-sm shadow-lg"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/15 to-cyan-500/15 border border-primary/40 backdrop-blur-sm shadow-lg mt-16 md:mt-0"
                   style={{ 
                     animation: "slideUp 0.6s ease-out both"
                   }}
                 >
                   <img src={logomark} alt="A+ Charge" className="w-5 h-5" />
                   <span className="text-xs font-bold text-primary tracking-wide uppercase">Northeast India's Leading EV Network</span>
-                  <Zap className="w-4 h-4 text-cyan-500 animate-pulse" />
                 </div>
 
                 {/* Main Heading - Bold Two Lines */}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-bold leading-[1.15] tracking-tight md:pr-0 md:-mr-8 lg:-mr-12">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-bold leading-[1.15] tracking-tight">
                   <span 
-                    className="block bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent pb-1 whitespace-nowrap"
+                    className="block bg-gradient-to-r from-primary via-blue-600 to-cyan-500 bg-clip-text text-transparent pb-1"
                     style={{ 
                       animation: "slideUp 0.6s ease-out 0.1s both, textGlow 3s ease-in-out infinite",
                       backgroundSize: "200% auto"
@@ -319,7 +318,7 @@ const Home = () => {
                     Northeast India's Largest &
                   </span>
                   <span 
-                    className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-700 bg-clip-text text-transparent whitespace-nowrap"
+                    className="block bg-gradient-to-r from-cyan-500 via-primary to-blue-700 bg-clip-text text-transparent"
                     style={{ 
                       animation: "slideUp 0.6s ease-out 0.2s both, textGlow 3s ease-in-out 0.5s infinite",
                       backgroundSize: "200% auto"
@@ -559,7 +558,7 @@ const Home = () => {
                   return (
                     <div
                       key={index}
-                      className={`group relative p-3 md:p-4 rounded-xl cursor-pointer transition-all duration-300 overflow-hidden min-h-[60px] sm:min-h-[70px] md:min-h-[80px] ${
+                      className={`group relative p-3 md:p-4 rounded-xl cursor-pointer transition-colors duration-300 overflow-hidden h-[70px] sm:h-[80px] md:h-[90px] ${
                         isActive 
                           ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg shadow-primary/30' 
                           : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30 hover:shadow-md'
