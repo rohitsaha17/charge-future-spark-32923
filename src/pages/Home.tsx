@@ -667,97 +667,58 @@ const Home = () => {
               Collaborating with industry leaders to build India's most reliable EV charging network
             </p>
           </div>
-          <div className="relative overflow-hidden mask-gradient py-8">
+          
+          {/* Mobile: Static grid layout */}
+          <div className="md:hidden py-6">
+            <div className="grid grid-cols-3 gap-4 justify-items-center">
+              {[
+                { src: atherLogo, alt: "Ather Energy" },
+                { src: mgLogo, alt: "MG Motors" },
+                { src: tataLogo, alt: "Tata Motors" },
+                { src: gmdaLogo, alt: "GMDA" },
+                { src: aaiLogo, alt: "Airports Authority of India" },
+                { src: imperiaVistaLogo, alt: "Imperia Vista" },
+                { src: osmLogo, alt: "Omega Seiki Mobility" },
+              ].map((partner, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-center p-2 transition-all duration-300 opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] bg-transparent"
+                >
+                  <img src={partner.src} alt={partner.alt} className="h-12 w-auto object-contain mix-blend-multiply" width="80" height="48" />
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Desktop: Scrolling animation */}
+          <div className="hidden md:block relative overflow-hidden mask-gradient py-8">
             <div className="flex gap-0 animate-scroll-left">
               {[
-                {
-                  src: atherLogo,
-                  alt: "Ather Energy",
-                },
-                {
-                  src: mgLogo,
-                  alt: "MG Motors",
-                },
-                {
-                  src: tataLogo,
-                  alt: "Tata Motors",
-                },
-                {
-                  src: gmdaLogo,
-                  alt: "GMDA",
-                },
-                {
-                  src: aaiLogo,
-                  alt: "Airports Authority of India",
-                },
-                {
-                  src: imperiaVistaLogo,
-                  alt: "Imperia Vista",
-                },
-                {
-                  src: osmLogo,
-                  alt: "Omega Seiki Mobility",
-                },
+                { src: atherLogo, alt: "Ather Energy" },
+                { src: mgLogo, alt: "MG Motors" },
+                { src: tataLogo, alt: "Tata Motors" },
+                { src: gmdaLogo, alt: "GMDA" },
+                { src: aaiLogo, alt: "Airports Authority of India" },
+                { src: imperiaVistaLogo, alt: "Imperia Vista" },
+                { src: osmLogo, alt: "Omega Seiki Mobility" },
               ]
                 .concat([
-                  {
-                    src: atherLogo,
-                    alt: "Ather Energy",
-                  },
-                  {
-                    src: mgLogo,
-                    alt: "MG Motors",
-                  },
-                  {
-                    src: tataLogo,
-                    alt: "Tata Motors",
-                  },
-                  {
-                    src: gmdaLogo,
-                    alt: "GMDA",
-                  },
-                  {
-                    src: aaiLogo,
-                    alt: "Airports Authority of India",
-                  },
-                  {
-                    src: imperiaVistaLogo,
-                    alt: "Imperia Vista",
-                  },
-                  {
-                    src: osmLogo,
-                    alt: "Omega Seiki Mobility",
-                  },
+                  { src: atherLogo, alt: "Ather Energy" },
+                  { src: mgLogo, alt: "MG Motors" },
+                  { src: tataLogo, alt: "Tata Motors" },
+                  { src: gmdaLogo, alt: "GMDA" },
+                  { src: aaiLogo, alt: "Airports Authority of India" },
+                  { src: imperiaVistaLogo, alt: "Imperia Vista" },
+                  { src: osmLogo, alt: "Omega Seiki Mobility" },
                 ])
                 .concat([
-                  {
-                    src: atherLogo,
-                    alt: "Ather Energy",
-                  },
-                  {
-                    src: mgLogo,
-                    alt: "MG Motors",
-                  },
-                  {
-                    src: tataLogo,
-                    alt: "Tata Motors",
-                  },
-                  {
-                    src: gmdaLogo,
-                    alt: "GMDA",
-                  },
-                  {
-                    src: aaiLogo,
-                    alt: "Airports Authority of India",
-                  },
-                  {
-                    src: imperiaVistaLogo,
-                    alt: "Imperia Vista",
-                  },
-                  {
-                    src: osmLogo,
-                    alt: "Omega Seiki Mobility",
-                  },
+                  { src: atherLogo, alt: "Ather Energy" },
+                  { src: mgLogo, alt: "MG Motors" },
+                  { src: tataLogo, alt: "Tata Motors" },
+                  { src: gmdaLogo, alt: "GMDA" },
+                  { src: aaiLogo, alt: "Airports Authority of India" },
+                  { src: imperiaVistaLogo, alt: "Imperia Vista" },
+                  { src: osmLogo, alt: "Omega Seiki Mobility" },
                 ])
                 .map((partner, index) => (
                   <div
