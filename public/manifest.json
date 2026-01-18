@@ -1,0 +1,32 @@
+{
+  "name": "A Plus Charge",
+  "short_name": "A+ Charge",
+  "description": "Northeast India's Leading EV Charging Network - Find chargers, start sessions, and power your journey.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1628",
+  "theme_color": "#2674EC",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["utilities", "lifestyle"],
+  "lang": "en",
+  "scope": "/"
+}
