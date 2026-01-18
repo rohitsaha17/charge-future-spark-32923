@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import logomark from "@/assets/logomark.png";
 
 interface VideoIntroProps {
   onComplete: () => void;
@@ -7,6 +8,7 @@ interface VideoIntroProps {
 const VideoIntro = ({ onComplete }: VideoIntroProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const [isVideoVisible, setIsVideoVisible] = useState(false);
   const hasCompletedRef = useRef(false);
   const playStartedRef = useRef(false);
 
@@ -42,8 +44,9 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
     };
 
     const handlePlaying = () => {
-      // Video actually started playing
+      // Video actually started playing - show it
       playStartedRef.current = true;
+      setIsVideoVisible(true);
       clearTimeout(loadTimeout);
     };
 
@@ -93,20 +96,47 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-all duration-400 ${
+      className={`fixed inset-0 z-[9999] bg-gradient-to-br from-slate-900 via-[#0a1628] to-slate-900 flex items-center justify-center transition-all duration-400 ${
         isExiting ? "opacity-0 scale-110" : "opacity-100 scale-100"
       }`}
       style={{ willChange: 'transform, opacity' }}
     >
-      {/* Simple loading indicator while video loads */}
-      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-        <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-      </div>
+      {/* Loading state - visible while video loads */}
+      {!isVideoVisible && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+          {/* Animated background glow */}
+          <div 
+            className="absolute w-[400px] h-[400px] rounded-full"
+            style={{
+              background: 'radial-gradient(circle, rgba(38,116,236,0.25) 0%, transparent 70%)',
+              animation: 'pulse 2s ease-in-out infinite'
+            }}
+          />
+          
+          {/* Logo */}
+          <div className="relative z-20 flex flex-col items-center">
+            <img 
+              src={logomark} 
+              alt="A Plus Charge" 
+              className="w-20 h-20 md:w-24 md:h-24 object-contain mb-4"
+              style={{ 
+                filter: 'drop-shadow(0 0 20px rgba(38,116,236,0.5))',
+                animation: 'pulse 1.5s ease-in-out infinite'
+              }}
+            />
+            {/* Loading spinner */}
+            <div className="w-8 h-8 border-3 border-white/20 border-t-white rounded-full animate-spin" />
+            <p className="text-white/60 text-sm mt-4">Loading...</p>
+          </div>
+        </div>
+      )}
 
       {/* Video element */}
       <video
         ref={videoRef}
-        className="w-full h-full object-cover relative z-20"
+        className={`w-full h-full object-cover relative z-20 transition-opacity duration-300 ${
+          isVideoVisible ? 'opacity-100' : 'opacity-0'
+        }`}
         playsInline
         webkit-playsinline="true"
         x-webkit-airplay="allow"
@@ -133,6 +163,13 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       >
         Skip →
       </button>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.05); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 };
