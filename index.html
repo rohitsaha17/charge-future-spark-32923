@@ -6,6 +6,16 @@
     <title>A Plus Charge - Leading EV Charging Solutions in Northeast India</title>
     <meta name="description" content="A Plus Charge provides smart, reliable EV charging infrastructure across India. From residential to ultra-fast DC charging, we're building the future of clean mobility.">
     <meta name="author" content="A Plus Charge" />
+    <meta name="theme-color" content="#2674EC" />
+    
+    <!-- Favicon and App Icons - Critical for Google Search Results -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="shortcut icon" href="/favicon-192.png">
+    <meta name="msapplication-TileImage" content="/favicon-512.png">
+    <meta name="msapplication-TileColor" content="#2674EC">
     
     <!-- Google Fonts - Modern Typography with font-display: swap for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,34 +26,82 @@
     <!-- Preload critical above-fold images -->
     <link rel="preload" as="image" href="/src/assets/hero-ev-charging-v2.png" fetchpriority="high">
     <link rel="preload" as="image" href="/src/assets/logo.png" fetchpriority="high">
-    <link rel="preload" as="image" href="/src/assets/a-plus-logomark.png" fetchpriority="high">
     <link rel="preload" as="image" href="/src/assets/logomark.png" fetchpriority="high">
     
     <!-- Preload intro video for faster loading -->
     <link rel="preload" as="video" href="/intro-video.mp4" type="video/mp4">
 
-    
-    
-<meta property="og:type" content="website" />
-    <meta property="og:image" content="/og-image.png" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://apluscharge.in" />
+    <meta property="og:title" content="A Plus Charge - Leading EV Charging Solutions in Northeast India">
+    <meta property="og:description" content="A Plus Charge provides smart, reliable EV charging infrastructure across India. From residential to ultra-fast DC charging, we're building the future of clean mobility.">
+    <meta property="og:image" content="https://apluscharge.in/favicon-512.png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
     <meta property="og:site_name" content="A Plus Charge" />
-    <meta property="og:url" content="https://apluscharge.in" />
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@apluscharge" />
-    <meta name="twitter:image" content="/og-image.png" />
-    <meta property="og:title" content="A Plus Charge - Leading EV Charging Solutions in Northeast India">
     <meta name="twitter:title" content="A Plus Charge - Leading EV Charging Solutions in Northeast India">
-    <meta property="og:description" content="A Plus Charge provides smart, reliable EV charging infrastructure across India. From residential to ultra-fast DC charging, we're building the future of clean mobility.">
     <meta name="twitter:description" content="A Plus Charge provides smart, reliable EV charging infrastructure across India. From residential to ultra-fast DC charging, we're building the future of clean mobility.">
-    <link rel="icon" type="image/png" href="/og-image.png">
-  <script type="text/javascript" defer>!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.32/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script>
+    <meta name="twitter:image" content="https://apluscharge.in/favicon-512.png" />
+    
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://apluscharge.in">
+    
+    <!-- Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "A Plus Charge",
+      "alternateName": "A+ Charge",
+      "url": "https://apluscharge.in",
+      "logo": "https://apluscharge.in/favicon-512.png",
+      "description": "Northeast India's Leading EV Charging Network",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "23, Rajat Kamal Path, RG Baruah Road",
+        "addressLocality": "Guwahati",
+        "addressRegion": "Assam",
+        "postalCode": "781024",
+        "addressCountry": "IN"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-70990-18180",
+        "contactType": "customer service",
+        "email": "info@apluscharge.in"
+      },
+      "sameAs": [
+        "https://instagram.com/apluscharge"
+      ]
+    }
+    </script>
+    
+    <script type="text/javascript" defer>!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.32/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script>
 </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration for Asset Caching -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('SW registration failed:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
