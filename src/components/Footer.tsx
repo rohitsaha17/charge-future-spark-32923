@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <img src={logo} alt="A Plus Charge" className="h-10 w-auto mb-4" />
+            <img src={logo} alt="A Plus Charge" className="h-10 w-auto mb-4" loading="lazy" decoding="async" />
             <p className="text-sm text-muted-foreground">
               Northeast India's pioneering EV charging network. Serving Assam, Meghalaya, Arunachal Pradesh, 
               and the entire Seven Sisters with clean, smart energy solutions.
