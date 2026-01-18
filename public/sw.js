@@ -1,16 +1,20 @@
 // A Plus Charge Service Worker - Asset Caching for Performance
-const CACHE_NAME = 'aplus-charge-v1';
-const STATIC_CACHE = 'aplus-static-v1';
-const IMAGE_CACHE = 'aplus-images-v1';
-const VIDEO_CACHE = 'aplus-videos-v1';
+// Version 2 - Optimized for Core Web Vitals
+const CACHE_VERSION = 'v2';
+const CACHE_NAME = `aplus-charge-${CACHE_VERSION}`;
+const STATIC_CACHE = `aplus-static-${CACHE_VERSION}`;
+const IMAGE_CACHE = `aplus-images-${CACHE_VERSION}`;
+const VIDEO_CACHE = `aplus-videos-${CACHE_VERSION}`;
+const FONT_CACHE = `aplus-fonts-${CACHE_VERSION}`;
 
-// Assets to precache on install
+// Critical assets to precache on install (affects LCP)
 const PRECACHE_ASSETS = [
   '/',
   '/favicon-192.png',
   '/favicon-512.png',
   '/apple-touch-icon.png',
   '/og-image.png',
+  '/manifest.json',
 ];
 
 // Install event - precache critical assets
@@ -21,6 +25,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll(PRECACHE_ASSETS);
     })
   );
+  // Skip waiting to activate immediately
   self.skipWaiting();
 });
 
@@ -31,13 +36,14 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((name) => {
+            // Delete old version caches
             return name.startsWith('aplus-') && 
-                   name !== CACHE_NAME && 
-                   name !== STATIC_CACHE && 
-                   name !== IMAGE_CACHE && 
-                   name !== VIDEO_CACHE;
+                   !name.includes(CACHE_VERSION);
           })
-          .map((name) => caches.delete(name))
+          .map((name) => {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          })
       );
     })
   );
@@ -55,25 +61,52 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http(s) requests
   if (!url.protocol.startsWith('http')) return;
 
+  // Skip Supabase API requests - should not be cached
+  if (url.hostname.includes('supabase')) return;
+
   // Handle different asset types with appropriate strategies
-  if (isImageRequest(request)) {
-    event.respondWith(cacheFirstWithRefresh(request, IMAGE_CACHE));
+  if (isFontRequest(request)) {
+    // Fonts: Cache-first (immutable, long-lived)
+    event.respondWith(cacheFirst(request, FONT_CACHE));
+  } else if (isImageRequest(request)) {
+    // Images: Cache-first with stale-while-revalidate
+    event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE));
   } else if (isVideoRequest(request)) {
-    event.respondWith(cacheFirstWithRefresh(request, VIDEO_CACHE));
+    // Videos: Cache-first (large files, cache immediately)
+    event.respondWith(cacheFirst(request, VIDEO_CACHE));
   } else if (isStaticAsset(request)) {
+    // JS/CSS: Cache-first (hashed filenames in production)
     event.respondWith(cacheFirst(request, STATIC_CACHE));
+  } else if (isNavigationRequest(request)) {
+    // HTML: Network-first for fresh content
+    event.respondWith(networkFirst(request, CACHE_NAME));
   } else {
-    // Network first for HTML and API requests
+    // Default: Network-first
     event.respondWith(networkFirst(request, CACHE_NAME));
   }
 });
+
+// Check if request is a navigation (HTML page)
+function isNavigationRequest(request) {
+  return request.mode === 'navigate' || request.destination === 'document';
+}
+
+// Check if request is for a font
+function isFontRequest(request) {
+  const url = new URL(request.url);
+  return (
+    request.destination === 'font' ||
+    /\.(woff|woff2|ttf|eot|otf)$/i.test(url.pathname) ||
+    url.hostname === 'fonts.gstatic.com'
+  );
+}
 
 // Check if request is for an image
 function isImageRequest(request) {
   const url = new URL(request.url);
   return (
     request.destination === 'image' ||
-    /\.(jpg|jpeg|png|gif|webp|svg|ico)$/i.test(url.pathname)
+    /\.(jpg|jpeg|png|gif|webp|svg|ico|avif)$/i.test(url.pathname)
   );
 }
 
@@ -113,12 +146,12 @@ async function cacheFirst(request, cacheName) {
   }
 }
 
-// Cache-first with background refresh - good for images
-async function cacheFirstWithRefresh(request, cacheName) {
+// Stale-while-revalidate - optimal for images (fast + fresh)
+async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cachedResponse = await cache.match(request);
   
-  // Start background refresh
+  // Start background refresh regardless of cache hit
   const fetchPromise = fetch(request)
     .then((networkResponse) => {
       if (networkResponse.ok) {
@@ -128,7 +161,7 @@ async function cacheFirstWithRefresh(request, cacheName) {
     })
     .catch(() => null);
   
-  // Return cached response immediately if available
+  // Return cached response immediately if available (fast LCP)
   if (cachedResponse) {
     return cachedResponse;
   }
