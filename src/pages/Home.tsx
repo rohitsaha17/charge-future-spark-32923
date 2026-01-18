@@ -517,23 +517,23 @@ const Home = () => {
         ref={statsSection.ref}
         className={`py-10 sm:py-12 md:py-16 lg:py-20 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
-        {/* Full-Width Illustration - Pinned to Right for desktop/tablet */}
-        <div className="absolute inset-0 hidden md:flex items-center justify-end overflow-visible pointer-events-none">
+        {/* Full-Width Illustration - Pinned to Right for desktop/tablet - FIXED CROPPING */}
+        <div className="absolute inset-0 hidden md:flex items-center justify-end overflow-hidden pointer-events-none">
           <img
             src={chargingStationIllustration}
             alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-            className="relative h-[110%] w-auto max-w-[55%] object-contain"
+            className="relative h-[120%] w-auto max-w-none object-contain"
             style={{ 
               objectPosition: 'center right',
-              transform: 'translateX(5%)'
+              marginRight: '-5%',
+              transform: 'translateY(-5%)'
             }}
-            loading="eager"
+            loading="lazy"
             decoding="async"
-            fetchPriority="high"
           />
           {/* Fade on left only, keep right and bottom fully visible */}
           <div className="absolute inset-0 pointer-events-none" style={{
-            background: 'linear-gradient(to right, white 0%, white 25%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,0.5) 55%, transparent 70%)'
+            background: 'linear-gradient(to right, white 0%, white 20%, rgba(255,255,255,0.8) 35%, rgba(255,255,255,0.4) 50%, transparent 65%)'
           }}></div>
         </div>
 
@@ -606,19 +606,20 @@ const Home = () => {
           </div>
           
           {/* Mobile Image - Full width, edge to edge */}
-          <div className="w-full md:hidden relative mt-6 sm:mt-8">
-            <img
-              src={chargingStationIllustration}
-              alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
-              className="w-full h-auto object-contain"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
-            {/* Fade on top only */}
-            <div className="absolute inset-0 pointer-events-none" style={{
-              background: 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, transparent 20%)'
-            }}></div>
+          <div className="w-full md:hidden relative mt-6 sm:mt-8 overflow-hidden">
+            <div className="relative w-full">
+              <img
+                src={chargingStationIllustration}
+                alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
+                className="w-full h-auto object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+              {/* Fade on top only */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, transparent 25%)'
+              }}></div>
+            </div>
           </div>
         </div>
       </section>
