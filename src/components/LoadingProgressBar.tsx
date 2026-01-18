@@ -37,7 +37,7 @@ const LoadingProgressBar = ({ isLoading }: LoadingProgressBarProps) => {
       <div className="relative">
         <Progress value={progress} className="h-1 rounded-none" />
         <div className="absolute left-1/2 top-2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 bg-background/95 backdrop-blur rounded-full border border-border/40 shadow-lg animate-pulse">
-          <img src={logomark} alt="A+ Logo" className="w-6 h-6 animate-spin-slow" />
+          <img src={logomark} alt="A+ Logo" className="w-6 h-6 animate-spin-slow" loading="eager" decoding="sync" />
           <span className="text-xs font-medium text-foreground/80">Loading...</span>
         </div>
       </div>

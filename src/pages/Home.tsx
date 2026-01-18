@@ -385,6 +385,8 @@ const Home = () => {
                   className="relative w-full h-auto object-contain object-right drop-shadow-[0_25px_80px_rgba(38,116,236,0.3)]"
                   style={{ transform: 'scale(1.35)' }}
                   loading="eager"
+                  decoding="sync"
+                  fetchPriority="high"
                 />
               </div>
 
@@ -399,6 +401,8 @@ const Home = () => {
                   alt="A Plus Charge EV charging station - white electric car charging at branded A Plus charger"
                   className="relative w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
+                  decoding="sync"
+                  fetchPriority="high"
                 />
               </div>
             </div>
@@ -524,6 +528,8 @@ const Home = () => {
               marginRight: '-5%',
               transform: 'translateY(-5%)'
             }}
+            loading="lazy"
+            decoding="async"
           />
           {/* Fade on left only, keep right and bottom fully visible */}
           <div className="absolute inset-0 pointer-events-none" style={{
@@ -606,6 +612,8 @@ const Home = () => {
                 src={chargingStationIllustration}
                 alt="Modern A Plus Charge EV charging station with solar panels and white electric vehicle"
                 className="w-full h-auto object-cover"
+                loading="lazy"
+                decoding="async"
               />
               {/* Fade on top only */}
               <div className="absolute inset-0 pointer-events-none" style={{
@@ -684,7 +692,7 @@ const Home = () => {
                   key={index}
                   className="flex items-center justify-center p-2 transition-all duration-300 opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] bg-transparent"
                 >
-                  <img src={partner.src} alt={partner.alt} className="h-12 w-auto object-contain mix-blend-multiply" width="80" height="48" />
+                  <img src={partner.src} alt={partner.alt} className="h-12 w-auto object-contain mix-blend-multiply" width="80" height="48" loading="lazy" decoding="async" />
                 </div>
               ))}
             </div>
@@ -725,7 +733,7 @@ const Home = () => {
                     key={index}
                     className="flex-shrink-0 mx-12 transition-all duration-300 opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] bg-transparent"
                   >
-                    <img src={partner.src} alt={partner.alt} className="h-16 lg:h-20 w-auto object-contain mix-blend-multiply" width="120" height="80" />
+                    <img src={partner.src} alt={partner.alt} className="h-16 lg:h-20 w-auto object-contain mix-blend-multiply" width="120" height="80" loading="lazy" decoding="async" />
                   </div>
                 ))}
             </div>
@@ -773,6 +781,8 @@ const Home = () => {
                       src={phoneMockup}
                       alt="A Plus Charge Mobile App Interface"
                       className="w-[400px] md:w-[500px] lg:w-[550px] h-auto drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)] transform hover:scale-[1.02] transition-transform duration-500 md:-translate-y-[80px] lg:-translate-y-[90px]"
+                      loading="lazy"
+                      decoding="async"
                     />
                     {/* Glow Effect Behind Phone */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent blur-3xl -z-10 scale-110"></div>

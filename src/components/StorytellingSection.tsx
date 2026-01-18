@@ -54,19 +54,24 @@ const StorytellingSection = ({
       ref={sectionRef}
       className={`relative w-full min-h-[30vh] md:min-h-[35vh] lg:min-h-[40vh] flex items-center justify-center overflow-hidden ${className ?? ''}`}
     >
-      {/* Parallax background with smooth motion */}
+      {/* Parallax background with smooth motion - using img for better loading */}
       {backgroundImage && (
         <motion.div 
-          className="absolute inset-0 w-full h-[130%]"
+          className="absolute inset-0 w-full h-[130%] overflow-hidden"
           style={{
             y: backgroundY,
             scale,
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
           }}
-        />
+        >
+          <img 
+            src={backgroundImage}
+            alt=""
+            className="w-full h-full object-cover object-center"
+            loading="lazy"
+            decoding="async"
+            aria-hidden="true"
+          />
+        </motion.div>
       )}
       
       {/* Animated gradient overlay with subtle shimmer */}

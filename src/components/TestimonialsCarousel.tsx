@@ -103,6 +103,8 @@ const TestimonialsCarousel = () => {
                       src={testimonial.image}
                       alt={testimonial.name}
                       className="w-12 h-12 rounded-full ring-2 ring-primary/20"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="flex-grow">
                       <h4 className="font-semibold text-foreground">{testimonial.name}</h4>

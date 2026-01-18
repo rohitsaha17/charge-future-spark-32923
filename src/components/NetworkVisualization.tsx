@@ -419,7 +419,7 @@ const NetworkVisualization = () => {
               
               <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-slate-800 dark:bg-slate-900 flex items-center justify-center overflow-hidden p-3 relative z-10">
                 <img src={logomark} alt="A Plus Charge" className="w-14 h-14 md:w-20 md:h-20 object-contain" 
-                  style={{ animation: 'logoPulse 2s ease-in-out infinite' }} />
+                  style={{ animation: 'logoPulse 2s ease-in-out infinite' }} loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
