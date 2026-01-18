@@ -8,6 +8,15 @@
     <meta name="author" content="A Plus Charge" />
     <meta name="theme-color" content="#2674EC" />
     
+    <!-- DNS Prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+    <!-- Preconnect to critical origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <!-- Favicon and App Icons - Critical for Google Search Results -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-192.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-192.png">
@@ -17,18 +26,48 @@
     <meta name="msapplication-TileImage" content="/favicon-512.png">
     <meta name="msapplication-TileColor" content="#2674EC">
     
-    <!-- Google Fonts - Modern Typography with font-display: swap for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Critical CSS for LCP - Inline styles for above-fold content -->
+    <style>
+      /* Critical CSS for initial render - prevents CLS */
+      html { scroll-behavior: smooth; }
+      body { 
+        margin: 0; 
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #root { min-height: 100vh; }
+      /* Reserve space for navigation to prevent CLS */
+      .nav-placeholder { height: 80px; }
+      /* LCP optimization - reserve space for hero */
+      .hero-placeholder { 
+        min-height: 100vh; 
+        background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+      }
+      /* Prevent layout shift from loading states */
+      img { max-width: 100%; height: auto; }
+      /* Font loading optimization */
+      @font-face {
+        font-family: 'Plus Jakarta Sans';
+        font-display: swap;
+        src: local('Plus Jakarta Sans');
+      }
+      @font-face {
+        font-family: 'Space Grotesk';
+        font-display: swap;
+        src: local('Space Grotesk');
+      }
+    </style>
+    
+    <!-- Google Fonts - Optimized loading with font-display: swap -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Preload critical above-fold images -->
-    <link rel="preload" as="image" href="/src/assets/hero-ev-charging-v2.png" fetchpriority="high">
-    <link rel="preload" as="image" href="/src/assets/logo.png" fetchpriority="high">
+    <!-- Preload critical above-fold images (LCP candidates) -->
     <link rel="preload" as="image" href="/src/assets/logomark.png" fetchpriority="high">
     
-    <!-- Preload intro video for faster loading -->
+    <!-- Preload intro video with lower priority -->
     <link rel="preload" as="video" href="/intro-video.mp4" type="video/mp4">
 
     <!-- Open Graph / Facebook -->
@@ -81,13 +120,29 @@
       ]
     }
     </script>
-    
-    <script type="text/javascript" defer>!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.32/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script>
 </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Defer non-critical third-party scripts -->
+    <script type="text/javascript" defer>
+      // Load UnicornStudio after main content is interactive
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          if(!window.UnicornStudio){
+            window.UnicornStudio={isInitialized:!1};
+            var i=document.createElement("script");
+            i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.32/dist/unicornStudio.umd.js";
+            i.onload=function(){
+              window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)
+            };
+            (document.head || document.body).appendChild(i);
+          }
+        }, 2000);
+      });
+    </script>
     
     <!-- Service Worker Registration for Asset Caching -->
     <script>
@@ -101,6 +156,22 @@
               console.log('SW registration failed:', error);
             });
         });
+      }
+    </script>
+    
+    <!-- Web Vitals monitoring (development only) -->
+    <script type="module">
+      if (location.hostname === 'localhost' || location.hostname.includes('lovable')) {
+        import('https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js').then(({ onCLS, onINP, onLCP, onFCP, onTTFB }) => {
+          const logVital = (metric) => {
+            console.log(`[Web Vital] ${metric.name}: ${metric.value.toFixed(2)}${metric.name === 'CLS' ? '' : 'ms'}`);
+          };
+          onCLS(logVital);
+          onINP(logVital);
+          onLCP(logVital);
+          onFCP(logVital);
+          onTTFB(logVital);
+        }).catch(() => {});
       }
     </script>
   </body>
