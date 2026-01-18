@@ -8,6 +8,7 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import VideoIntro from "./components/VideoIntro";
 import LoadingProgressBar from "./components/LoadingProgressBar";
+import PrefetchLinks from "./components/PrefetchLinks";
 import { useWebVitals } from "./hooks/useWebVitals";
 
 // Lazy load pages for better code splitting and faster initial load
@@ -132,6 +133,7 @@ const AppContent = () => {
         </Suspense>
       </div>
       <Footer />
+      <PrefetchLinks />
     </>
   );
 };

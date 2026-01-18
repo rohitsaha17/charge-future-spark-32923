@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import logomark from "@/assets/logomark.png";
 
 interface VideoIntroProps {
   onComplete: () => void;
@@ -8,8 +7,6 @@ interface VideoIntroProps {
 const VideoIntro = ({ onComplete }: VideoIntroProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isExiting, setIsExiting] = useState(false);
-  const [isVideoReady, setIsVideoReady] = useState(false);
-  const [showFallback, setShowFallback] = useState(false);
   const hasCompletedRef = useRef(false);
   const playStartedRef = useRef(false);
 
@@ -24,22 +21,13 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
     const video = videoRef.current;
     if (!video) return;
 
-    // More generous timeout - 6 seconds for slow networks
+    // Extended timeout - 8 seconds for slow networks before skipping
     const loadTimeout = setTimeout(() => {
       if (!playStartedRef.current) {
-        console.log("Video load timeout - showing fallback");
-        setShowFallback(true);
-        // Give fallback animation 2 seconds to show, then complete
-        setTimeout(triggerExit, 2000);
+        console.log("Video load timeout (8s) - skipping intro");
+        triggerExit();
       }
-    }, 6000);
-
-    // Quick fallback for very slow connections - show logo animation after 1.5s
-    const quickFallback = setTimeout(() => {
-      if (!isVideoReady && !playStartedRef.current) {
-        setShowFallback(true);
-      }
-    }, 1500);
+    }, 8000);
 
     const handleTimeUpdate = () => {
       // Play only first 4.5 seconds then exit
@@ -50,42 +38,18 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
 
     const handleCanPlayThrough = () => {
       // Video is fully buffered enough to play without interruption
-      setIsVideoReady(true);
-      setShowFallback(false);
       attemptPlay();
     };
 
     const handlePlaying = () => {
       // Video actually started playing
       playStartedRef.current = true;
-      setShowFallback(false);
       clearTimeout(loadTimeout);
-      clearTimeout(quickFallback);
     };
 
     const handleError = () => {
-      console.log("Video error - showing fallback");
-      setShowFallback(true);
-      setTimeout(triggerExit, 2000);
-    };
-
-    const handleStalled = () => {
-      console.log("Video stalled");
-      // If video stalls and hasn't started, show fallback
-      if (!playStartedRef.current) {
-        setShowFallback(true);
-      }
-    };
-
-    const handleWaiting = () => {
-      // Video is buffering - show fallback if taking too long
-      if (!playStartedRef.current) {
-        setTimeout(() => {
-          if (!playStartedRef.current) {
-            setShowFallback(true);
-          }
-        }, 1000);
-      }
+      console.log("Video error - skipping intro");
+      triggerExit();
     };
 
     const attemptPlay = async () => {
@@ -100,9 +64,8 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
         console.log("Video autoplay successful");
       } catch (error) {
         console.warn("Autoplay blocked:", error);
-        // Show fallback animation instead
-        setShowFallback(true);
-        setTimeout(triggerExit, 2000);
+        // Skip intro if autoplay fails
+        triggerExit();
       }
     };
 
@@ -111,8 +74,6 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
     video.addEventListener('canplaythrough', handleCanPlayThrough);
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('error', handleError);
-    video.addEventListener('stalled', handleStalled);
-    video.addEventListener('waiting', handleWaiting);
     
     // If video is already ready (cached), play immediately
     if (video.readyState >= 4) {
@@ -126,10 +87,7 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       video.removeEventListener('canplaythrough', handleCanPlayThrough);
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('error', handleError);
-      video.removeEventListener('stalled', handleStalled);
-      video.removeEventListener('waiting', handleWaiting);
       clearTimeout(loadTimeout);
-      clearTimeout(quickFallback);
     };
   }, [onComplete]);
 
@@ -140,70 +98,15 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       }`}
       style={{ willChange: 'transform, opacity' }}
     >
-      {/* Fallback loading animation - shows while video loads or if it fails */}
-      {showFallback && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 bg-gradient-to-br from-slate-900 via-[#0a1628] to-slate-900">
-          {/* Animated background */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div 
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
-              style={{
-                background: 'radial-gradient(circle, rgba(38,116,236,0.3) 0%, transparent 70%)',
-                animation: 'pulse 2s ease-in-out infinite'
-              }}
-            />
-            <div 
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full"
-              style={{
-                background: 'radial-gradient(circle, rgba(0,198,255,0.2) 0%, transparent 70%)',
-                animation: 'pulse 2s ease-in-out infinite 0.5s'
-              }}
-            />
-          </div>
-          
-          {/* Logo animation */}
-          <div className="relative z-20 flex flex-col items-center">
-            <div 
-              className="relative w-24 h-24 md:w-32 md:h-32 mb-4"
-              style={{ animation: 'logoEnter 0.6s ease-out forwards' }}
-            >
-              {/* Glow ring */}
-              <div 
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: 'linear-gradient(135deg, #2674EC, #00C6FF)',
-                  filter: 'blur(20px)',
-                  animation: 'pulse 1.5s ease-in-out infinite'
-                }}
-              />
-              {/* Logo */}
-              <img 
-                src={logomark} 
-                alt="A Plus Charge" 
-                className="relative w-full h-full object-contain drop-shadow-2xl"
-                loading="eager"
-              />
-            </div>
-            <div 
-              className="text-white text-xl md:text-2xl font-bold tracking-wider"
-              style={{ animation: 'fadeIn 0.5s ease-out 0.3s forwards', opacity: 0 }}
-            >
-              A<span className="text-primary">+</span> CHARGE
-            </div>
-            <div 
-              className="text-white/60 text-sm mt-2"
-              style={{ animation: 'fadeIn 0.5s ease-out 0.5s forwards', opacity: 0 }}
-            >
-              Powering the Future
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Simple loading indicator while video loads */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+        <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
 
       {/* Video element */}
       <video
         ref={videoRef}
-        className={`w-full h-full object-cover transition-opacity duration-300 ${showFallback ? 'opacity-0' : 'opacity-100'}`}
+        className="w-full h-full object-cover relative z-20"
         playsInline
         webkit-playsinline="true"
         x-webkit-airplay="allow"
@@ -230,21 +133,6 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       >
         Skip →
       </button>
-
-      <style>{`
-        @keyframes logoEnter {
-          0% { transform: scale(0.5); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes fadeIn {
-          0% { opacity: 0; transform: translateY(10px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 0.6; }
-          50% { transform: scale(1.1); opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 };
