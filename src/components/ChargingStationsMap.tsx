@@ -9,15 +9,19 @@ const ChargingStationsMap = () => {
   const map = useRef<maplibregl.Map | null>(null);
   const markers = useRef<maplibregl.Marker[]>([]);
   const [stations, setStations] = useState<any[]>([]);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const markersAddedRef = useRef(false);
 
+  // Fetch stations on mount
   useEffect(() => {
     fetchStations();
   }, []);
 
+  // Initialize map
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || map.current) return;
 
-    map.current = new maplibregl.Map({
+    const mapInstance = new maplibregl.Map({
       container: mapContainer.current,
       style: 'https://demotiles.maplibre.org/style.json',
       center: [91.7362, 26.1445],
@@ -25,72 +29,70 @@ const ChargingStationsMap = () => {
       pitch: 45,
     });
 
-    map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
+    mapInstance.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    mapInstance.on('load', () => {
+      setMapLoaded(true);
+    });
+
+    map.current = mapInstance;
 
     return () => {
       markers.current.forEach(marker => marker.remove());
       markers.current = [];
       map.current?.remove();
+      map.current = null;
+      setMapLoaded(false);
+      markersAddedRef.current = false;
     };
   }, []);
 
+  // Add markers when both map is loaded AND stations are available
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current || !mapLoaded || stations.length === 0) return;
+
+    // Prevent duplicate marker additions
+    if (markersAddedRef.current && markers.current.length > 0) return;
 
     // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    if (stations.length === 0) return;
+    const bounds = new maplibregl.LngLatBounds();
 
-    // Wait for map to be ready
-    const addMarkers = () => {
-      const bounds = new maplibregl.LngLatBounds();
-
-      stations.forEach((station) => {
-        const markerElement = createCustomMarker(station);
-        
-        // Add click event to open Google Maps
-        markerElement.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openInGoogleMaps(station.latitude, station.longitude, station.name);
-        });
-        
-        const marker = new maplibregl.Marker({ 
-          element: markerElement,
-          anchor: 'bottom'
-        })
-          .setLngLat([station.longitude, station.latitude])
-          .setPopup(
-            new maplibregl.Popup({ 
-              offset: 25,
-              className: 'custom-popup',
-              maxWidth: '320px'
-            }).setHTML(createPopupContent(station))
-          )
-          .addTo(map.current!);
-
-        markers.current.push(marker);
-        bounds.extend([station.longitude, station.latitude]);
+    stations.forEach((station) => {
+      const markerElement = createCustomMarker(station);
+      
+      // Add click event to open Google Maps
+      markerElement.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openInGoogleMaps(station.latitude, station.longitude, station.name);
       });
+      
+      const marker = new maplibregl.Marker({ 
+        element: markerElement,
+        anchor: 'bottom'
+      })
+        .setLngLat([station.longitude, station.latitude])
+        .setPopup(
+          new maplibregl.Popup({ 
+            offset: 25,
+            className: 'custom-popup',
+            maxWidth: '320px'
+          }).setHTML(createPopupContent(station))
+        )
+        .addTo(map.current!);
 
-      if (stations.length > 0 && bounds.getNorthEast() && bounds.getSouthWest()) {
-        map.current!.fitBounds(bounds, { padding: 80, maxZoom: 12 });
-      }
-    };
+      markers.current.push(marker);
+      bounds.extend([station.longitude, station.latitude]);
+    });
 
-    if (map.current.loaded()) {
-      addMarkers();
-    } else {
-      map.current.on('load', addMarkers);
+    if (bounds.getNorthEast() && bounds.getSouthWest()) {
+      map.current.fitBounds(bounds, { padding: 80, maxZoom: 12 });
     }
 
-    return () => {
-      if (map.current) {
-        map.current.off('load', addMarkers);
-      }
-    };
-  }, [stations]);
+    markersAddedRef.current = true;
+  }, [stations, mapLoaded]);
 
   const openInGoogleMaps = (lat: number, lng: number, name: string) => {
     // Detect if user is on mobile
