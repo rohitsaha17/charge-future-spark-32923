@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import SEOHead from "@/components/SEOHead";
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -54,6 +55,19 @@ const BlogPost = () => {
 
   return (
     <article className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50">
+      <SEOHead
+        title={blog.title}
+        description={blog.meta_description || blog.excerpt}
+        path={`/blog/${blog.slug}`}
+        ogType="article"
+        ogImage={blog.featured_image || undefined}
+        keywords={blog.meta_keywords?.join(", ") || undefined}
+        article={{
+          publishedTime: blog.published_at,
+          modifiedTime: blog.updated_at,
+          tags: blog.tags || undefined,
+        }}
+      />
       <div className="container mx-auto px-4 py-16 max-w-4xl">
         <Button
           variant="ghost"

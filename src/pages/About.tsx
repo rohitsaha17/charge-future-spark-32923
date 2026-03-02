@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import SEOHead from "@/components/SEOHead";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
@@ -122,6 +123,12 @@ const About = () => {
 
   return (
     <div className="min-h-screen pb-20">
+      <SEOHead
+        title="About Us - Our Mission & Team"
+        description="A Plus Charge is Northeast India's leading EV charging network. 45+ live stations, 97% uptime, covering 9 states. Meet our team and learn our story."
+        path="/about"
+        keywords="A Plus Charge about, EV charging company India, Northeast India EV, Guwahati EV charging team"
+      />
       {/* Enhanced Hero Section */}
       <EnhancedPageHeader
         title="From Vision to"

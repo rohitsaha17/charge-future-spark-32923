@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
@@ -127,6 +128,12 @@ const Services = () => {
 
   return (
     <div className="min-h-screen pb-20">
+      <SEOHead
+        title="EV Charger Price List & Services"
+        description="Browse A Plus Charge's EV charger range: 3.3kW plug points from ₹15,000 to 60kW DC fast chargers at ₹7,97,500. GST inclusive pricing with warranty."
+        path="/services"
+        keywords="EV charger price India, DC fast charger cost, AC charger price, EV charging station price list, 7.4kW charger, 60kW charger"
+      />
       {/* Enhanced Hero Section */}
       <EnhancedPageHeader
         title="EV Charger"

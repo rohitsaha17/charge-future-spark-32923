@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -73,6 +74,12 @@ const Invest = () => {
 
   return (
     <div className="min-h-screen pb-20">
+      <SEOHead
+        title="Invest in EV Charging Infrastructure"
+        description="Invest in Northeast India's fastest-growing EV charging network. First-mover advantage, 97% uptime, diversified revenue streams. Contact us today."
+        path="/invest"
+        keywords="invest EV charging India, EV infrastructure investment, A Plus Charge investor, electric vehicle business opportunity"
+      />
       {/* Enhanced Hero Section */}
       <EnhancedPageHeader
         title="Why"
