@@ -11,6 +11,8 @@ import l1PlugPoint from "@/assets/chargers/l1-plug-point.jpg";
 import dcFastCharger from "@/assets/chargers/dc-fast-charger.jpg";
 import l2AcCharger from "@/assets/chargers/l2-ac-charger.jpg";
 import evChargerStation from "@/assets/chargers/ev-charger-station.jpg";
+import ac7kwCharger from "@/assets/chargers/ac-7kw-charger.png";
+import dc60kwCharger from "@/assets/chargers/dc-60kw-charger.png";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import ChargerComparisonTable from "@/components/ChargerComparisonTable";
 
@@ -34,7 +36,7 @@ const Services = () => {
       ideal: "Residential, Apartments"
     },
     {
-      image: l2AcCharger,
+      image: ac7kwCharger,
       name: "L2 - 7.4 kW AC Charger",
       type: "EV 4 Wheelers - Blind",
       power: "7.4 kW AC",
@@ -76,7 +78,7 @@ const Services = () => {
       ideal: "Highways, Fuel Stations"
     },
     {
-      image: evChargerStation,
+      image: dc60kwCharger,
       name: "L3 - 60 kW DC Fast Charger",
       type: "4 Wheeler DC",
       power: "60 kW DC",

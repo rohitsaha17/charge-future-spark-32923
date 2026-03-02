@@ -217,7 +217,7 @@ const Partner = () => {
                 className="w-full h-full object-cover"
                 poster="/intro-video-poster.jpg"
               >
-                <source src="/intro-video.mp4" type="video/mp4" />
+                <source src="/partner-video.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
               
