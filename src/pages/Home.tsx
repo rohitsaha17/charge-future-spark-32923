@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { microFeedback } from "@/lib/microFeedback";
 import { MapPin, Users, Zap, ChevronDown, ArrowRight, Settings, Wrench, Megaphone, DollarSign, Monitor, HeadphonesIcon } from "lucide-react";
@@ -79,7 +80,13 @@ const Home = () => {
     },
   ];
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
+      <SEOHead
+        title="A Plus Charge - EV Charging Solutions in Northeast India"
+        description="Smart, reliable EV charging infrastructure across Northeast India. From 3.3kW residential to 60kW DC fast charging. Partner with us for 15-20% ROI."
+        path="/"
+        keywords="EV charging station, electric vehicle charger, Northeast India, Guwahati, DC fast charger, AC charger, EV charging partner"
+      />
       {/* Hero Section - Energetic & Electric */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Dynamic Electric Background */}
@@ -949,7 +956,7 @@ const Home = () => {
       
       {/* Floating Find Charger Button - Mobile Only */}
       <FloatingFindCharger />
-    </div>
+    </main>
   );
 };
 export default Home;

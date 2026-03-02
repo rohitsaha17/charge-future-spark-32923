@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import LocationPickerMap from "@/components/LocationPickerMap";
@@ -187,6 +188,12 @@ const Partner = () => {
 
   return (
     <div className="min-h-screen pb-20">
+      <SEOHead
+        title="Become Our Partner - EV Charging ROI Calculator"
+        description="Partner with A Plus Charge. ₹0 partnership fee, 15-20% expected ROI. Calculate your returns with our ROI calculator. 24/7 technical support."
+        path="/partner"
+        keywords="EV charging partner India, EV station franchise, charging station ROI, EV business opportunity Northeast India"
+      />
       {/* Enhanced Hero Section */}
       <EnhancedPageHeader
         title="Grow With"

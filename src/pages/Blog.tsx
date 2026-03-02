@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { FileText, Calendar, ArrowRight } from 'lucide-react';
@@ -38,6 +39,12 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen pb-20">
+      <SEOHead
+        title="Blog - EV Charging News & Insights"
+        description="Stay updated with the latest EV charging news, industry insights, and updates from A Plus Charge. Tips for EV owners and partners."
+        path="/blog"
+        keywords="EV charging blog, electric vehicle news India, EV charging tips, A Plus Charge updates"
+      />
       {/* Enhanced Hero Section */}
       <section className="relative py-32 md:py-40 mb-12 overflow-hidden bg-gradient-to-br from-primary via-blue-600 to-cyan-500">
         <div className="absolute inset-0 opacity-20">

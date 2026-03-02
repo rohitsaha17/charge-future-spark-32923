@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import SEOHead from "@/components/SEOHead";
 import { Card } from "@/components/ui/card";
 import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation } from "lucide-react";
 import GoogleMapsCharging from "@/components/GoogleMapsCharging";
@@ -75,6 +76,12 @@ const FindCharger = () => {
 
   return (
     <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
+      <SEOHead
+        title="Find EV Charging Stations Near You"
+        description="Locate A Plus Charge EV charging stations across Northeast India. Real-time availability, AC & DC chargers, navigation to nearest station."
+        path="/find-charger"
+        keywords="EV charging station near me, find EV charger Northeast India, Guwahati charging station, Shillong EV charger"
+      />
       {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(220_15%_97%)] to-background"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsl(216_83%_56%_/_0.08),_transparent_50%)]"></div>
