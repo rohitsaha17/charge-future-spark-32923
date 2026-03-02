@@ -5,6 +5,7 @@ import StorytellingSection from "@/components/StorytellingSection";
 import LocationPickerMap from "@/components/LocationPickerMap";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
 import { Play, MapPin, Sparkles } from "lucide-react";
+import PartnerVideo from "@/components/PartnerVideo";
 import trustBg from "@/assets/trust-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -211,22 +212,7 @@ const Partner = () => {
               </p>
             </div>
             
-            <div className="relative aspect-video bg-muted rounded-lg overflow-hidden group">
-              <video 
-                controls 
-                className="w-full h-full object-cover"
-                poster="/intro-video-poster.jpg"
-              >
-                <source src="/partner-video.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                <div className="w-20 h-20 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm">
-                  <Play className="w-10 h-10 text-white ml-1" />
-                </div>
-              </div>
-            </div>
+            <PartnerVideo />
             
             <div className="mt-6 grid md:grid-cols-3 gap-4 text-center">
               <div className="p-4">
