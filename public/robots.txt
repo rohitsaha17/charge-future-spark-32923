@@ -4,3 +4,4 @@ Disallow: /admin/
 Disallow: /admin/*
 
 Sitemap: https://apluscharge.in/sitemap.xml
+Sitemap: https://charge-future-spark-32923.lovable.app/sitemap.xml

@@ -82,8 +82,8 @@ const Home = () => {
   return (
     <main className="min-h-screen bg-background">
       <SEOHead
-        title="A Plus Charge - EV Charging Solutions in Northeast India"
-        description="Smart, reliable EV charging infrastructure across Northeast India. From 3.3kW residential to 60kW DC fast charging. Partner with us for 15-20% ROI."
+        title="A Plus Charge | EV Charging Northeast India"
+        description="Northeast India's largest EV charging network. 3.3kW to 60kW fast chargers across Assam & beyond. Partner with us."
         path="/"
         keywords="EV charging station, electric vehicle charger, Northeast India, Guwahati, DC fast charger, AC charger, EV charging partner"
       />
