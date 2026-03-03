@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Youtube, Linkedin, Twitter, Facebook } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
@@ -54,13 +54,24 @@ const Footer = () => {
                 <MapPin size={16} />
                 <span>ALTERNATEV SOLUTIONS PVT LTD<br />23, Rajat Kamal Path, RG Baruah Road,<br />Guwahati-781024</span>
               </li>
-              <li className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                <a href="https://instagram.com/apluscharge" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                  @apluscharge
-                </a>
-              </li>
             </ul>
+            <div className="flex items-center gap-3 mt-4">
+              <a href="https://www.instagram.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-primary transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/company/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors">
+                <Linkedin size={20} />
+              </a>
+              <a href="https://www.youtube.com/@evboy_samyak" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-muted-foreground hover:text-primary transition-colors">
+                <Youtube size={20} />
+              </a>
+              <a href="https://x.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="text-muted-foreground hover:text-primary transition-colors">
+                <Twitter size={20} />
+              </a>
+              <a href="https://www.facebook.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-muted-foreground hover:text-primary transition-colors">
+                <Facebook size={20} />
+              </a>
+            </div>
           </div>
         </div>
 
