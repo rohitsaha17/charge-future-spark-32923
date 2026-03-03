@@ -120,101 +120,58 @@ const Home = () => {
             />
           </div>
 
-          {/* Electric Lightning Network */}
+          {/* Subtle Connection Lines */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="lightningGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.9">
-                  <animate attributeName="stop-opacity" values="0.5;0.9;0.5" dur="2s" repeatCount="indefinite"/>
-                </stop>
-                <stop offset="50%" stopColor="hsl(191, 100%, 50%)" stopOpacity="0.7">
-                  <animate attributeName="stop-opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
-                </stop>
-                <stop offset="100%" stopColor="hsl(160, 84%, 50%)" stopOpacity="0.5">
-                  <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite"/>
-                </stop>
+                <stop offset="0%" stopColor="hsl(216, 83%, 56%)" stopOpacity="0.7"/>
+                <stop offset="50%" stopColor="hsl(191, 100%, 50%)" stopOpacity="0.5"/>
+                <stop offset="100%" stopColor="hsl(160, 84%, 50%)" stopOpacity="0.3"/>
               </linearGradient>
-              <filter id="electricGlow2">
-                <feGaussianBlur stdDeviation="4" result="blur"/>
-                <feMerge>
-                  <feMergeNode in="blur"/>
-                  <feMergeNode in="blur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
             </defs>
-            
-            {/* Dynamic Connection Lines */}
-            <g filter="url(#electricGlow2)" opacity="0.6">
-              <path d="M 0,200 Q 150,180 300,220 T 600,200" stroke="url(#lightningGrad)" strokeWidth="2" fill="none" className="animate-pulse"/>
-              <path d="M 100,400 Q 300,350 500,420 T 900,380" stroke="url(#lightningGrad)" strokeWidth="1.5" fill="none" style={{ animationDelay: '0.5s' }} className="animate-pulse"/>
-              <path d="M 200,600 Q 400,550 600,620 T 1000,580" stroke="url(#lightningGrad)" strokeWidth="1" fill="none" style={{ animationDelay: '1s' }} className="animate-pulse"/>
+            <g opacity="0.5">
+              <path d="M 0,200 Q 150,180 300,220 T 600,200" stroke="url(#lightningGrad)" strokeWidth="1.5" fill="none" className="animate-pulse"/>
+              <path d="M 100,400 Q 300,350 500,420 T 900,380" stroke="url(#lightningGrad)" strokeWidth="1" fill="none" style={{ animationDelay: '0.5s' }} className="animate-pulse"/>
             </g>
-            
-            {/* Energy Nodes */}
+            {/* Minimal Energy Nodes */}
             <g>
               {[
-                { cx: "8%", cy: "25%", r: 8, delay: 0 },
-                { cx: "22%", cy: "35%", r: 10, delay: 0.3 },
-                { cx: "42%", cy: "22%", r: 7, delay: 0.6 },
-                { cx: "65%", cy: "40%", r: 12, delay: 0.9 },
-                { cx: "18%", cy: "60%", r: 6, delay: 0.2 },
-                { cx: "38%", cy: "52%", r: 9, delay: 0.5 },
-                { cx: "58%", cy: "68%", r: 7, delay: 0.8 },
-                { cx: "78%", cy: "55%", r: 11, delay: 1.1 },
-                { cx: "12%", cy: "78%", r: 6, delay: 0.4 },
-                { cx: "88%", cy: "32%", r: 8, delay: 0.7 },
+                { cx: "15%", cy: "30%", r: 6, delay: 0 },
+                { cx: "45%", cy: "25%", r: 8, delay: 0.4 },
+                { cx: "70%", cy: "45%", r: 7, delay: 0.8 },
+                { cx: "85%", cy: "35%", r: 6, delay: 1.2 },
               ].map((node, i) => (
-                <g key={i}>
-                  <circle 
-                    cx={node.cx} 
-                    cy={node.cy} 
-                    r={node.r} 
-                    fill="url(#lightningGrad)" 
-                    opacity="0.6"
-                    style={{ 
-                      animation: `nodePulse 2.5s ease-in-out ${node.delay}s infinite`,
-                    }}
-                  />
-                  <circle 
-                    cx={node.cx} 
-                    cy={node.cy} 
-                    r={node.r * 2} 
-                    fill="none"
-                    stroke="url(#lightningGrad)" 
-                    strokeWidth="1"
-                    opacity="0.3"
-                    style={{ 
-                      animation: `nodeRipple 3s ease-out ${node.delay}s infinite`,
-                    }}
-                  />
-                </g>
+                <circle 
+                  key={i}
+                  cx={node.cx} 
+                  cy={node.cy} 
+                  r={node.r} 
+                  fill="url(#lightningGrad)" 
+                  opacity="0.5"
+                  className="animate-pulse"
+                  style={{ animationDelay: `${node.delay}s` }}
+                />
               ))}
             </g>
           </svg>
 
-          {/* Floating Particles */}
+          {/* Subtle Floating Particles - reduced for performance */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(25)].map((_, i) => (
+            {[...Array(8)].map((_, i) => (
               <div
                 key={i}
-                className="absolute rounded-full"
+                className="absolute rounded-full animate-pulse"
                 style={{
-                  width: `${3 + (i % 4)}px`,
-                  height: `${3 + (i % 4)}px`,
-                  left: `${3 + (i * 3.8)}%`,
-                  top: `${10 + (i % 7) * 12}%`,
-                  background: i % 4 === 0 
-                    ? 'linear-gradient(135deg, hsl(216, 83%, 56%), hsl(191, 100%, 50%))'
-                    : i % 4 === 1
-                    ? 'linear-gradient(135deg, hsl(191, 100%, 50%), hsl(160, 84%, 50%))'
-                    : i % 4 === 2
+                  width: `${3 + (i % 3)}px`,
+                  height: `${3 + (i % 3)}px`,
+                  left: `${5 + (i * 12)}%`,
+                  top: `${15 + (i % 5) * 16}%`,
+                  background: i % 2 === 0 
                     ? 'hsl(216, 83%, 56%)'
-                    : 'hsl(160, 84%, 50%)',
-                  boxShadow: `0 0 ${8 + (i % 4) * 4}px hsl(216, 83%, 56%, 0.6)`,
-                  animation: `sparkFloat ${4 + (i % 5)}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.15}s`,
-                  opacity: 0.5 + (i % 3) * 0.15,
+                    : 'hsl(191, 100%, 50%)',
+                  boxShadow: `0 0 8px hsl(216, 83%, 56%, 0.4)`,
+                  animationDelay: `${i * 0.3}s`,
+                  opacity: 0.4,
                 }}
               />
             ))}
@@ -261,20 +218,6 @@ const Home = () => {
             0%, 100% { transform: scale(1); opacity: 0.8; }
             50% { transform: scale(1.1); opacity: 1; }
           }
-          @keyframes nodePulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.5); opacity: 1; }
-          }
-          @keyframes nodeRipple {
-            0% { transform: scale(1); opacity: 0.4; }
-            100% { transform: scale(3); opacity: 0; }
-          }
-          @keyframes sparkFloat {
-            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.4; }
-            25% { transform: translateY(-25px) translateX(12px) scale(1.2); opacity: 0.8; }
-            50% { transform: translateY(-12px) translateX(-8px) scale(0.9); opacity: 0.5; }
-            75% { transform: translateY(-35px) translateX(5px) scale(1.1); opacity: 0.7; }
-          }
           @keyframes iconFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
             50% { transform: translateY(-20px) rotate(8deg); opacity: 0.4; }
@@ -290,10 +233,6 @@ const Home = () => {
           @keyframes scaleIn {
             0% { opacity: 0; transform: scale(0.9); }
             100% { opacity: 1; transform: scale(1); }
-          }
-          @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
           }
         `}</style>
 
