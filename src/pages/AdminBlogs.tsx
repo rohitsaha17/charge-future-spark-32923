@@ -239,13 +239,10 @@ const AdminBlogs = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="content">Content</Label>
-                  <Textarea
-                    id="content"
+                  <Label htmlFor="content">Content (Rich Text)</Label>
+                  <RichTextEditor
                     value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    rows={10}
-                    required
+                    onChange={(content) => setFormData({ ...formData, content })}
                   />
                 </div>
 
