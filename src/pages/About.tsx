@@ -3,27 +3,22 @@ import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import SEOHead from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DEFAULT_STATS,
+  DEFAULT_PARTNERS,
+  DEFAULT_FAQS,
+  DEFAULT_TEAM,
+  PARTNER_FALLBACKS,
+  TEAM_FALLBACKS,
+} from "@/lib/siteDefaults";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
 import AnimatedCard from "@/components/AnimatedCard";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import { Target, Eye, Heart, CheckCircle, Zap, Users, Leaf, Star, ChevronDown, Linkedin, Youtube, MapPin, Clock } from "lucide-react";
-import founderPortrait from "@/assets/team/founder-samyak-new.jpg";
 import heroBackground from "@/assets/charging-station-launch.jpg";
 import trustBg from "@/assets/trust-bg.jpg";
-import ctoPortrait from "@/assets/team/cto-portrait.jpg";
-import operationsPortrait from "@/assets/team/operations-portrait.jpg";
-import bdPortrait from "@/assets/team/bd-portrait.jpg";
-import techPortrait from "@/assets/team/tech-portrait.jpg";
-import customerPortrait from "@/assets/team/customer-portrait.jpg";
-import atherLogo from "@/assets/partners/ather-logo-new.png";
-import tataLogo from "@/assets/partners/tata-logo-new.png";
-import mgLogo from "@/assets/partners/mg-logo-new.png";
-import gmdaLogo from "@/assets/partners/gmda-logo-new.png";
-import aaiLogo from "@/assets/partners/aai-logo.png";
-import imperiaVistaLogo from "@/assets/partners/imperia-vista-logo.png";
-import osmLogo from "@/assets/partners/osm-logo.png";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { JourneyTimeline } from "@/components/JourneyTimeline";
 import {
@@ -33,104 +28,28 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const DEFAULT_STATS = [
-  { value: 45, label: "Live Public Stations", suffix: "+" },
-  { value: 100, label: "Locations by 2026", suffix: "+" },
-  { value: 97, label: "Average Uptime", suffix: "%" },
-  { value: 9, label: "States Covered", suffix: "" },
-];
-
-const DEFAULT_PARTNERS = [
-  { name: "Ather Energy", logo_url: atherLogo, website_url: null },
-  { name: "Tata Motors", logo_url: tataLogo, website_url: null },
-  { name: "MG Motors", logo_url: mgLogo, website_url: null },
-  { name: "GMDA", logo_url: gmdaLogo, website_url: null },
-  { name: "Airports Authority of India", logo_url: aaiLogo, website_url: null },
-  { name: "Imperia Vista", logo_url: imperiaVistaLogo, website_url: null },
-  { name: "Omega Seiki Mobility", logo_url: osmLogo, website_url: null },
-];
-
-const DEFAULT_FAQS = [
-  {
-    question: "What makes A Plus Charge different?",
-    answer: "We're the best CPO from North East India built specifically for Northeast India's unique terrain, weather, and power grid challenges. Our systems are optimized for monsoons, hill stations, and local language support.",
-  },
-  {
-    question: "How reliable are your charging stations?",
-    answer: "We maintain a 98%+ uptime rate with 24/7 monitoring and rapid response teams. Our stations are engineered to handle extreme weather conditions typical of Northeast India.",
-  },
-  {
-    question: "Which EV brands do you support?",
-    answer: "We support all major EV brands including Tata, MG, Ather, and more. Our stations feature both CCS2 and Type 2 connectors for maximum compatibility.",
-  },
-  {
-    question: "How can I invest in A Plus Charge?",
-    answer: "We offer site-host partnerships and investment opportunities. Visit our Invest page or contact our team to learn about ROI projections and partnership models.",
-  },
-];
-
-const DEFAULT_TEAM = [
-  {
-    name: "Samyak Jain (EV Boy)",
-    role: "Founder & CEO",
-    image_url: founderPortrait,
-    bio: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge - Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
-    highlight: "PG in Entrepreneurship, Amity University | 10+ years in clean energy",
-    linkedin_url: "https://in.linkedin.com/in/samyak-jain-alternatev",
-    youtube_url: "https://www.youtube.com/@evboy_samyak",
-  },
-  {
-    name: "Priya Sharma",
-    role: "Chief Technology Officer",
-    image_url: ctoPortrait,
-    bio: "Led the development of our proprietary charging management system. Priya's algorithms optimize for Northeast's unique power grid challenges and monsoon conditions.",
-    highlight: "Former Tesla engineer, IoT specialist",
-    linkedin_url: null,
-    youtube_url: null,
-  },
-  {
-    name: "Ankit Deka",
-    role: "Head of Operations",
-    image_url: operationsPortrait,
-    bio: "Grew up in rural Assam, understands terrain challenges firsthand. Ankit ensures our chargers work flawlessly from Shillong's hills to Tezpur's valleys.",
-    highlight: "Deployed 50+ charging stations across 7 states",
-    linkedin_url: null,
-    youtube_url: null,
-  },
-  {
-    name: "Meghna Bora",
-    role: "Business Development Lead",
-    image_url: bdPortrait,
-    bio: "Built partnerships with OEMs, site hosts, and government bodies. Meghna's local connections and negotiation skills opened doors across Northeast India.",
-    highlight: "Secured GMDA partnership, Ather alliance",
-    linkedin_url: null,
-    youtube_url: null,
-  },
-  {
-    name: "Rahul Choudhury",
-    role: "Lead Engineer",
-    image_url: techPortrait,
-    bio: "Designs charging infrastructure that withstands extreme weather. Rahul's innovations in waterproofing and voltage stability set industry standards.",
-    highlight: "15 patents in EV charging technology",
-    linkedin_url: null,
-    youtube_url: null,
-  },
-  {
-    name: "Sneha Das",
-    role: "Customer Success Manager",
-    image_url: customerPortrait,
-    bio: "Speaks 5 regional languages, runs our 24/7 support. Sneha ensures every EV driver feels supported, from first-time users to fleet operators.",
-    highlight: "99.2% customer satisfaction rating",
-    linkedin_url: null,
-    youtube_url: null,
-  },
-];
+const INITIAL_STATS = DEFAULT_STATS;
+const INITIAL_PARTNERS = DEFAULT_PARTNERS.map((p) => ({
+  name: p.name,
+  logo_url: p.fallbackImage,
+  website_url: p.website_url,
+}));
+const INITIAL_FAQS = DEFAULT_FAQS;
+const INITIAL_TEAM = DEFAULT_TEAM.map((t) => ({
+  name: t.name,
+  role: t.role,
+  image_url: t.fallbackImage,
+  bio: t.bio,
+  highlight: t.highlight,
+  linkedin_url: t.linkedin_url,
+  youtube_url: t.youtube_url,
+}));
 
 const About = () => {
-  const [stats, setStats] = useState(DEFAULT_STATS);
-  const [partners, setPartners] = useState(DEFAULT_PARTNERS);
-  const [faqs, setFaqs] = useState(DEFAULT_FAQS);
-  const [team, setTeam] = useState(DEFAULT_TEAM);
+  const [stats, setStats] = useState<any[]>(INITIAL_STATS);
+  const [partners, setPartners] = useState<any[]>(INITIAL_PARTNERS);
+  const [faqs, setFaqs] = useState<any[]>(INITIAL_FAQS);
+  const [team, setTeam] = useState<any[]>(INITIAL_TEAM);
 
   useEffect(() => {
     (async () => {
@@ -147,9 +66,26 @@ const About = () => {
           suffix: r.suffix || '',
         })));
       }
-      if (p.data && p.data.length) setPartners(p.data as any);
+      if (p.data && p.data.length) {
+        // Use uploaded logo if present, otherwise fall back to the bundled
+        // default image keyed by partner name so the site still looks right.
+        setPartners(
+          p.data.map((r: any) => ({
+            name: r.name,
+            logo_url: r.logo_url || PARTNER_FALLBACKS[r.name] || null,
+            website_url: r.website_url,
+          }))
+        );
+      }
       if (f.data && f.data.length) setFaqs(f.data as any);
-      if (t.data && t.data.length) setTeam(t.data as any);
+      if (t.data && t.data.length) {
+        setTeam(
+          t.data.map((r: any) => ({
+            ...r,
+            image_url: r.image_url || TEAM_FALLBACKS[r.name] || null,
+          }))
+        );
+      }
     })();
   }, []);
 

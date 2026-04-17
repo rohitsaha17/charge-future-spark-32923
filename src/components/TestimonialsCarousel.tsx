@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { Star, Quote } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_TESTIMONIALS as SITE_DEFAULT_TESTIMONIALS } from "@/lib/siteDefaults";
 
 interface Testimonial {
   name: string;
@@ -19,48 +20,14 @@ interface Testimonial {
   location: string;
 }
 
-const DEFAULT_TESTIMONIALS: Testimonial[] = [
-  {
-    name: "Rajesh Kumar",
-    role: "Mahindra XEV 9e Owner",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh",
-    rating: 5,
-    review: "A Plus Charge has transformed my daily commute. Their charging stations are reliable, fast, and always available when I need them. The best EV charging network in Northeast India!",
-    location: "Guwahati, Assam"
-  },
-  {
-    name: "Priya Sharma",
-    role: "Tata Nexon EV Owner",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
-    rating: 5,
-    review: "The convenience of having multiple charging points across the city is incredible. The app is user-friendly and the charging speed is impressive. Highly recommend A Plus Charge!",
-    location: "Shillong, Meghalaya"
-  },
-  {
-    name: "Amit Borthakur",
-    role: "MG ZS EV Owner",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit",
-    rating: 5,
-    review: "As a partner, I've seen tremendous ROI. The support team is excellent and the technology is top-notch. A Plus Charge is leading the EV revolution in our region.",
-    location: "Dibrugarh, Assam"
-  },
-  {
-    name: "Sneha Devi",
-    role: "Ather 450X Owner",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha",
-    rating: 5,
-    review: "Fast charging, clean stations, and amazing customer service. I can fully charge my scooter in under an hour. A Plus Charge makes EV ownership stress-free!",
-    location: "Imphal, Manipur"
-  },
-  {
-    name: "Rahul Das",
-    role: "Hyundai Kona Owner",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",
-    rating: 5,
-    review: "The expansion across Northeast India is impressive. I recently took a road trip and found A Plus Charge stations at every major stop. True game-changer for EV adoption.",
-    location: "Silchar, Assam"
-  }
-];
+const DEFAULT_TESTIMONIALS: Testimonial[] = SITE_DEFAULT_TESTIMONIALS.map((t) => ({
+  name: t.name,
+  role: t.role,
+  image: t.fallbackImage,
+  rating: t.rating,
+  review: t.review,
+  location: t.location,
+}));
 
 const TestimonialsCarousel = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(DEFAULT_TESTIMONIALS);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+import { SERVICE_FALLBACKS } from "@/lib/siteDefaults";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
@@ -117,7 +118,7 @@ const Services = () => {
       if (data && data.length) {
         setChargerTypes(
           data.map((r: any) => ({
-            image: r.image_url || l1PlugPoint,
+            image: r.image_url || SERVICE_FALLBACKS[r.slug] || l1PlugPoint,
             name: r.name,
             type: r.charger_type || '',
             power: r.power || '',

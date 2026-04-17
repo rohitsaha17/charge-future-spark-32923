@@ -9,7 +9,8 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown, Eye, EyeOff, Sparkles, AlertTriangle, Edit2 } from 'lucide-react';
+import { SEED_ROWS } from '@/lib/siteDefaults';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +50,15 @@ const AdminContent = () => {
     services_catalog: [],
   });
   const [pendingDelete, setPendingDelete] = useState<{ table: TableName; id: string } | null>(null);
+  const [errors, setErrors] = useState<Record<TableName, string | null>>({
+    partners: null,
+    statistics: null,
+    testimonials: null,
+    team_members: null,
+    faqs: null,
+    services_catalog: null,
+  });
+  const [seeding, setSeeding] = useState<TableName | 'all' | null>(null);
 
   useEffect(() => {
     checkAuthAndFetch();
@@ -76,23 +86,54 @@ const AdminContent = () => {
   };
 
   const fetchAll = async () => {
-    await Promise.all(
-      ALL_TABLES.map(async (t) => {
-        const { data: rows } = await (supabase as any)
-          .from(t)
-          .select('*')
-          .order('sort_order', { ascending: true });
-        setData((prev) => ({ ...prev, [t]: rows || [] }));
-      })
-    );
+    await Promise.all(ALL_TABLES.map(refreshOne));
   };
 
-  const refreshOne = async (table: TableName) => {
-    const { data: rows } = await (supabase as any)
+  async function refreshOne(table: TableName) {
+    const { data: rows, error } = await (supabase as any)
       .from(table)
       .select('*')
       .order('sort_order', { ascending: true });
-    setData((prev) => ({ ...prev, [table]: rows || [] }));
+    if (error) {
+      setErrors((prev) => ({ ...prev, [table]: error.message }));
+      setData((prev) => ({ ...prev, [table]: [] }));
+    } else {
+      setErrors((prev) => ({ ...prev, [table]: null }));
+      setData((prev) => ({ ...prev, [table]: rows || [] }));
+    }
+  }
+
+  const seedTable = async (table: TableName) => {
+    const rows = (SEED_ROWS as any)[table];
+    if (!rows || !rows.length) return;
+    setSeeding(table);
+    try {
+      const { error } = await (supabase as any).from(table).insert(rows);
+      if (error) {
+        toast.error(`Seed failed: ${error.message}`);
+      } else {
+        toast.success(`Populated ${rows.length} default ${table.replace('_', ' ')} entries`);
+        await refreshOne(table);
+      }
+    } finally {
+      setSeeding(null);
+    }
+  };
+
+  const seedAllEmpty = async () => {
+    setSeeding('all');
+    try {
+      const emptyTables = ALL_TABLES.filter((t) => data[t].length === 0 && !errors[t]);
+      for (const t of emptyTables) {
+        const rows = (SEED_ROWS as any)[t];
+        if (!rows || !rows.length) continue;
+        await (supabase as any).from(t).insert(rows);
+      }
+      toast.success(`Populated defaults for ${emptyTables.length} section(s)`);
+      await fetchAll();
+    } finally {
+      setSeeding(null);
+    }
   };
 
   const saveRow = async (table: TableName, row: AnyRow) => {
@@ -146,17 +187,81 @@ const AdminContent = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 p-4 md:p-8 pt-24">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/admin/dashboard">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Dashboard
-            </Button>
-          </Link>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-            Site Content
-          </h1>
+        <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
+          <div>
+            <Link to="/admin/dashboard">
+              <Button variant="outline" size="sm" className="mb-3">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              Site Content
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+              Edit the live content of your website. Changes save directly to the database and reflect on the public site immediately — no rebuild required.
+            </p>
+          </div>
         </div>
+
+        {/* Status banner: show which sections are empty or erroring */}
+        {(() => {
+          const missingTables = ALL_TABLES.filter((t) => errors[t]);
+          const emptyTables = ALL_TABLES.filter((t) => !errors[t] && data[t].length === 0);
+          if (missingTables.length > 0) {
+            return (
+              <Card className="p-4 mb-6 border-destructive/40 bg-destructive/5">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
+                  <div className="flex-1 text-sm">
+                    <p className="font-semibold text-destructive">Database setup needed</p>
+                    <p className="text-foreground/80 mt-1">
+                      Some content tables don't exist yet. Apply the latest Supabase migration
+                      (<code className="bg-muted px-1 rounded text-xs">supabase/migrations/20260417120000_content_management.sql</code>)
+                      via your Supabase dashboard, then reload this page.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Missing: {missingTables.join(', ')}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            );
+          }
+          if (emptyTables.length > 0) {
+            return (
+              <Card className="p-5 mb-6 border-primary/30 bg-gradient-to-r from-primary/5 to-cyan-500/5">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="w-5 h-5 text-primary mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-semibold">
+                      {emptyTables.length === ALL_TABLES.length
+                        ? 'Start by populating your site with its current content'
+                        : 'Some sections are empty'}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      One click copies what's currently on your live site into the database, so you can edit it here. You can upload new images, change text, or remove items anytime.
+                    </p>
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
+                      <Button
+                        size="sm"
+                        onClick={seedAllEmpty}
+                        disabled={seeding !== null}
+                        className="bg-gradient-to-r from-primary to-cyan-500"
+                      >
+                        {seeding === 'all' ? 'Populating…' : `Populate ${emptyTables.length} section${emptyTables.length > 1 ? 's' : ''}`}
+                      </Button>
+                      <span className="text-xs text-muted-foreground">
+                        Empty: {emptyTables.map((t) => t.replace('_', ' ')).join(', ')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            );
+          }
+          return null;
+        })()}
 
         <Tabs defaultValue="partners" className="w-full">
           <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 mb-6">
@@ -171,7 +276,11 @@ const AdminContent = () => {
           <TabsContent value="partners">
             <SectionEditor
               title="Clientele / Partners"
+              description="Partner logos shown on the About page under 'Our Clientele'. Upload a transparent PNG logo and optionally link to the partner's website."
               rows={data.partners}
+              error={errors.partners}
+              onSeed={() => seedTable('partners')}
+              seeding={seeding === 'partners' || seeding === 'all'}
               onMove={(row, dir) => moveRow('partners', row, dir)}
               onDelete={(id) => setPendingDelete({ table: 'partners', id })}
               blank={{ name: '', logo_url: '', website_url: '', sort_order: nextOrder(data.partners), visible: true }}
@@ -195,7 +304,11 @@ const AdminContent = () => {
           <TabsContent value="statistics">
             <SectionEditor
               title="Statistics / Counters"
+              description="Animated counters on the About page ('Our Network at a Glance'). Value is the number, suffix is optional ('+', '%')."
               rows={data.statistics}
+              error={errors.statistics}
+              onSeed={() => seedTable('statistics')}
+              seeding={seeding === 'statistics' || seeding === 'all'}
               onMove={(row, dir) => moveRow('statistics', row, dir)}
               onDelete={(id) => setPendingDelete({ table: 'statistics', id })}
               blank={{ label: '', value: '', suffix: '', sort_order: nextOrder(data.statistics), visible: true }}
@@ -215,7 +328,11 @@ const AdminContent = () => {
           <TabsContent value="testimonials">
             <SectionEditor
               title="Testimonials"
+              description="Customer reviews shown in the carousel on the About page. Leave the photo blank to auto-generate an avatar."
               rows={data.testimonials}
+              error={errors.testimonials}
+              onSeed={() => seedTable('testimonials')}
+              seeding={seeding === 'testimonials' || seeding === 'all'}
               onMove={(row, dir) => moveRow('testimonials', row, dir)}
               onDelete={(id) => setPendingDelete({ table: 'testimonials', id })}
               blank={{ name: '', role: '', location: '', image_url: '', rating: 5, review: '', sort_order: nextOrder(data.testimonials), visible: true }}
@@ -254,7 +371,11 @@ const AdminContent = () => {
           <TabsContent value="team_members">
             <SectionEditor
               title="Team"
+              description="Team members shown on the About page. The first member is highlighted as Founder with a larger spotlight card."
               rows={data.team_members}
+              error={errors.team_members}
+              onSeed={() => seedTable('team_members')}
+              seeding={seeding === 'team_members' || seeding === 'all'}
               onMove={(row, dir) => moveRow('team_members', row, dir)}
               onDelete={(id) => setPendingDelete({ table: 'team_members', id })}
               blank={{ name: '', role: '', image_url: '', bio: '', highlight: '', linkedin_url: '', youtube_url: '', sort_order: nextOrder(data.team_members), visible: true }}
@@ -285,7 +406,11 @@ const AdminContent = () => {
           <TabsContent value="faqs">
             <SectionEditor
               title="Frequently Asked Questions"
+              description="FAQ accordion on the About page. Category is optional and lets you group related questions together in future."
               rows={data.faqs}
+              error={errors.faqs}
+              onSeed={() => seedTable('faqs')}
+              seeding={seeding === 'faqs' || seeding === 'all'}
               onMove={(row, dir) => moveRow('faqs', row, dir)}
               onDelete={(id) => setPendingDelete({ table: 'faqs', id })}
               blank={{ question: '', answer: '', category: '', sort_order: nextOrder(data.faqs), visible: true }}
@@ -303,7 +428,11 @@ const AdminContent = () => {
           <TabsContent value="services_catalog">
             <SectionEditor
               title="Services / Charger Catalog"
+              description="Charger products shown on the Services page grid and comparison table. Features are displayed as bullet points."
               rows={data.services_catalog}
+              error={errors.services_catalog}
+              onSeed={() => seedTable('services_catalog')}
+              seeding={seeding === 'services_catalog' || seeding === 'all'}
               onMove={(row, dir) => moveRow('services_catalog', row, dir)}
               onDelete={(id) => setPendingDelete({ table: 'services_catalog', id })}
               blank={{
@@ -427,6 +556,7 @@ const TextField = ({
 
 interface SectionEditorProps {
   title: string;
+  description?: string;
   rows: AnyRow[];
   blank: AnyRow;
   hydrate?: (row: AnyRow) => AnyRow;
@@ -435,10 +565,14 @@ interface SectionEditorProps {
   onSave: (row: AnyRow) => Promise<boolean>;
   onDelete: (id: string) => void;
   onMove: (row: AnyRow, dir: -1 | 1) => void;
+  onSeed?: () => Promise<void> | void;
+  seeding?: boolean;
+  error?: string | null;
 }
 
 const SectionEditor = ({
   title,
+  description,
   rows,
   blank,
   hydrate,
@@ -447,6 +581,9 @@ const SectionEditor = ({
   onSave,
   onDelete,
   onMove,
+  onSeed,
+  seeding,
+  error,
 }: SectionEditorProps) => {
   const [draft, setDraft] = useState<AnyRow>(blank);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -479,6 +616,18 @@ const SectionEditor = ({
   };
 
   return (
+    <div className="space-y-4">
+      {description && (
+        <p className="text-sm text-muted-foreground">{description}</p>
+      )}
+      {error && (
+        <Card className="p-3 border-destructive/40 bg-destructive/5 text-sm">
+          <span className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="w-4 h-4" />
+            {error}
+          </span>
+        </Card>
+      )}
     <div className="grid lg:grid-cols-2 gap-6">
       <Card className="p-5 space-y-4">
         <div className="flex items-center justify-between">
@@ -527,7 +676,15 @@ const SectionEditor = ({
         </div>
         <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
           {rows.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-8">No items yet</p>
+            <div className="text-center py-8 space-y-3">
+              <p className="text-sm text-muted-foreground">No items yet</p>
+              {onSeed && (
+                <Button size="sm" variant="outline" onClick={() => onSeed()} disabled={seeding}>
+                  <Sparkles className="w-4 h-4 mr-1.5" />
+                  {seeding ? 'Populating…' : 'Populate from current site'}
+                </Button>
+              )}
+            </div>
           )}
           {rows.map((row, idx) => (
             <div
@@ -565,7 +722,7 @@ const SectionEditor = ({
                   {row.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
                 </Button>
                 <Button size="icon" variant="outline" onClick={() => startEdit(row)}>
-                  ✏️
+                  <Edit2 className="w-4 h-4" />
                 </Button>
                 <Button size="icon" variant="destructive" onClick={() => onDelete(row.id)}>
                   <Trash2 className="w-4 h-4" />
@@ -575,6 +732,7 @@ const SectionEditor = ({
           ))}
         </div>
       </Card>
+    </div>
     </div>
   );
 };
