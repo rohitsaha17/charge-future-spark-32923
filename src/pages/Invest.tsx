@@ -13,6 +13,13 @@ import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
 import { supabase } from "@/integrations/supabase/client";
 
+// Google Ads gtag type
+declare global {
+  interface Window {
+    gtag: (command: string, eventNameOrTargetId: string, eventParams?: Record<string, any>) => void;
+  }
+}
+
 const Invest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 

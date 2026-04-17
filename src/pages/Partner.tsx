@@ -18,6 +18,13 @@ import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, Tre
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+// Google Ads gtag type
+declare global {
+  interface Window {
+    gtag: (command: string, eventNameOrTargetId: string, eventParams?: Record<string, any>) => void;
+  }
+}
+
 // Charger data matching Services page pricing
 const chargerDataConfig: Record<string, { investment: number; units: { low: number; base: number; aggressive: number }; platformFee: number; defaultTariff: number; type: string; displayName: string }> = {
   "l1-3.3kw": { 
