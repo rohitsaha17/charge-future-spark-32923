@@ -1,227 +1,172 @@
 import { useEffect, useRef, useState } from "react";
-import logomark from "@/assets/logomark.png";
 
 interface VideoIntroProps {
   onComplete: () => void;
 }
 
+// Intro behaviour:
+//  - Try to play the intro video.
+//  - If the video hasn't started within 3s, bail to the site immediately
+//    (no "Loading..." screen).
+//  - On success, play the first ~4.5s then fade to the site.
+//  - Absolute upper bound of 6s — whatever happens (tab backgrounded,
+//    playback paused by the browser, stall), we always land the user on
+//    the site by 6s.
+//  - On slow connections / save-data / errors, skip straight to the site.
+const LOAD_TIMEOUT_MS = 3000;
+const MAX_INTRO_MS = 6000;
+const CLIP_SECONDS = 4.5;
+
 const VideoIntro = ({ onComplete }: VideoIntroProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isExiting, setIsExiting] = useState(false);
-  const [showFallback, setShowFallback] = useState(false);
   const playAttemptedRef = useRef(false);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const maxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasCompletedRef = useRef(false);
 
-  const triggerExit = () => {
+  const triggerExit = (immediate = false) => {
     if (hasCompletedRef.current) return;
     hasCompletedRef.current = true;
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+    if (maxTimeoutRef.current) {
+      clearTimeout(maxTimeoutRef.current);
+      maxTimeoutRef.current = null;
+    }
+    if (immediate) {
+      onComplete();
+      return;
+    }
     setIsExiting(true);
-    setTimeout(onComplete, 500);
+    setTimeout(onComplete, 350);
   };
 
   useEffect(() => {
     const video = videoRef.current;
-    
-    // Check connection speed - skip video on slow connections
+
+    // Skip intro on slow / data-saver connections — no fallback screen.
     const connection = (navigator as any).connection;
     if (connection) {
       const effectiveType = connection.effectiveType;
-      // Skip video on 2G or slow 3G
       if (effectiveType === '2g' || effectiveType === 'slow-2g' || connection.saveData === true) {
-        // On slow/save-data connections, skip the intro entirely.
-        triggerExit();
+        triggerExit(true);
         return;
       }
     }
 
     if (!video) return;
 
-    // Bail out quickly if the video hasn't started — it's 2.6MB so we don't
-    // want to block the landing page beyond ~1.5s on a cold cache.
+    // If the video hasn't even started playing within LOAD_TIMEOUT_MS,
+    // drop the intro and land the user on the site.
     loadTimeoutRef.current = setTimeout(() => {
-      setShowFallback(true);
-      setTimeout(triggerExit, 600);
-    }, 1500);
+      triggerExit(true);
+    }, LOAD_TIMEOUT_MS);
 
-    const handleTimeUpdate = () => {
-      // Clear load timeout once video is playing
+    // Absolute upper bound — covers the case where the video plays,
+    // `timeupdate` fires (clearing the load timeout), and then the browser
+    // pauses playback (backgrounded tab, battery saver, etc.) so we'd never
+    // reach 4.5s to exit on our own.
+    maxTimeoutRef.current = setTimeout(() => {
+      triggerExit();
+    }, MAX_INTRO_MS);
+
+    const clearLoadTimeout = () => {
       if (loadTimeoutRef.current) {
         clearTimeout(loadTimeoutRef.current);
         loadTimeoutRef.current = null;
       }
-      // Play only first 4.5 seconds then exit
-      if (video.currentTime >= 4.5 && !isExiting) {
+    };
+
+    const handleTimeUpdate = () => {
+      // First time a frame renders → we're definitely playing, keep it.
+      clearLoadTimeout();
+      if (video.currentTime >= CLIP_SECONDS && !hasCompletedRef.current) {
         triggerExit();
       }
     };
 
+    const handlePlaying = () => clearLoadTimeout();
+
+    const handleError = () => triggerExit(true);
+
+    const forcePlay = async () => {
+      if (!video || hasCompletedRef.current) return;
+      video.muted = true;
+      video.playsInline = true;
+      try {
+        await video.play();
+        return;
+      } catch {
+        // Autoplay blocked. Fall through — timeout will carry us to the site.
+      }
+    };
+
     const handleCanPlay = () => {
-      // As soon as video can play, start it
       if (!playAttemptedRef.current) {
         playAttemptedRef.current = true;
         forcePlay();
       }
     };
 
-    const handleError = () => {
-      setShowFallback(true);
-      setTimeout(triggerExit, 500);
-    };
-
-    const handleStalled = () => {
-      // If video stalls, give it 1.5 more seconds before showing fallback
-      setTimeout(() => {
-        if (video.paused || video.readyState < 3) {
-          setShowFallback(true);
-          setTimeout(triggerExit, 1000);
-        }
-      }, 1500);
-    };
-
-    const handleWaiting = () => {
-      // Video is buffering - if it takes too long, show fallback
-      setTimeout(() => {
-        if (!hasCompletedRef.current && video.readyState < 3) {
-          setShowFallback(true);
-          setTimeout(triggerExit, 1000);
-        }
-      }, 2000);
-    };
-
-    // Ultra-aggressive autoplay for mobile
-    const forcePlay = async () => {
-      if (!video || hasCompletedRef.current) return;
-      
-      // Ensure muted and inline
-      video.muted = true;
-      video.playsInline = true;
-      
-      // Attempt 1: Immediate play
-      try {
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-          if (loadTimeoutRef.current) {
-            clearTimeout(loadTimeoutRef.current);
-            loadTimeoutRef.current = null;
-          }
-          return;
-        }
-      } catch {
-        // Initial autoplay blocked; will retry below
-      }
-      
-      // Attempt 2: Load and retry
-      try {
-        video.load();
-        video.muted = true;
-        await new Promise(resolve => setTimeout(resolve, 100));
-        await video.play();
-        if (loadTimeoutRef.current) {
-          clearTimeout(loadTimeoutRef.current);
-          loadTimeoutRef.current = null;
-        }
-        return;
-      } catch {
-        // Retry autoplay blocked; fall through to fallback
-      }
-      
-      // On mobile, if autoplay fails, show fallback immediately
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (isMobile) {
-        setShowFallback(true);
-        setTimeout(triggerExit, 1000);
-        return;
-      }
-      
-      // Desktop fallback - wait for interaction briefly then skip
-      setTimeout(() => {
-        if (!hasCompletedRef.current && (video.paused || video.readyState < 3)) {
-          setShowFallback(true);
-          setTimeout(triggerExit, 1000);
-        }
-      }, 1500);
-    };
-
-    // Set up event listeners
     video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('playing', handlePlaying);
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('loadeddata', handleCanPlay);
     video.addEventListener('error', handleError);
-    video.addEventListener('stalled', handleStalled);
-    video.addEventListener('waiting', handleWaiting);
-    
-    // Try to play immediately on mount
-    if (video.readyState >= 2) {
-      handleCanPlay();
-    }
 
-    // Also try after a brief delay
+    if (video.readyState >= 2) handleCanPlay();
+
     const delayTimer = setTimeout(() => {
       if (!playAttemptedRef.current) {
         playAttemptedRef.current = true;
         forcePlay();
       }
-    }, 100);
+    }, 50);
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('loadeddata', handleCanPlay);
       video.removeEventListener('error', handleError);
-      video.removeEventListener('stalled', handleStalled);
-      video.removeEventListener('waiting', handleWaiting);
       clearTimeout(delayTimer);
-      if (loadTimeoutRef.current) {
-        clearTimeout(loadTimeoutRef.current);
-      }
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+      if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
     };
-  }, [onComplete, isExiting]);
+  }, [onComplete]);
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-all duration-500 ${
+      className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-all duration-300 ${
         isExiting ? "opacity-0 -translate-y-full" : "opacity-100 translate-y-0"
       }`}
       style={{ willChange: 'transform, opacity' }}
     >
-      {/* Fallback animation when video can't load */}
-      {showFallback ? (
-        <div className="flex flex-col items-center justify-center animate-pulse">
-          <img 
-            src={logomark} 
-            alt="A+ Charge" 
-            className="w-24 h-24 md:w-32 md:h-32 animate-bounce"
-            loading="eager"
-          />
-          <div className="mt-4 text-white text-lg font-semibold">Loading...</div>
-        </div>
-      ) : (
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          playsInline
-          webkit-playsinline="true"
-          x-webkit-airplay="allow"
-          muted
-          autoPlay
-          preload="metadata"
-          controls={false}
-          disablePictureInPicture
-          disableRemotePlayback
-          controlsList="nodownload noplaybackrate nofullscreen"
-          poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-          style={{ 
-            willChange: 'transform',
-            backfaceVisibility: 'hidden',
-            transform: 'translateZ(0)'
-          }}
-        >
-          <source src="/intro-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      )}
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover"
+        playsInline
+        webkit-playsinline="true"
+        x-webkit-airplay="allow"
+        muted
+        autoPlay
+        preload="auto"
+        controls={false}
+        disablePictureInPicture
+        disableRemotePlayback
+        controlsList="nodownload noplaybackrate nofullscreen"
+        poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+        style={{
+          willChange: 'transform',
+          backfaceVisibility: 'hidden',
+          transform: 'translateZ(0)',
+        }}
+      >
+        <source src="/intro-video.mp4" type="video/mp4" />
+      </video>
     </div>
   );
 };
