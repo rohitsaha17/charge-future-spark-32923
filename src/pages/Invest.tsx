@@ -60,6 +60,15 @@ const Invest = () => {
 
       if (error) throw error;
       
+      // Google Ads conversion tracking - Investor form submission
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-18094566614/stSnCLy48JwcENbZlLRD',
+          'value': 1.0,
+          'currency': 'INR'
+        });
+      }
+      
       toast.success("Thank you for your interest! Our team will contact you shortly.");
       (e.target as HTMLFormElement).reset();
     } catch (error) {

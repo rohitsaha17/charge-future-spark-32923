@@ -173,6 +173,15 @@ const Partner = () => {
 
       if (error) throw error;
       
+      // Google Ads conversion tracking - Partner form submission
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-18094566614/stSnCLy48JwcENbZlLRD',
+          'value': 1.0,
+          'currency': 'INR'
+        });
+      }
+      
       toast.success("Thank you! Your partnership enquiry has been submitted successfully. We'll contact you within 24 hours.");
       (e.target as HTMLFormElement).reset();
       setSelectedLocation(null);
