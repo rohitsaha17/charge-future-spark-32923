@@ -137,6 +137,39 @@ export type Database = {
         }
         Relationships: []
       }
+      faqs: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          id: string
+          question: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          question: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          question?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
       investor_enquiries: {
         Row: {
           city: string | null
@@ -224,6 +257,93 @@ export type Database = {
         }
         Relationships: []
       }
+      partners: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      services_catalog: {
+        Row: {
+          charger_type: string | null
+          created_at: string
+          description: string | null
+          features: string[]
+          id: string
+          ideal_for: string | null
+          image_url: string | null
+          name: string
+          power: string | null
+          price: string | null
+          slug: string | null
+          sort_order: number
+          updated_at: string
+          visible: boolean
+          warranty: string | null
+        }
+        Insert: {
+          charger_type?: string | null
+          created_at?: string
+          description?: string | null
+          features?: string[]
+          id?: string
+          ideal_for?: string | null
+          image_url?: string | null
+          name: string
+          power?: string | null
+          price?: string | null
+          slug?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+          warranty?: string | null
+        }
+        Update: {
+          charger_type?: string | null
+          created_at?: string
+          description?: string | null
+          features?: string[]
+          id?: string
+          ideal_for?: string | null
+          image_url?: string | null
+          name?: string
+          power?: string | null
+          price?: string | null
+          slug?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+          warranty?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           created_at: string
@@ -245,6 +365,129 @@ export type Database = {
           setting_key?: string
           setting_value?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      statistics: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          label: string
+          sort_order: number
+          suffix: string | null
+          updated_at: string
+          value: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label: string
+          sort_order?: number
+          suffix?: string | null
+          updated_at?: string
+          value: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label?: string
+          sort_order?: number
+          suffix?: string | null
+          updated_at?: string
+          value?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          bio: string | null
+          created_at: string
+          highlight: string | null
+          id: string
+          image_url: string | null
+          linkedin_url: string | null
+          name: string
+          role: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+          youtube_url: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          highlight?: string | null
+          id?: string
+          image_url?: string | null
+          linkedin_url?: string | null
+          name: string
+          role: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+          youtube_url?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          highlight?: string | null
+          id?: string
+          image_url?: string | null
+          linkedin_url?: string | null
+          name?: string
+          role?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          location: string | null
+          name: string
+          rating: number
+          review: string
+          role: string | null
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          name: string
+          rating?: number
+          review: string
+          role?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          name?: string
+          rating?: number
+          review?: string
+          role?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
         }
         Relationships: []
       }
