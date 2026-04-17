@@ -84,6 +84,21 @@ const SEOHead = ({
     }
     canonical.setAttribute("href", canonicalUrl);
 
+    // Hreflang self-referencing tags
+    const setHreflang = (hreflang: string, href: string) => {
+      let el = document.querySelector(`link[rel="alternate"][hreflang="${hreflang}"]`) as HTMLLinkElement;
+      if (!el) {
+        el = document.createElement("link");
+        el.setAttribute("rel", "alternate");
+        el.setAttribute("hreflang", hreflang);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("href", href);
+    };
+    setHreflang("en", canonicalUrl);
+    setHreflang("en-in", canonicalUrl);
+    setHreflang("x-default", canonicalUrl);
+
     // JSON-LD
     const existingLd = document.getElementById("seo-jsonld");
     if (existingLd) existingLd.remove();
