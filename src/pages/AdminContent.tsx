@@ -10,7 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown, Eye, EyeOff, Sparkles, AlertTriangle, Edit2 } from 'lucide-react';
-import { SEED_ROWS } from '@/lib/siteDefaults';
+import { SEED_ROWS, PARTNER_FALLBACKS, TEAM_FALLBACKS, SERVICE_FALLBACKS, DEFAULT_TESTIMONIALS } from '@/lib/siteDefaults';
+
+// Map testimonial name → fallback avatar URL for the list view preview
+const TESTIMONIAL_FALLBACKS: Record<string, string> = Object.fromEntries(
+  DEFAULT_TESTIMONIALS.map((t) => [t.name, t.fallbackImage])
+);
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,8 +37,28 @@ const ALL_TABLES = [
   'team_members',
   'faqs',
   'services_catalog',
+  'journey_milestones',
 ] as const;
 type TableName = (typeof ALL_TABLES)[number];
+
+// Per-table fallback image lookup for the CMS list view. Uses the
+// same bundled defaults the public site falls back to, so what the
+// admin sees matches what visitors see.
+const FALLBACK_LOOKUPS: Partial<Record<TableName, Record<string, string>>> = {
+  partners: PARTNER_FALLBACKS,
+  team_members: TEAM_FALLBACKS,
+  testimonials: TESTIMONIAL_FALLBACKS,
+};
+
+const servicesFallbackBySlug = (row: AnyRow) =>
+  row.slug ? SERVICE_FALLBACKS[row.slug] : undefined;
+
+const getRowFallbackImage = (table: TableName, row: AnyRow): string | undefined => {
+  if (table === 'services_catalog') return servicesFallbackBySlug(row);
+  const lookup = FALLBACK_LOOKUPS[table];
+  if (!lookup || !row.name) return undefined;
+  return lookup[row.name];
+};
 
 const csvToArray = (val: string): string[] =>
   val.split(',').map((t) => t.trim()).filter(Boolean);
@@ -48,6 +73,7 @@ const AdminContent = () => {
     team_members: [],
     faqs: [],
     services_catalog: [],
+    journey_milestones: [],
   });
   const [pendingDelete, setPendingDelete] = useState<{ table: TableName; id: string } | null>(null);
   const [errors, setErrors] = useState<Record<TableName, string | null>>({
@@ -57,6 +83,7 @@ const AdminContent = () => {
     team_members: null,
     faqs: null,
     services_catalog: null,
+    journey_milestones: null,
   });
   const [seeding, setSeeding] = useState<TableName | 'all' | null>(null);
 
@@ -264,29 +291,43 @@ const AdminContent = () => {
         })()}
 
         <Tabs defaultValue="partners" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 mb-6">
-            <TabsTrigger value="partners">Partners</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 mb-6">
+            <TabsTrigger value="partners">Clients &amp; Partners</TabsTrigger>
             <TabsTrigger value="statistics">Statistics</TabsTrigger>
             <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
             <TabsTrigger value="team_members">Team</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
             <TabsTrigger value="services_catalog">Services</TabsTrigger>
+            <TabsTrigger value="journey_milestones">Timeline</TabsTrigger>
           </TabsList>
 
           <TabsContent value="partners">
             <SectionEditor
-              title="Clientele / Partners"
-              description="Partner logos shown on the About page under 'Our Clientele'. Upload a transparent PNG logo and optionally link to the partner's website."
+              title="Clients &amp; Partners"
+              description="Two groups in one list. Set each row's Type to 'Client' for paying customers or 'Partner' for strategic allies (or 'Both'). The About page renders them as two separate sections — 'Our Clients' and 'Strategic Partners'."
+              tableName="partners"
               rows={data.partners}
               error={errors.partners}
               onSeed={() => seedTable('partners')}
               seeding={seeding === 'partners' || seeding === 'all'}
               onMove={(row, dir) => moveRow('partners', row, dir)}
               onDelete={(id) => setPendingDelete({ table: 'partners', id })}
-              blank={{ name: '', logo_url: '', website_url: '', sort_order: nextOrder(data.partners), visible: true }}
+              blank={{ name: '', logo_url: '', website_url: '', type: 'partner', sort_order: nextOrder(data.partners), visible: true }}
               renderForm={(row, setRow) => (
                 <>
                   <Field label="Name" value={row.name} onChange={(v) => setRow({ ...row, name: v })} />
+                  <div className="space-y-2">
+                    <Label>Type</Label>
+                    <select
+                      className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+                      value={row.type || 'partner'}
+                      onChange={(e) => setRow({ ...row, type: e.target.value })}
+                    >
+                      <option value="client">Client — customer using our services</option>
+                      <option value="partner">Partner — strategic ally / OEM</option>
+                      <option value="both">Both — appears in both sections</option>
+                    </select>
+                  </div>
                   <Field label="Website URL" value={row.website_url || ''} onChange={(v) => setRow({ ...row, website_url: v })} />
                   <ImageUploadField
                     label="Logo"
@@ -294,6 +335,7 @@ const AdminContent = () => {
                     onChange={(v) => setRow({ ...row, logo_url: v })}
                     folder="partners"
                     previewClassName="h-16"
+                    fallback={row.name ? PARTNER_FALLBACKS[row.name] : undefined}
                   />
                 </>
               )}
@@ -305,6 +347,7 @@ const AdminContent = () => {
             <SectionEditor
               title="Statistics / Counters"
               description="Animated counters on the About page ('Our Network at a Glance'). Value is the number, suffix is optional ('+', '%')."
+              tableName="statistics"
               rows={data.statistics}
               error={errors.statistics}
               onSeed={() => seedTable('statistics')}
@@ -329,6 +372,7 @@ const AdminContent = () => {
             <SectionEditor
               title="Testimonials"
               description="Customer reviews shown in the carousel on the About page. Leave the photo blank to auto-generate an avatar."
+              tableName="testimonials"
               rows={data.testimonials}
               error={errors.testimonials}
               onSeed={() => seedTable('testimonials')}
@@ -361,6 +405,7 @@ const AdminContent = () => {
                     value={row.image_url || ''}
                     onChange={(v) => setRow({ ...row, image_url: v })}
                     folder="testimonials"
+                    fallback={row.name ? TESTIMONIAL_FALLBACKS[row.name] : undefined}
                   />
                 </>
               )}
@@ -372,6 +417,7 @@ const AdminContent = () => {
             <SectionEditor
               title="Team"
               description="Team members shown on the About page. The first member is highlighted as Founder with a larger spotlight card."
+              tableName="team_members"
               rows={data.team_members}
               error={errors.team_members}
               onSeed={() => seedTable('team_members')}
@@ -396,6 +442,7 @@ const AdminContent = () => {
                     value={row.image_url || ''}
                     onChange={(v) => setRow({ ...row, image_url: v })}
                     folder="team"
+                    fallback={row.name ? TEAM_FALLBACKS[row.name] : undefined}
                   />
                 </>
               )}
@@ -407,6 +454,7 @@ const AdminContent = () => {
             <SectionEditor
               title="Frequently Asked Questions"
               description="FAQ accordion on the About page. Category is optional and lets you group related questions together in future."
+              tableName="faqs"
               rows={data.faqs}
               error={errors.faqs}
               onSeed={() => seedTable('faqs')}
@@ -429,6 +477,7 @@ const AdminContent = () => {
             <SectionEditor
               title="Services / Charger Catalog"
               description="Charger products shown on the Services page grid and comparison table. Features are displayed as bullet points."
+              tableName="services_catalog"
               rows={data.services_catalog}
               error={errors.services_catalog}
               onSeed={() => seedTable('services_catalog')}
@@ -489,10 +538,48 @@ const AdminContent = () => {
                     value={row.image_url || ''}
                     onChange={(v) => setRow({ ...row, image_url: v })}
                     folder="services"
+                    fallback={row.slug ? SERVICE_FALLBACKS[row.slug] : undefined}
                   />
                 </>
               )}
               onSave={(r) => saveRow('services_catalog', r)}
+            />
+          </TabsContent>
+
+          <TabsContent value="journey_milestones">
+            <SectionEditor
+              title="Journey Timeline"
+              description="The 'A Plus Charge's Journey to EV Charging Leadership' timeline on the About page. Icon must be a lucide icon name (e.g. Rocket, Trophy, Zap). Color is a Tailwind gradient (e.g. from-blue-500 to-cyan-500)."
+              tableName="journey_milestones"
+              rows={data.journey_milestones}
+              error={errors.journey_milestones}
+              onSeed={() => seedTable('journey_milestones')}
+              seeding={seeding === 'journey_milestones' || seeding === 'all'}
+              onMove={(row, dir) => moveRow('journey_milestones', row, dir)}
+              onDelete={(id) => setPendingDelete({ table: 'journey_milestones', id })}
+              blank={{
+                year: String(new Date().getFullYear()),
+                title: '',
+                description: '',
+                icon: 'Rocket',
+                color: 'from-blue-500 to-cyan-500',
+                sort_order: nextOrder(data.journey_milestones),
+                visible: true,
+              }}
+              renderForm={(row, setRow) => (
+                <>
+                  <div className="grid grid-cols-[100px_1fr] gap-3">
+                    <Field label="Year" value={row.year} onChange={(v) => setRow({ ...row, year: v })} />
+                    <Field label="Title" value={row.title} onChange={(v) => setRow({ ...row, title: v })} />
+                  </div>
+                  <TextField label="Description" value={row.description} onChange={(v) => setRow({ ...row, description: v })} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Icon (lucide name)" value={row.icon || ''} onChange={(v) => setRow({ ...row, icon: v })} />
+                    <Field label="Color (Tailwind gradient)" value={row.color || ''} onChange={(v) => setRow({ ...row, color: v })} />
+                  </div>
+                </>
+              )}
+              onSave={(r) => saveRow('journey_milestones', r)}
             />
           </TabsContent>
         </Tabs>
@@ -557,6 +644,7 @@ const TextField = ({
 interface SectionEditorProps {
   title: string;
   description?: string;
+  tableName?: TableName;
   rows: AnyRow[];
   blank: AnyRow;
   hydrate?: (row: AnyRow) => AnyRow;
@@ -573,6 +661,7 @@ interface SectionEditorProps {
 const SectionEditor = ({
   title,
   description,
+  tableName,
   rows,
   blank,
   hydrate,
@@ -686,17 +775,29 @@ const SectionEditor = ({
               )}
             </div>
           )}
-          {rows.map((row, idx) => (
+          {rows.map((row, idx) => {
+            const uploadedImg = row.image_url || row.logo_url;
+            const fallbackImg = tableName ? getRowFallbackImage(tableName, row) : undefined;
+            const displayImg = uploadedImg || fallbackImg;
+            const usingFallback = !uploadedImg && !!fallbackImg;
+            return (
             <div
               key={row.id}
               className="p-3 border rounded-md bg-card flex items-center gap-3"
             >
-              {row.image_url || row.logo_url ? (
+              {displayImg ? (
                 <img
-                  src={row.image_url || row.logo_url}
+                  src={displayImg}
                   alt=""
-                  className="w-12 h-12 rounded object-cover flex-shrink-0 border"
+                  title={usingFallback ? 'Using bundled default image' : undefined}
+                  className={`w-12 h-12 rounded object-cover flex-shrink-0 border bg-white ${
+                    usingFallback ? 'opacity-70 ring-1 ring-dashed ring-muted-foreground/40' : ''
+                  }`}
                 />
+              ) : tableName === 'journey_milestones' && row.year ? (
+                <div className="w-12 h-12 rounded bg-gradient-to-br from-primary to-cyan-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  {row.year}
+                </div>
               ) : (
                 <div className="w-12 h-12 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
                   —
@@ -704,10 +805,17 @@ const SectionEditor = ({
               )}
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">
-                  {row.name || row.label || row.question || row.review?.slice(0, 50) || '(unnamed)'}
+                  {row.name || row.title || row.label || row.question || row.review?.slice(0, 50) || '(unnamed)'}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
-                  {row.role || row.value || row.charger_type || row.category || ''}
+                  {row.type ? (
+                    <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold mr-1.5 uppercase tracking-wider ${
+                      row.type === 'client' ? 'bg-emerald-100 text-emerald-700' :
+                      row.type === 'partner' ? 'bg-blue-100 text-blue-700' :
+                      'bg-purple-100 text-purple-700'
+                    }`}>{row.type}</span>
+                  ) : null}
+                  {row.role || row.value || row.charger_type || row.category || row.year || ''}
                   {row.value && row.suffix ? row.suffix : ''}
                 </p>
               </div>
@@ -729,7 +837,8 @@ const SectionEditor = ({
                 </Button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </Card>
     </div>

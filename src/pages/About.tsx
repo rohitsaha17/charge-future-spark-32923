@@ -33,7 +33,14 @@ const INITIAL_PARTNERS = DEFAULT_PARTNERS.map((p) => ({
   name: p.name,
   logo_url: p.fallbackImage,
   website_url: p.website_url,
+  type: p.type,
 }));
+
+// Partner name → default type, so DB rows with no `type` column yet
+// (i.e. before the latest migration runs) still land in the right section.
+const PARTNER_DEFAULT_TYPE: Record<string, 'client' | 'partner' | 'both'> = Object.fromEntries(
+  DEFAULT_PARTNERS.map((p) => [p.name, p.type])
+);
 const INITIAL_FAQS = DEFAULT_FAQS;
 const INITIAL_TEAM = DEFAULT_TEAM.map((t) => ({
   name: t.name,
@@ -69,11 +76,14 @@ const About = () => {
       if (p.data && p.data.length) {
         // Use uploaded logo if present, otherwise fall back to the bundled
         // default image keyed by partner name so the site still looks right.
+        // Type falls back to the known default for well-known names so rows
+        // from older seeds still land in the correct section.
         setPartners(
           p.data.map((r: any) => ({
             name: r.name,
             logo_url: r.logo_url || PARTNER_FALLBACKS[r.name] || null,
             website_url: r.website_url,
+            type: r.type || PARTNER_DEFAULT_TYPE[r.name] || 'partner',
           }))
         );
       }
@@ -344,31 +354,68 @@ const About = () => {
 
         <GradientDivider />
 
-        {/* 8. Clientele / Partners Section */}
-        <section id="partners" className="mb-16 md:mb-24 scroll-mt-24 -mx-4 px-4 py-8 md:py-12 bg-gradient-to-b from-muted/30 via-muted/10 to-transparent rounded-2xl">
-          <div className="text-center mb-6 md:mb-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Our Clientele</h2>
-            <p className="text-sm md:text-base text-muted-foreground uppercase tracking-wider mb-6">Trusted by industry leaders</p>
-            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-12">
-              {partners.map((partner, index) => {
-                const img = (partner as any).logo_url || (partner as any).logo;
-                if (!img) return null;
-                const content = (
-                  <img src={img} alt={partner.name} className="h-8 md:h-10 lg:h-12 w-auto object-contain mix-blend-multiply" width="80" height="48" />
-                );
-                return (
-                  <div key={index} className="opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] transition-all duration-300 bg-transparent">
-                    {(partner as any).website_url ? (
-                      <a href={(partner as any).website_url} target="_blank" rel="noopener noreferrer">{content}</a>
-                    ) : (
-                      content
-                    )}
+        {/* 8. Clients + Strategic Partners sections */}
+        {(() => {
+          const renderLogo = (partner: any, index: number) => {
+            const img = partner.logo_url || partner.logo;
+            if (!img) return null;
+            const content = (
+              <img
+                src={img}
+                alt={partner.name}
+                className="h-8 md:h-10 lg:h-12 w-auto object-contain mix-blend-multiply"
+                width="80"
+                height="48"
+              />
+            );
+            return (
+              <div key={index} className="opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] transition-all duration-300 bg-transparent">
+                {partner.website_url ? (
+                  <a href={partner.website_url} target="_blank" rel="noopener noreferrer">
+                    {content}
+                  </a>
+                ) : (
+                  content
+                )}
+              </div>
+            );
+          };
+
+          const clients = partners.filter((p: any) => p.type === 'client' || p.type === 'both');
+          const strategic = partners.filter((p: any) => p.type === 'partner' || p.type === 'both');
+
+          return (
+            <>
+              {clients.length > 0 && (
+                <section id="clients" className="mb-12 md:mb-16 scroll-mt-24 -mx-4 px-4 py-8 md:py-12 bg-gradient-to-b from-muted/30 via-muted/10 to-transparent rounded-2xl">
+                  <div className="text-center mb-6 md:mb-8">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Our Clients</h2>
+                    <p className="text-sm md:text-base text-muted-foreground uppercase tracking-wider mb-6">
+                      Organisations using our charging network
+                    </p>
+                    <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-12">
+                      {clients.map(renderLogo)}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+                </section>
+              )}
+
+              {strategic.length > 0 && (
+                <section id="partners" className="mb-16 md:mb-24 scroll-mt-24 -mx-4 px-4 py-8 md:py-12 bg-gradient-to-b from-primary/5 via-cyan-500/5 to-transparent rounded-2xl">
+                  <div className="text-center mb-6 md:mb-8">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Strategic Partners</h2>
+                    <p className="text-sm md:text-base text-muted-foreground uppercase tracking-wider mb-6">
+                      OEMs and alliances powering our network
+                    </p>
+                    <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-12">
+                      {strategic.map(renderLogo)}
+                    </div>
+                  </div>
+                </section>
+              )}
+            </>
+          );
+        })()}
 
         <GradientDivider />
 

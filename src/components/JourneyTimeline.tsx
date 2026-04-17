@@ -1,119 +1,53 @@
 import { useEffect, useRef, useState } from "react";
-import { Zap, Building2, FileCheck, Users, Battery, Handshake, ParkingCircle, Trophy, Plane, MapPin, Car, Rocket, Target } from "lucide-react";
+import {
+  Zap, Building2, FileCheck, Users, Battery, Handshake, ParkingCircle,
+  Trophy, Plane, MapPin, Car, Rocket, Target,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_MILESTONES } from "@/lib/siteDefaults";
 
-const timelineEvents = [
-  {
-    year: "2023",
-    title: "Company Founded",
-    description: "AlternatEV Solutions (A Plus Charge) established in Guwahati, Assam",
-    icon: Building2,
-    color: "from-blue-500 to-cyan-500"
-  },
-  {
-    year: "2023",
-    title: "First Pilot Installation",
-    description: "Successful deployment of our first EV charging station",
-    icon: Zap,
-    color: "from-green-500 to-emerald-500"
-  },
-  {
-    year: "2023",
-    title: "DPIIT Recognition",
-    description: "Received official startup recognition from Department for Promotion of Industry",
-    icon: FileCheck,
-    color: "from-purple-500 to-pink-500"
-  },
-  {
-    year: "2024",
-    title: "1st 30 kW DC Fast Charger",
-    description: "Deployed on Guwahati–Kaziranga Route, unlocking long-distance EV travel",
-    icon: Battery,
-    color: "from-yellow-500 to-amber-500"
-  },
-  {
-    year: "2024",
-    title: "Partnership with ChargeMOD",
-    description: "Strategic collaboration to enhance charging network capabilities",
-    icon: Handshake,
-    color: "from-orange-500 to-red-500"
-  },
-  {
-    year: "2024",
-    title: "Onboarded Lubi EV as Hardware Partner",
-    description: "Strengthened hardware supply chain with quality equipment partnership",
-    icon: Building2,
-    color: "from-blue-600 to-indigo-600"
-  },
-  {
-    year: "2024",
-    title: "Crossed 20 Live EV Charging Stations",
-    description: "Milestone achievement across Northeast India's charging infrastructure",
-    icon: Trophy,
-    color: "from-rose-500 to-pink-600"
-  },
-  {
-    year: "2025",
-    title: "Strategic Collaboration with AAI",
-    description: "Exclusive partnership with Airport Authority of India for airport charging",
-    icon: Plane,
-    color: "from-teal-500 to-cyan-500"
-  },
-  {
-    year: "2025",
-    title: "2nd DC Fast Charger at GMDA Parking",
-    description: "Premium public site secured in Guwahati's high-traffic facility",
-    icon: ParkingCircle,
-    color: "from-indigo-500 to-purple-500"
-  },
-  {
-    year: "2025",
-    title: "Expanded to West Bengal & Tripura",
-    description: "Geographic expansion into new Eastern India markets",
-    icon: MapPin,
-    color: "from-emerald-500 to-green-600"
-  },
-  {
-    year: "2025",
-    title: "Partnerships with Tata SCV & MG India",
-    description: "OEM partnerships for charger visibility on vehicle dashboards",
-    icon: Car,
-    color: "from-amber-500 to-yellow-600"
-  },
-  {
-    year: "2025",
-    title: "Strategic Partnership with Ather Energy",
-    description: "Formalized alliance with leading EV manufacturer",
-    icon: Handshake,
-    color: "from-cyan-500 to-blue-600"
-  },
-  {
-    year: "2025",
-    title: "Launched NE.EV Initiative",
-    description: "Dedicated program for DC Charger deployment across Northeast",
-    icon: Rocket,
-    color: "from-violet-500 to-purple-600"
-  },
-  {
-    year: "2025",
-    title: "Crossed 40 Chargers Milestone",
-    description: "Doubled our network with 40+ live charging stations",
-    icon: Trophy,
-    color: "from-pink-500 to-rose-600"
-  },
-  {
-    year: "2025",
-    title: "40 Additional DC Sites Identified",
-    description: "Strategic expansion pipeline for next phase of growth",
-    icon: Target,
-    color: "from-blue-500 to-primary"
-  }
-];
+// Map lucide icon names (stored in the DB as strings) to components.
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Zap, Building2, FileCheck, Users, Battery, Handshake, ParkingCircle,
+  Trophy, Plane, MapPin, Car, Rocket, Target,
+};
+const getIcon = (name?: string | null) => ICON_MAP[name || ''] || Rocket;
+
+const DEFAULT_TIMELINE = DEFAULT_MILESTONES.map((m) => ({
+  year: m.year,
+  title: m.title,
+  description: m.description,
+  icon: getIcon(m.icon),
+  color: m.color,
+}));
 
 export const JourneyTimeline = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [timelineEvents, setTimelineEvents] = useState(DEFAULT_TIMELINE);
   const timelineRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('journey_milestones')
+        .select('*')
+        .eq('visible', true)
+        .order('sort_order');
+      if (data && data.length) {
+        setTimelineEvents(
+          data.map((r: any) => ({
+            year: r.year,
+            title: r.title,
+            description: r.description,
+            icon: getIcon(r.icon),
+            color: r.color || 'from-primary to-cyan-500',
+          }))
+        );
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const observers = itemRefs.current.map((item, index) => {

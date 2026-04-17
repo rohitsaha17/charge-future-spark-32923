@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadImage } from '@/lib/storage';
 
@@ -12,6 +12,10 @@ interface ImageUploadFieldProps {
   onChange: (url: string) => void;
   folder?: string;
   previewClassName?: string;
+  /** Image shown when `value` is empty — indicates the current
+   *  bundled site default so the admin sees what's on the live site
+   *  even before uploading a custom replacement. */
+  fallback?: string | null;
 }
 
 export const ImageUploadField = ({
@@ -20,6 +24,7 @@ export const ImageUploadField = ({
   onChange,
   folder = 'content',
   previewClassName = 'h-24',
+  fallback,
 }: ImageUploadFieldProps) => {
   const [uploading, setUploading] = useState(false);
   const id = `upload-${folder}-${Math.random().toString(36).slice(2, 7)}`;
@@ -37,22 +42,40 @@ export const ImageUploadField = ({
     }
   };
 
+  const showingFallback = !value && !!fallback;
+  const previewSrc = value || fallback || '';
+
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
-      {value && (
+      {previewSrc && (
         <div className="relative inline-block">
-          <img src={value} alt="" className={`${previewClassName} rounded-md border object-cover`} />
-          <Button
-            type="button"
-            size="icon"
-            variant="destructive"
-            className="absolute -top-2 -right-2 h-6 w-6"
-            onClick={() => onChange('')}
-          >
-            <X className="h-3 w-3" />
-          </Button>
+          <img
+            src={previewSrc}
+            alt=""
+            className={`${previewClassName} rounded-md border object-cover bg-white ${
+              showingFallback ? 'opacity-70 ring-1 ring-dashed ring-muted-foreground/40' : ''
+            }`}
+          />
+          {value && (
+            <Button
+              type="button"
+              size="icon"
+              variant="destructive"
+              className="absolute -top-2 -right-2 h-6 w-6"
+              onClick={() => onChange('')}
+              title="Remove uploaded image (falls back to default)"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
         </div>
+      )}
+      {showingFallback && (
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <Info className="w-3 h-3" />
+          Using bundled default. Upload to replace.
+        </p>
       )}
       <div className="flex gap-2">
         <Input
