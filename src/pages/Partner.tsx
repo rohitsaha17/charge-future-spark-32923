@@ -18,6 +18,13 @@ import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, Tre
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+// Google Ads gtag type
+declare global {
+  interface Window {
+    gtag: (command: string, eventNameOrTargetId: string, eventParams?: Record<string, any>) => void;
+  }
+}
+
 // Charger data matching Services page pricing
 const chargerDataConfig: Record<string, { investment: number; units: { low: number; base: number; aggressive: number }; platformFee: number; defaultTariff: number; type: string; displayName: string }> = {
   "l1-3.3kw": { 
@@ -172,6 +179,15 @@ const Partner = () => {
         });
 
       if (error) throw error;
+      
+      // Google Ads conversion tracking - Partner form submission
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-18094566614/stSnCLy48JwcENbZlLRD',
+          'value': 1.0,
+          'currency': 'INR'
+        });
+      }
       
       toast.success("Thank you! Your partnership enquiry has been submitted successfully. We'll contact you within 24 hours.");
       (e.target as HTMLFormElement).reset();

@@ -36,7 +36,7 @@ const LocationPickerMap = ({ onLocationSelect, initialLat = 26.1445, initialLng 
   const [showResults, setShowResults] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
 
   // Create draggable marker

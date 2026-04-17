@@ -13,6 +13,13 @@ import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
 import { supabase } from "@/integrations/supabase/client";
 
+// Google Ads gtag type
+declare global {
+  interface Window {
+    gtag: (command: string, eventNameOrTargetId: string, eventParams?: Record<string, any>) => void;
+  }
+}
+
 const Invest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,6 +66,15 @@ const Invest = () => {
         });
 
       if (error) throw error;
+      
+      // Google Ads conversion tracking - Investor form submission
+      if (typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-18094566614/stSnCLy48JwcENbZlLRD',
+          'value': 1.0,
+          'currency': 'INR'
+        });
+      }
       
       toast.success("Thank you for your interest! Our team will contact you shortly.");
       (e.target as HTMLFormElement).reset();

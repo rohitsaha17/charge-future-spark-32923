@@ -10,7 +10,7 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
   const [isExiting, setIsExiting] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const playAttemptedRef = useRef(false);
-  const loadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasCompletedRef = useRef(false);
 
   const triggerExit = () => {
