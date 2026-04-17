@@ -16,10 +16,9 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Preload critical above-fold images -->
-    <link rel="preload" as="image" href="/src/assets/hero-ev-charging-v2.png" fetchpriority="high">
-    <link rel="preload" as="image" href="/src/assets/logo.png" fetchpriority="high">
-    <link rel="preload" as="image" href="/src/assets/a-plus-logomark.png" fetchpriority="high">
+    <!-- DNS prefetch for third-party domains used at runtime -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -112,16 +111,26 @@
     <link rel="alternate" hreflang="en-in" href="https://apluscharge.in/" />
     <link rel="alternate" hreflang="x-default" href="https://apluscharge.in/" />
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18094566614"></script>
+    <!-- Google Ads (gtag) — loaded lazily after first paint so it doesn't block the critical path -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-18094566614');
+      const loadGtag = () => {
+        if (window.__gtagLoaded) return;
+        window.__gtagLoaded = true;
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=AW-18094566614';
+        document.head.appendChild(s);
+        gtag('js', new Date());
+        gtag('config', 'AW-18094566614');
+      };
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGtag, { timeout: 4000 });
+      } else {
+        window.addEventListener('load', () => setTimeout(loadGtag, 2000), { once: true });
+      }
     </script>
-
-  <script type="text/javascript" defer>!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.32/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script>
 </head>
 
   <body>

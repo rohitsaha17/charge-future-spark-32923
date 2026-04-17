@@ -42,7 +42,7 @@ const Navigation = () => {
               }
             }}
           >
-            <img src={logo} alt="A Plus Charge" className="h-8 w-auto" loading="eager" decoding="sync" fetchPriority="high" />
+            <img src={logo} alt="A Plus Charge" className="h-8 w-auto" loading="eager" decoding="sync" />
           </Link>
 
           {/* Desktop Menu */}

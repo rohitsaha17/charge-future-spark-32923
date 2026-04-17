@@ -332,7 +332,6 @@ const Home = () => {
                   style={{ transform: 'scale(1.35)' }}
                   loading="eager"
                   decoding="sync"
-                  fetchPriority="high"
                 />
               </div>
 
@@ -348,7 +347,6 @@ const Home = () => {
                   className="relative w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
                   decoding="sync"
-                  fetchPriority="high"
                 />
               </div>
             </div>

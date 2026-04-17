@@ -28,20 +28,21 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
     if (connection) {
       const effectiveType = connection.effectiveType;
       // Skip video on 2G or slow 3G
-      if (effectiveType === '2g' || effectiveType === 'slow-2g') {
-        setShowFallback(true);
-        setTimeout(triggerExit, 1500);
+      if (effectiveType === '2g' || effectiveType === 'slow-2g' || connection.saveData === true) {
+        // On slow/save-data connections, skip the intro entirely.
+        triggerExit();
         return;
       }
     }
 
     if (!video) return;
 
-    // Set a 3-second timeout - reduced from 4s for faster fallback
+    // Bail out quickly if the video hasn't started — it's 2.6MB so we don't
+    // want to block the landing page beyond ~1.5s on a cold cache.
     loadTimeoutRef.current = setTimeout(() => {
       setShowFallback(true);
-      setTimeout(triggerExit, 1000);
-    }, 3000);
+      setTimeout(triggerExit, 600);
+    }, 1500);
 
     const handleTimeUpdate = () => {
       // Clear load timeout once video is playing
@@ -65,7 +66,7 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
 
     const handleError = () => {
       setShowFallback(true);
-      setTimeout(triggerExit, 1000);
+      setTimeout(triggerExit, 500);
     };
 
     const handleStalled = () => {
@@ -205,7 +206,7 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
           x-webkit-airplay="allow"
           muted
           autoPlay
-          preload="auto"
+          preload="metadata"
           controls={false}
           disablePictureInPicture
           disableRemotePlayback

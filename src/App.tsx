@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,25 +8,40 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import VideoIntro from "./components/VideoIntro";
 import LoadingProgressBar from "./components/LoadingProgressBar";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Services from "./pages/Services";
-import FindCharger from "./pages/FindCharger";
-import Partner from "./pages/Partner";
-import Invest from "./pages/Invest";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminChargingStations from "./pages/AdminChargingStations";
-import AdminBlogs from "./pages/AdminBlogs";
-import AdminEnquiries from "./pages/AdminEnquiries";
-import AdminContent from "./pages/AdminContent";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import NotFound from "./pages/NotFound";
+import Home from "./pages/Home"; // Eager: first-paint critical
 
-const queryClient = new QueryClient();
+// Lazy-loaded: split into separate chunks so the initial bundle is tiny
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const FindCharger = lazy(() => import("./pages/FindCharger"));
+const Partner = lazy(() => import("./pages/Partner"));
+const Invest = lazy(() => import("./pages/Invest"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminChargingStations = lazy(() => import("./pages/AdminChargingStations"));
+const AdminBlogs = lazy(() => import("./pages/AdminBlogs"));
+const AdminEnquiries = lazy(() => import("./pages/AdminEnquiries"));
+const AdminContent = lazy(() => import("./pages/AdminContent"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+const SuspenseFallback = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 const AppContent = () => {
   const location = useLocation();
@@ -41,12 +56,21 @@ const AppContent = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    // Only check on initial mount when on home page
     if ((location.pathname === '/' || location.pathname === '/index') && isInitialLoad) {
-      // Check if video has been played in this tab session
-      const hasPlayedInSession = sessionStorage.getItem('videoPlayedInSession');
-      
-      if (!hasPlayedInSession) {
+      // Skip on any of:
+      //  - already seen in prior visit (localStorage)
+      //  - user prefers reduced motion
+      //  - slow connection (2G / save-data)
+      const seenBefore = (() => {
+        try { return localStorage.getItem('introSeen') === '1'; } catch { return false; }
+      })();
+      const prefersReduced = typeof window.matchMedia === 'function'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const conn = (navigator as any).connection;
+      const saveData = conn?.saveData === true;
+      const slowNetwork = conn?.effectiveType === '2g' || conn?.effectiveType === 'slow-2g';
+
+      if (!seenBefore && !prefersReduced && !saveData && !slowNetwork) {
         setShowIntro(true);
       }
       setIsInitialLoad(false);
@@ -54,22 +78,18 @@ const AppContent = () => {
   }, [location.pathname, isInitialLoad]);
 
   useEffect(() => {
-    // Handle route transitions with fade animation
     if (location.pathname !== displayLocation.pathname) {
       setIsNavigating(true);
-      
       const timer = setTimeout(() => {
         setDisplayLocation(location);
         setIsNavigating(false);
-      }, 300);
-
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [location, displayLocation]);
 
   const handleIntroComplete = () => {
-    // Mark video as played in this session
-    sessionStorage.setItem('videoPlayedInSession', 'true');
+    try { localStorage.setItem('introSeen', '1'); } catch { /* ignore */ }
     setShowIntro(false);
   };
 
@@ -82,29 +102,31 @@ const AppContent = () => {
       <LoadingProgressBar isLoading={isNavigating} />
       <Navigation />
       <div
-        className={`transition-opacity duration-300 ${
+        className={`transition-opacity duration-200 ${
           isNavigating ? "opacity-0" : "opacity-100"
         }`}
       >
-        <Routes location={displayLocation}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/find-charger" element={<FindCharger />} />
-          <Route path="/partner" element={<Partner />} />
-          <Route path="/invest" element={<Invest />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/charging-stations" element={<AdminChargingStations />} />
-          <Route path="/admin/blogs" element={<AdminBlogs />} />
-          <Route path="/admin/enquiries" element={<AdminEnquiries />} />
-          <Route path="/admin/content" element={<AdminContent />} />
-          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<SuspenseFallback />}>
+          <Routes location={displayLocation}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/find-charger" element={<FindCharger />} />
+            <Route path="/partner" element={<Partner />} />
+            <Route path="/invest" element={<Invest />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/charging-stations" element={<AdminChargingStations />} />
+            <Route path="/admin/blogs" element={<AdminBlogs />} />
+            <Route path="/admin/enquiries" element={<AdminEnquiries />} />
+            <Route path="/admin/content" element={<AdminContent />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </div>
       <Footer />
     </>
