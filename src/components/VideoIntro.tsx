@@ -29,7 +29,6 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       const effectiveType = connection.effectiveType;
       // Skip video on 2G or slow 3G
       if (effectiveType === '2g' || effectiveType === 'slow-2g') {
-        console.log("Slow connection detected - showing fallback");
         setShowFallback(true);
         setTimeout(triggerExit, 1500);
         return;
@@ -40,7 +39,6 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
 
     // Set a 3-second timeout - reduced from 4s for faster fallback
     loadTimeoutRef.current = setTimeout(() => {
-      console.log("Video load timeout - showing fallback");
       setShowFallback(true);
       setTimeout(triggerExit, 1000);
     }, 3000);
@@ -66,13 +64,11 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
     };
 
     const handleError = () => {
-      console.log("Video error - showing fallback");
       setShowFallback(true);
       setTimeout(triggerExit, 1000);
     };
 
     const handleStalled = () => {
-      console.log("Video stalled - starting fallback timer");
       // If video stalls, give it 1.5 more seconds before showing fallback
       setTimeout(() => {
         if (video.paused || video.readyState < 3) {
@@ -86,7 +82,6 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       // Video is buffering - if it takes too long, show fallback
       setTimeout(() => {
         if (!hasCompletedRef.current && video.readyState < 3) {
-          console.log("Video buffering too long - showing fallback");
           setShowFallback(true);
           setTimeout(triggerExit, 1000);
         }
@@ -106,16 +101,14 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
         const playPromise = video.play();
         if (playPromise !== undefined) {
           await playPromise;
-          console.log("Video autoplay successful");
-          // Clear load timeout on successful play
           if (loadTimeoutRef.current) {
             clearTimeout(loadTimeoutRef.current);
             loadTimeoutRef.current = null;
           }
           return;
         }
-      } catch (error) {
-        console.warn("Initial autoplay blocked:", error);
+      } catch {
+        // Initial autoplay blocked; will retry below
       }
       
       // Attempt 2: Load and retry
@@ -124,20 +117,18 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
         video.muted = true;
         await new Promise(resolve => setTimeout(resolve, 100));
         await video.play();
-        console.log("Video autoplay successful on retry");
         if (loadTimeoutRef.current) {
           clearTimeout(loadTimeoutRef.current);
           loadTimeoutRef.current = null;
         }
         return;
-      } catch (retryError) {
-        console.warn("Retry autoplay blocked:", retryError);
+      } catch {
+        // Retry autoplay blocked; fall through to fallback
       }
       
       // On mobile, if autoplay fails, show fallback immediately
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       if (isMobile) {
-        console.log("Mobile autoplay failed - showing fallback");
         setShowFallback(true);
         setTimeout(triggerExit, 1000);
         return;
@@ -146,7 +137,6 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       // Desktop fallback - wait for interaction briefly then skip
       setTimeout(() => {
         if (!hasCompletedRef.current && (video.paused || video.readyState < 3)) {
-          console.log("Autoplay not working - showing fallback");
           setShowFallback(true);
           setTimeout(triggerExit, 1000);
         }

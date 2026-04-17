@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -7,6 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Star, Quote } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Testimonial {
   name: string;
@@ -17,7 +19,7 @@ interface Testimonial {
   location: string;
 }
 
-const testimonials: Testimonial[] = [
+const DEFAULT_TESTIMONIALS: Testimonial[] = [
   {
     name: "Rajesh Kumar",
     role: "Mahindra XEV 9e Owner",
@@ -61,6 +63,30 @@ const testimonials: Testimonial[] = [
 ];
 
 const TestimonialsCarousel = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('testimonials')
+        .select('*')
+        .eq('visible', true)
+        .order('sort_order');
+      if (data && data.length) {
+        setTestimonials(
+          data.map((r: any) => ({
+            name: r.name,
+            role: r.role || '',
+            image: r.image_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(r.name)}`,
+            rating: r.rating || 5,
+            review: r.review,
+            location: r.location || '',
+          }))
+        );
+      }
+    })();
+  }, []);
+
   return (
     <div className="w-full max-w-6xl mx-auto px-4">
       <Carousel

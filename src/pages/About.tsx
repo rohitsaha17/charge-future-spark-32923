@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import SEOHead from "@/components/SEOHead";
+import { supabase } from "@/integrations/supabase/client";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
@@ -31,94 +33,130 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+const DEFAULT_STATS = [
+  { value: 45, label: "Live Public Stations", suffix: "+" },
+  { value: 100, label: "Locations by 2026", suffix: "+" },
+  { value: 97, label: "Average Uptime", suffix: "%" },
+  { value: 9, label: "States Covered", suffix: "" },
+];
+
+const DEFAULT_PARTNERS = [
+  { name: "Ather Energy", logo_url: atherLogo, website_url: null },
+  { name: "Tata Motors", logo_url: tataLogo, website_url: null },
+  { name: "MG Motors", logo_url: mgLogo, website_url: null },
+  { name: "GMDA", logo_url: gmdaLogo, website_url: null },
+  { name: "Airports Authority of India", logo_url: aaiLogo, website_url: null },
+  { name: "Imperia Vista", logo_url: imperiaVistaLogo, website_url: null },
+  { name: "Omega Seiki Mobility", logo_url: osmLogo, website_url: null },
+];
+
+const DEFAULT_FAQS = [
+  {
+    question: "What makes A Plus Charge different?",
+    answer: "We're the best CPO from North East India built specifically for Northeast India's unique terrain, weather, and power grid challenges. Our systems are optimized for monsoons, hill stations, and local language support.",
+  },
+  {
+    question: "How reliable are your charging stations?",
+    answer: "We maintain a 98%+ uptime rate with 24/7 monitoring and rapid response teams. Our stations are engineered to handle extreme weather conditions typical of Northeast India.",
+  },
+  {
+    question: "Which EV brands do you support?",
+    answer: "We support all major EV brands including Tata, MG, Ather, and more. Our stations feature both CCS2 and Type 2 connectors for maximum compatibility.",
+  },
+  {
+    question: "How can I invest in A Plus Charge?",
+    answer: "We offer site-host partnerships and investment opportunities. Visit our Invest page or contact our team to learn about ROI projections and partnership models.",
+  },
+];
+
+const DEFAULT_TEAM = [
+  {
+    name: "Samyak Jain (EV Boy)",
+    role: "Founder & CEO",
+    image_url: founderPortrait,
+    bio: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge - Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
+    highlight: "PG in Entrepreneurship, Amity University | 10+ years in clean energy",
+    linkedin_url: "https://in.linkedin.com/in/samyak-jain-alternatev",
+    youtube_url: "https://www.youtube.com/@evboy_samyak",
+  },
+  {
+    name: "Priya Sharma",
+    role: "Chief Technology Officer",
+    image_url: ctoPortrait,
+    bio: "Led the development of our proprietary charging management system. Priya's algorithms optimize for Northeast's unique power grid challenges and monsoon conditions.",
+    highlight: "Former Tesla engineer, IoT specialist",
+    linkedin_url: null,
+    youtube_url: null,
+  },
+  {
+    name: "Ankit Deka",
+    role: "Head of Operations",
+    image_url: operationsPortrait,
+    bio: "Grew up in rural Assam, understands terrain challenges firsthand. Ankit ensures our chargers work flawlessly from Shillong's hills to Tezpur's valleys.",
+    highlight: "Deployed 50+ charging stations across 7 states",
+    linkedin_url: null,
+    youtube_url: null,
+  },
+  {
+    name: "Meghna Bora",
+    role: "Business Development Lead",
+    image_url: bdPortrait,
+    bio: "Built partnerships with OEMs, site hosts, and government bodies. Meghna's local connections and negotiation skills opened doors across Northeast India.",
+    highlight: "Secured GMDA partnership, Ather alliance",
+    linkedin_url: null,
+    youtube_url: null,
+  },
+  {
+    name: "Rahul Choudhury",
+    role: "Lead Engineer",
+    image_url: techPortrait,
+    bio: "Designs charging infrastructure that withstands extreme weather. Rahul's innovations in waterproofing and voltage stability set industry standards.",
+    highlight: "15 patents in EV charging technology",
+    linkedin_url: null,
+    youtube_url: null,
+  },
+  {
+    name: "Sneha Das",
+    role: "Customer Success Manager",
+    image_url: customerPortrait,
+    bio: "Speaks 5 regional languages, runs our 24/7 support. Sneha ensures every EV driver feels supported, from first-time users to fleet operators.",
+    highlight: "99.2% customer satisfaction rating",
+    linkedin_url: null,
+    youtube_url: null,
+  },
+];
+
 const About = () => {
-  const stats = [
-    { value: 45, label: "Live Public Stations", suffix: "+" },
-    { value: 100, label: "Locations by 2026", suffix: "+" },
-    { value: 97, label: "Average Uptime", suffix: "%" },
-    { value: 9, label: "States Covered", suffix: "" },
-  ];
+  const [stats, setStats] = useState(DEFAULT_STATS);
+  const [partners, setPartners] = useState(DEFAULT_PARTNERS);
+  const [faqs, setFaqs] = useState(DEFAULT_FAQS);
+  const [team, setTeam] = useState(DEFAULT_TEAM);
+
+  useEffect(() => {
+    (async () => {
+      const [s, p, f, t] = await Promise.all([
+        supabase.from('statistics').select('*').eq('visible', true).order('sort_order'),
+        supabase.from('partners').select('*').eq('visible', true).order('sort_order'),
+        supabase.from('faqs').select('*').eq('visible', true).order('sort_order'),
+        supabase.from('team_members').select('*').eq('visible', true).order('sort_order'),
+      ]);
+      if (s.data && s.data.length) {
+        setStats(s.data.map((r: any) => ({
+          value: Number(String(r.value).replace(/[^0-9.]/g, '')) || 0,
+          label: r.label,
+          suffix: r.suffix || '',
+        })));
+      }
+      if (p.data && p.data.length) setPartners(p.data as any);
+      if (f.data && f.data.length) setFaqs(f.data as any);
+      if (t.data && t.data.length) setTeam(t.data as any);
+    })();
+  }, []);
 
   const values = [
     { icon: Zap, title: "Reliability First", description: "97%+ uptime guaranteed across all stations" },
     { icon: Users, title: "Customer Obsessed", description: "24/7 support, local language help whenever you need it" },
     { icon: Leaf, title: "Community-First Growth", description: "Powered by local talent, creating jobs in our communities" },
-  ];
-
-  const partners = [
-    { name: "Ather Energy", logo: atherLogo },
-    { name: "Tata Motors", logo: tataLogo },
-    { name: "MG Motors", logo: mgLogo },
-    { name: "GMDA", logo: gmdaLogo },
-    { name: "Airports Authority of India", logo: aaiLogo },
-    { name: "Imperia Vista", logo: imperiaVistaLogo },
-    { name: "Omega Seiki Mobility", logo: osmLogo },
-  ];
-
-  const faqs = [
-    {
-      question: "What makes A Plus Charge different?",
-      answer: "We're the best CPO from North East India built specifically for Northeast India's unique terrain, weather, and power grid challenges. Our systems are optimized for monsoons, hill stations, and local language support."
-    },
-    {
-      question: "How reliable are your charging stations?",
-      answer: "We maintain a 98%+ uptime rate with 24/7 monitoring and rapid response teams. Our stations are engineered to handle extreme weather conditions typical of Northeast India."
-    },
-    {
-      question: "Which EV brands do you support?",
-      answer: "We support all major EV brands including Tata, MG, Ather, and more. Our stations feature both CCS2 and Type 2 connectors for maximum compatibility."
-    },
-    {
-      question: "How can I invest in A Plus Charge?",
-      answer: "We offer site-host partnerships and investment opportunities. Visit our Invest page or contact our team to learn about ROI projections and partnership models."
-    },
-  ];
-
-  const team = [
-    {
-      name: "Samyak Jain (EV Boy)",
-      role: "Founder & CEO",
-      image: founderPortrait,
-      story: "Known as EV Boy for his passion and advocacy in clean mobility, Samyak Jain leads A Plus Charge - Northeast India's fastest-growing EV charging network. With over a decade of experience in renewable energy and infrastructure, he combines technical expertise with local insight to power India's electric future.",
-      highlight: "PG in Entrepreneurship, Amity University | 10+ years in clean energy",
-      linkedin: "https://in.linkedin.com/in/samyak-jain-alternatev",
-      youtube: "https://www.youtube.com/@evboy_samyak"
-    },
-    {
-      name: "Priya Sharma",
-      role: "Chief Technology Officer",
-      image: ctoPortrait,
-      story: "Led the development of our proprietary charging management system. Priya's algorithms optimize for Northeast's unique power grid challenges and monsoon conditions.",
-      highlight: "Former Tesla engineer, IoT specialist"
-    },
-    {
-      name: "Ankit Deka",
-      role: "Head of Operations",
-      image: operationsPortrait,
-      story: "Grew up in rural Assam, understands terrain challenges firsthand. Ankit ensures our chargers work flawlessly from Shillong's hills to Tezpur's valleys.",
-      highlight: "Deployed 50+ charging stations across 7 states"
-    },
-    {
-      name: "Meghna Bora",
-      role: "Business Development Lead",
-      image: bdPortrait,
-      story: "Built partnerships with OEMs, site hosts, and government bodies. Meghna's local connections and negotiation skills opened doors across Northeast India.",
-      highlight: "Secured GMDA partnership, Ather alliance"
-    },
-    {
-      name: "Rahul Choudhury",
-      role: "Lead Engineer",
-      image: techPortrait,
-      story: "Designs charging infrastructure that withstands extreme weather. Rahul's innovations in waterproofing and voltage stability set industry standards.",
-      highlight: "15 patents in EV charging technology"
-    },
-    {
-      name: "Sneha Das",
-      role: "Customer Success Manager",
-      image: customerPortrait,
-      story: "Speaks 5 regional languages, runs our 24/7 support. Sneha ensures every EV driver feels supported, from first-time users to fleet operators.",
-      highlight: "99.2% customer satisfaction rating"
-    }
   ];
 
   return (
@@ -272,43 +310,55 @@ const About = () => {
           <div className="max-w-4xl mx-auto">
             <Card className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="grid md:grid-cols-2 gap-0">
-                <div className="relative h-64 sm:h-80 md:h-auto overflow-hidden">
-                  <img 
-                    src={team[0].image} 
-                    alt={team[0].name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-6 md:p-8 lg:p-12 flex flex-col justify-center">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-2">{team[0].name}</h3>
-                  <p className="text-primary font-semibold mb-3 md:mb-4">{team[0].role}</p>
-                  <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 leading-relaxed">
-                    {team[0].story}
-                  </p>
-                  <div className="border-l-4 border-primary pl-4 mb-4 md:mb-6">
-                    <p className="text-xs md:text-sm font-semibold text-foreground">{team[0].highlight}</p>
-                  </div>
-                  <div className="flex gap-4">
-                    <a 
-                      href={team[0].linkedin} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <Linkedin className="w-5 h-5" />
-                      <span className="text-sm">LinkedIn</span>
-                    </a>
-                    <a 
-                      href={team[0].youtube} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <Youtube className="w-5 h-5" />
-                      <span className="text-sm">YouTube</span>
-                    </a>
-                  </div>
-                </div>
+                {(() => {
+                  const lead: any = team[0] || {};
+                  const img = lead.image_url || lead.image;
+                  return (
+                    <>
+                      <div className="relative h-64 sm:h-80 md:h-auto overflow-hidden">
+                        {img && (
+                          <img src={img} alt={lead.name} className="w-full h-full object-cover" />
+                        )}
+                      </div>
+                      <div className="p-6 md:p-8 lg:p-12 flex flex-col justify-center">
+                        <h3 className="text-2xl md:text-3xl font-bold mb-2">{lead.name}</h3>
+                        <p className="text-primary font-semibold mb-3 md:mb-4">{lead.role}</p>
+                        <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 leading-relaxed">
+                          {lead.bio || lead.story}
+                        </p>
+                        {lead.highlight && (
+                          <div className="border-l-4 border-primary pl-4 mb-4 md:mb-6">
+                            <p className="text-xs md:text-sm font-semibold text-foreground">{lead.highlight}</p>
+                          </div>
+                        )}
+                        <div className="flex gap-4">
+                          {(lead.linkedin_url || lead.linkedin) && (
+                            <a
+                              href={lead.linkedin_url || lead.linkedin}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              <Linkedin className="w-5 h-5" />
+                              <span className="text-sm">LinkedIn</span>
+                            </a>
+                          )}
+                          {(lead.youtube_url || lead.youtube) && (
+                            <a
+                              href={lead.youtube_url || lead.youtube}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              <Youtube className="w-5 h-5" />
+                              <span className="text-sm">YouTube</span>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </Card>
           </div>
@@ -364,11 +414,22 @@ const About = () => {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Our Clientele</h2>
             <p className="text-sm md:text-base text-muted-foreground uppercase tracking-wider mb-6">Trusted by industry leaders</p>
             <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-12">
-              {partners.map((partner, index) => (
-                <div key={index} className="opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] transition-all duration-300 bg-transparent">
-                  <img src={partner.logo} alt={partner.name} className="h-8 md:h-10 lg:h-12 w-auto object-contain mix-blend-multiply" width="80" height="48" />
-                </div>
-              ))}
+              {partners.map((partner, index) => {
+                const img = (partner as any).logo_url || (partner as any).logo;
+                if (!img) return null;
+                const content = (
+                  <img src={img} alt={partner.name} className="h-8 md:h-10 lg:h-12 w-auto object-contain mix-blend-multiply" width="80" height="48" />
+                );
+                return (
+                  <div key={index} className="opacity-90 hover:opacity-100 hover:scale-105 hover:drop-shadow-[0_8px_20px_rgba(38,116,236,0.25)] transition-all duration-300 bg-transparent">
+                    {(partner as any).website_url ? (
+                      <a href={(partner as any).website_url} target="_blank" rel="noopener noreferrer">{content}</a>
+                    ) : (
+                      content
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

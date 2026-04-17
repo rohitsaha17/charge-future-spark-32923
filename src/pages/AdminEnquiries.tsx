@@ -21,6 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface PartnerEnquiry {
   id: string;
@@ -56,6 +66,7 @@ const AdminEnquiries = () => {
   const [investorEnquiries, setInvestorEnquiries] = useState<InvestorEnquiry[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<PartnerEnquiry | null>(null);
   const [selectedInvestor, setSelectedInvestor] = useState<InvestorEnquiry | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; kind: 'partner' | 'investor' } | null>(null);
 
   useEffect(() => {
     checkAuthAndFetch();
@@ -136,36 +147,19 @@ const AdminEnquiries = () => {
     }
   };
 
-  const deletePartnerEnquiry = async (id: string) => {
-    if (!confirm('Delete this enquiry?')) return;
-    
-    const { error } = await supabase
-      .from('partner_enquiries')
-      .delete()
-      .eq('id', id);
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    const table = pendingDelete.kind === 'partner' ? 'partner_enquiries' : 'investor_enquiries';
+    const { error } = await supabase.from(table).delete().eq('id', pendingDelete.id);
 
     if (error) {
       toast.error('Failed to delete');
     } else {
       toast.success('Deleted successfully');
-      fetchPartnerEnquiries();
+      if (pendingDelete.kind === 'partner') fetchPartnerEnquiries();
+      else fetchInvestorEnquiries();
     }
-  };
-
-  const deleteInvestorEnquiry = async (id: string) => {
-    if (!confirm('Delete this enquiry?')) return;
-    
-    const { error } = await supabase
-      .from('investor_enquiries')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      toast.error('Failed to delete');
-    } else {
-      toast.success('Deleted successfully');
-      fetchInvestorEnquiries();
-    }
+    setPendingDelete(null);
   };
 
   const getStatusBadge = (status: string) => {
@@ -261,7 +255,7 @@ const AdminEnquiries = () => {
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => deletePartnerEnquiry(enquiry.id)}
+                            onClick={() => setPendingDelete({ id: enquiry.id, kind: 'partner' })}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -329,7 +323,7 @@ const AdminEnquiries = () => {
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => deleteInvestorEnquiry(enquiry.id)}
+                            onClick={() => setPendingDelete({ id: enquiry.id, kind: 'investor' })}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -397,6 +391,21 @@ const AdminEnquiries = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!pendingDelete} onOpenChange={(open) => !open && setPendingDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this enquiry?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Investor Detail Dialog */}
       <Dialog open={!!selectedInvestor} onOpenChange={() => setSelectedInvestor(null)}>

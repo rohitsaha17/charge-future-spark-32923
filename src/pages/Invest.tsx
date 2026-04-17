@@ -12,6 +12,7 @@ import { TrendingUp, Award, Shield, Target, Users, Zap } from "lucide-react";
 import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
 import { supabase } from "@/integrations/supabase/client";
+import { HONEYPOT_FIELD, isHoneypotTripped, isThrottled, markSubmission } from "@/lib/antiSpam";
 
 // Google Ads gtag type
 declare global {
@@ -41,9 +42,22 @@ const Invest = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
+
+    if (isHoneypotTripped(formData.get(HONEYPOT_FIELD))) {
+      toast.success("Thank you for your interest! Our team will contact you shortly.");
+      (e.target as HTMLFormElement).reset();
+      return;
+    }
+
+    const waitSeconds = isThrottled('invest');
+    if (waitSeconds > 0) {
+      toast.error(`Please wait ${waitSeconds}s before submitting again.`);
+      return;
+    }
+
+    setIsSubmitting(true);
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
     const email = formData.get('email') as string;
@@ -76,6 +90,7 @@ const Invest = () => {
         });
       }
       
+      markSubmission('invest');
       toast.success("Thank you for your interest! Our team will contact you shortly.");
       (e.target as HTMLFormElement).reset();
     } catch (error) {
@@ -205,6 +220,14 @@ const Invest = () => {
           <Card className="p-8 glass-card">
             <h2 className="text-2xl font-bold mb-6">Investor Enquiry</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                name={HONEYPOT_FIELD}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', opacity: 0 }}
+              />
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <Label>Name *</Label>

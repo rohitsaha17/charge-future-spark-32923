@@ -7,9 +7,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Pencil, X } from 'lucide-react';
 import { z } from 'zod';
+
+const csvToArray = (val: string): string[] =>
+  val.split(',').map((t) => t.trim()).filter(Boolean);
 
 const stationSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -33,6 +46,7 @@ const AdminChargingStations = () => {
   const [loading, setLoading] = useState(true);
   const [editingStation, setEditingStation] = useState<Station | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -45,6 +59,7 @@ const AdminChargingStations = () => {
     power_output: '60kW',
     total_chargers: '2',
     price_per_unit: '',
+    amenities: '',
   });
 
   const [editFormData, setEditFormData] = useState({
@@ -59,6 +74,7 @@ const AdminChargingStations = () => {
     power_output: '',
     total_chargers: '',
     price_per_unit: '',
+    amenities: '',
     status: 'active',
   });
 
@@ -131,6 +147,7 @@ const AdminChargingStations = () => {
         total_chargers: validatedData.total_chargers,
         available_chargers: validatedData.total_chargers,
         price_per_unit: validatedData.price_per_unit,
+        amenities: formData.amenities ? csvToArray(formData.amenities) : null,
         created_by: session?.user.id,
       };
 
@@ -153,6 +170,7 @@ const AdminChargingStations = () => {
         power_output: '60kW',
         total_chargers: '2',
         price_per_unit: '',
+        amenities: '',
       });
       fetchStations();
     } catch (error: any) {
@@ -178,6 +196,7 @@ const AdminChargingStations = () => {
       power_output: station.power_output,
       total_chargers: station.total_chargers.toString(),
       price_per_unit: station.price_per_unit?.toString() || '',
+      amenities: Array.isArray(station.amenities) ? station.amenities.join(', ') : '',
       status: station.status,
     });
     setIsEditDialogOpen(true);
@@ -210,6 +229,7 @@ const AdminChargingStations = () => {
           power_output: validatedData.power_output,
           total_chargers: validatedData.total_chargers,
           price_per_unit: validatedData.price_per_unit,
+          amenities: editFormData.amenities ? csvToArray(editFormData.amenities) : null,
           status: editFormData.status,
         })
         .eq('id', editingStation.id);
@@ -229,13 +249,12 @@ const AdminChargingStations = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this charging station?')) return;
-
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
     const { error } = await supabase
       .from('charging_stations')
       .delete()
-      .eq('id', id);
+      .eq('id', pendingDeleteId);
 
     if (error) {
       toast.error('Failed to delete charging station');
@@ -243,6 +262,7 @@ const AdminChargingStations = () => {
       toast.success('Charging station deleted successfully');
       fetchStations();
     }
+    setPendingDeleteId(null);
   };
 
   if (loading) {
@@ -394,6 +414,16 @@ const AdminChargingStations = () => {
                   />
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="amenities">Amenities (comma-separated)</Label>
+                  <Input
+                    id="amenities"
+                    placeholder="Restroom, Cafe, Wi-Fi, Parking"
+                    value={formData.amenities}
+                    onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
+                  />
+                </div>
+
                 <Button type="submit" className="w-full">
                   Add Station
                 </Button>
@@ -435,7 +465,7 @@ const AdminChargingStations = () => {
                         <Button
                           variant="destructive"
                           size="icon"
-                          onClick={() => handleDelete(station.id)}
+                          onClick={() => setPendingDeleteId(station.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -577,6 +607,15 @@ const AdminChargingStations = () => {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label>Amenities (comma-separated)</Label>
+                <Input
+                  placeholder="Restroom, Cafe, Wi-Fi, Parking"
+                  value={editFormData.amenities}
+                  onChange={(e) => setEditFormData({ ...editFormData, amenities: e.target.value })}
+                />
+              </div>
+
               <div className="flex gap-4 pt-4">
                 <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} className="flex-1">
                   Cancel
@@ -588,6 +627,21 @@ const AdminChargingStations = () => {
             </form>
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={!!pendingDeleteId} onOpenChange={(open) => !open && setPendingDeleteId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this charging station?</AlertDialogTitle>
+              <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

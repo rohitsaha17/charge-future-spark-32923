@@ -17,6 +17,7 @@ import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, TrendingDown, Award } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { HONEYPOT_FIELD, isHoneypotTripped, isThrottled, markSubmission } from "@/lib/antiSpam";
 
 // Google Ads gtag type
 declare global {
@@ -149,15 +150,27 @@ const Partner = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
+    const formData = new FormData(e.currentTarget);
+
+    if (isHoneypotTripped(formData.get(HONEYPOT_FIELD))) {
+      toast.success("Thank you! Your partnership enquiry has been submitted successfully. We'll contact you within 24 hours.");
+      (e.target as HTMLFormElement).reset();
+      return;
+    }
+
     if (!selectedLocation) {
       toast.error("Please mark your location on the map");
       return;
     }
 
+    const waitSeconds = isThrottled('partner');
+    if (waitSeconds > 0) {
+      toast.error(`Please wait ${waitSeconds}s before submitting again.`);
+      return;
+    }
+
     setIsSubmitting(true);
-    
-    const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
     const email = formData.get('email') as string;
@@ -189,6 +202,7 @@ const Partner = () => {
         });
       }
       
+      markSubmission('partner');
       toast.success("Thank you! Your partnership enquiry has been submitted successfully. We'll contact you within 24 hours.");
       (e.target as HTMLFormElement).reset();
       setSelectedLocation(null);
@@ -464,6 +478,14 @@ const Partner = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+            <input
+              type="text"
+              name={HONEYPOT_FIELD}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', opacity: 0 }}
+            />
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Contact Information */}
               <Card className="p-6 glass-card">

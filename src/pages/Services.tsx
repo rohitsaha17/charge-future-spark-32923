@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
+import { supabase } from "@/integrations/supabase/client";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
 import EnhancedPageHeader from "@/components/EnhancedPageHeader";
@@ -17,11 +18,21 @@ import dc60kwCharger from "@/assets/chargers/dc-60kw-charger.png";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import ChargerComparisonTable from "@/components/ChargerComparisonTable";
 
+const parsePriceINR = (s: string): number => Number(String(s).replace(/[^0-9.]/g, '')) || 0;
+const parsePowerKW = (s: string): number => {
+  const m = String(s).match(/([0-9.]+)/);
+  return m ? Number(m[1]) : 0;
+};
+const parseWarrantyYears = (s: string): number => {
+  const m = String(s).match(/([0-9]+)\s*(?:yr|year)/i);
+  return m ? Number(m[1]) : 1;
+};
+
 const Services = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const navigate = useNavigate();
 
-  const chargerTypes = [
+  const DEFAULT_CHARGERS = [
     {
       image: l1PlugPoint,
       name: "L1 - 3.3 kW Plug Point",
@@ -94,7 +105,37 @@ const Services = () => {
     }
   ];
 
-  const handleCalculateROI = (charger: typeof chargerTypes[0]) => {
+  const [chargerTypes, setChargerTypes] = useState(DEFAULT_CHARGERS);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('services_catalog')
+        .select('*')
+        .eq('visible', true)
+        .order('sort_order');
+      if (data && data.length) {
+        setChargerTypes(
+          data.map((r: any) => ({
+            image: r.image_url || l1PlugPoint,
+            name: r.name,
+            type: r.charger_type || '',
+            power: r.power || '',
+            powerValue: parsePowerKW(r.power || ''),
+            price: r.price || '',
+            priceValue: parsePriceINR(r.price || ''),
+            warranty: r.warranty || '',
+            warrantyYears: parseWarrantyYears(r.warranty || ''),
+            description: r.description || '',
+            features: Array.isArray(r.features) ? r.features : [],
+            ideal: r.ideal_for || '',
+          }))
+        );
+      }
+    })();
+  }, []);
+
+  const handleCalculateROI = (charger: typeof DEFAULT_CHARGERS[0]) => {
     navigate(`/partner?charger=${encodeURIComponent(charger.name)}&investment=${charger.priceValue}`);
   };
   const partnerModel = {
