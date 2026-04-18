@@ -16,11 +16,11 @@
          Google Fonts, dicebear avatars, self-hosted assets. -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com data:;
-      img-src 'self' data: blob: https: https://hliwejekiwgnrkhbmaun.supabase.co https://*.tile.openstreetmap.org https://api.dicebear.com https://picsum.photos;
-      connect-src 'self' https://hliwejekiwgnrkhbmaun.supabase.co wss://hliwejekiwgnrkhbmaun.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://nominatim.openstreetmap.org;
+      font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data:;
+      img-src 'self' data: blob: https:;
+      connect-src 'self' https://hliwejekiwgnrkhbmaun.supabase.co wss://hliwejekiwgnrkhbmaun.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://maps.googleapis.com https://maps.gstatic.com;
       frame-src 'self' https://www.google.com https://www.youtube.com;
       object-src 'none';
       base-uri 'self';
@@ -35,9 +35,10 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- DNS prefetch for third-party domains used at runtime -->
+    <!-- DNS prefetch + preconnect for third-party domains we use at runtime -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
-    <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
+    <link rel="preconnect" href="https://maps.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://maps.gstatic.com" crossorigin>
 
     <!-- Preload the LCP hero image so the browser requests it in parallel
          with the main bundle instead of waiting for React to mount.
