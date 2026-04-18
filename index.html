@@ -9,6 +9,25 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#2674EC" />
     <link rel="canonical" href="https://apluscharge.in/" />
+
+    <!-- Content Security Policy — the safety net if XSS ever lands despite
+         sanitization. Allowlist only what this site actually loads:
+         Supabase (APIs + storage), Google Tag Manager, OSM tiles,
+         Google Fonts, dicebear avatars, self-hosted assets. -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com data:;
+      img-src 'self' data: blob: https: https://hliwejekiwgnrkhbmaun.supabase.co https://*.tile.openstreetmap.org https://api.dicebear.com https://picsum.photos;
+      connect-src 'self' https://hliwejekiwgnrkhbmaun.supabase.co wss://hliwejekiwgnrkhbmaun.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://tile.openstreetmap.org;
+      frame-src 'self' https://www.google.com https://www.youtube.com;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+      upgrade-insecure-requests;
+    " />
     
     <!-- Google Fonts - Modern Typography with font-display: swap for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

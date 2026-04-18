@@ -19,6 +19,13 @@ const resetSchema = z.object({
 
 type Mode = 'login' | 'signup' | 'reset';
 
+// Self-serve admin signup is DISABLED by default. To bootstrap the first
+// admin, create a user through the Supabase dashboard (Authentication →
+// Users → Add user), then insert a row into public.user_roles with
+// role = 'admin' for that user_id. For local development you can flip this
+// to true via VITE_ALLOW_ADMIN_SIGNUP=true in .env.
+const ALLOW_SIGNUP = import.meta.env.VITE_ALLOW_ADMIN_SIGNUP === 'true';
+
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -50,6 +57,12 @@ const AdminLogin = () => {
         toast.success('Password reset email sent. Check your inbox.');
         setMode('login');
       } else if (mode === 'signup') {
+        if (!ALLOW_SIGNUP) {
+          toast.error('Self-serve signup is disabled. Ask an existing admin to create your account.');
+          setMode('login');
+          setLoading(false);
+          return;
+        }
         loginSchema.parse({ email, password });
         const { error } = await supabase.auth.signUp({
           email,
@@ -64,8 +77,15 @@ const AdminLogin = () => {
         setPassword('');
       } else {
         loginSchema.parse({ email, password });
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        // Block sign-in until the email is verified.
+        if (data.user && !data.user.email_confirmed_at) {
+          await supabase.auth.signOut();
+          toast.error('Please verify your email before signing in. Check your inbox.');
+          setLoading(false);
+          return;
+        }
         navigate('/admin/dashboard');
         toast.success('Logged in successfully!');
       }
@@ -144,7 +164,7 @@ const AdminLogin = () => {
               <Button type="button" variant="ghost" className="w-full" onClick={() => setMode('login')}>
                 Back to Sign In
               </Button>
-            ) : (
+            ) : ALLOW_SIGNUP ? (
               <Button
                 type="button"
                 variant="ghost"
@@ -153,7 +173,7 @@ const AdminLogin = () => {
               >
                 {mode === 'signup' ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
               </Button>
-            )}
+            ) : null}
           </form>
         </CardContent>
       </Card>

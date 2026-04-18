@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { uploadImage } from '@/lib/storage';
+import { sanitizeBlogHtml, sanitizePasteHtml } from '@/lib/sanitize';
 import {
   Dialog,
   DialogContent,
@@ -135,7 +136,9 @@ const RichTextEditor = ({ value, onChange, className, folder = 'blog', meta }: R
   const insertHTML = (html: string) => {
     editorRef.current?.focus();
     restoreSelection();
-    document.execCommand('insertHTML', false, html);
+    // Sanitize before injecting so a bug in the editor UI (or a clipboard-
+    // forged payload) can't drop an executable script into the editor.
+    document.execCommand('insertHTML', false, sanitizePasteHtml(html));
     flushValue();
   };
 
@@ -467,6 +470,15 @@ const RichTextEditor = ({ value, onChange, className, folder = 'blog', meta }: R
               className="min-h-[320px] max-h-[70vh] overflow-y-auto p-4 prose prose-sm max-w-none focus:outline-none"
               onInput={flushValue}
               onClick={handleEditorClick}
+              onPaste={(e) => {
+                // Clipboard HTML is a classic XSS vector — sanitize before inserting.
+                e.preventDefault();
+                const html = e.clipboardData.getData('text/html');
+                const text = e.clipboardData.getData('text/plain');
+                const cleaned = html ? sanitizePasteHtml(html) : text;
+                document.execCommand('insertHTML', false, cleaned);
+                flushValue();
+              }}
               onBlur={() => {
                 saveSelection();
                 flushValue();
@@ -830,9 +842,9 @@ const BlogPreview = ({ html, meta }: { html: string; meta?: PreviewMeta }) => {
               prose-li:text-foreground/85
               prose-hr:my-10 prose-hr:border-border/40"
             dangerouslySetInnerHTML={{
-              __html:
-                html ||
-                '<p class="text-muted-foreground">Nothing to preview yet — start writing in the Edit tab.</p>',
+              __html: html
+                ? sanitizeBlogHtml(html)
+                : '<p class="text-muted-foreground">Nothing to preview yet — start writing in the Edit tab.</p>',
             }}
           />
 

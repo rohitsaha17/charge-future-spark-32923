@@ -18,6 +18,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { sanitizeBlogHtml } from '@/lib/sanitize';
 
 const estimateReadingTime = (html: string): number => {
   const text = (html || '').replace(/<[^>]+>/g, ' ').trim();
@@ -370,7 +371,7 @@ const BlogPost = () => {
                   prose-hr:my-12 prose-hr:border-border/40
                   prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
                   prose-pre:bg-foreground prose-pre:text-background prose-pre:rounded-xl prose-pre:shadow-lg"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(blog.content) }}
               />
 
               {/* Tags */}

@@ -81,6 +81,18 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    // Clear any cached app state (visibility settings, CMS drafts, anti-spam
+    // throttle timers, etc.) so the next user on this machine doesn't
+    // inherit anything belonging to the previous session.
+    try {
+      sessionStorage.clear();
+      // Preserve only the permanent "I've seen the intro video" flag.
+      const introSeen = localStorage.getItem('introSeen');
+      localStorage.clear();
+      if (introSeen) localStorage.setItem('introSeen', introSeen);
+    } catch {
+      // Storage APIs can throw in private mode; safe to ignore.
+    }
     navigate('/admin/login');
     toast.success('Logged out successfully');
   };
@@ -132,7 +144,10 @@ const AdminDashboard = () => {
     toast.info('Changes discarded');
   };
 
-  if (loading) {
+  // Render nothing until we've resolved auth AND confirmed admin role.
+  // Stops a brief visual flash of the dashboard UI if the session exists
+  // but the role check hasn't resolved (or fails).
+  if (loading || !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
