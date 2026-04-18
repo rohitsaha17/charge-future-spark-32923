@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 // Allowed tags/attributes for blog content. Enough for rich formatting,
 // images, code, links, tables, and our custom gallery/figure blocks —
 // nothing that can execute JS.
-const BLOG_CONFIG: DOMPurify.Config = {
+const BLOG_CONFIG: import('dompurify').Config = {
   ALLOWED_TAGS: [
     'a', 'b', 'i', 'em', 'strong', 'u', 's', 'del', 'ins', 'mark', 'sub', 'sup',
     'p', 'br', 'hr',
