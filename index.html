@@ -113,8 +113,16 @@
 
     <!-- Google Ads (gtag) — loaded lazily after first paint so it doesn't block the critical path -->
     <script>
+      // Google Ads (AW-18094566614)
+      // Queue js/config synchronously so any conversion events fired before
+      // the external script loads still attribute to this session. Only the
+      // gtag.js script itself is deferred to idle time to keep the critical
+      // path light.
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-18094566614');
+
       const loadGtag = () => {
         if (window.__gtagLoaded) return;
         window.__gtagLoaded = true;
@@ -122,8 +130,6 @@
         s.async = true;
         s.src = 'https://www.googletagmanager.com/gtag/js?id=AW-18094566614';
         document.head.appendChild(s);
-        gtag('js', new Date());
-        gtag('config', 'AW-18094566614');
       };
       if ('requestIdleCallback' in window) {
         requestIdleCallback(loadGtag, { timeout: 4000 });
