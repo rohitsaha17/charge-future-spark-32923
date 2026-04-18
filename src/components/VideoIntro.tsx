@@ -5,17 +5,17 @@ interface VideoIntroProps {
 }
 
 // Intro behaviour:
-//  - Try to play the intro video.
-//  - If the video hasn't started within 3s, bail to the site immediately
-//    (no "Loading..." screen).
-//  - On success, play the first ~4.5s then fade to the site.
-//  - Absolute upper bound of 6s — whatever happens (tab backgrounded,
-//    playback paused by the browser, stall), we always land the user on
-//    the site by 6s.
-//  - On slow connections / save-data / errors, skip straight to the site.
-const LOAD_TIMEOUT_MS = 3000;
-const MAX_INTRO_MS = 6000;
-const CLIP_SECONDS = 4.5;
+//  - Try to play the full intro video from start to finish.
+//  - Exit when the video's `ended` event fires (natural completion).
+//  - If the video hasn't started playing within LOAD_TIMEOUT_MS, assume
+//    autoplay is blocked / network is too slow and land the user on the
+//    site rather than leaving them on a black screen.
+//  - HARD_MAX_MS is a last-resort ceiling so no matter what (tab back-
+//    grounded mid-play, battery saver, corrupted video), the user always
+//    reaches the site within this bound.
+//  - On slow connections / save-data, skip straight to the site.
+const LOAD_TIMEOUT_MS = 4000;
+const HARD_MAX_MS = 12000;
 
 const VideoIntro = ({ onComplete }: VideoIntroProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -59,19 +59,16 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
 
     if (!video) return;
 
-    // If the video hasn't even started playing within LOAD_TIMEOUT_MS,
-    // drop the intro and land the user on the site.
+    // If the video hasn't started by LOAD_TIMEOUT_MS, bail.
     loadTimeoutRef.current = setTimeout(() => {
       triggerExit(true);
     }, LOAD_TIMEOUT_MS);
 
-    // Absolute upper bound — covers the case where the video plays,
-    // `timeupdate` fires (clearing the load timeout), and then the browser
-    // pauses playback (backgrounded tab, battery saver, etc.) so we'd never
-    // reach 4.5s to exit on our own.
+    // Hard safety ceiling — if the video somehow stalls mid-play we still
+    // release the user after HARD_MAX_MS.
     maxTimeoutRef.current = setTimeout(() => {
       triggerExit();
-    }, MAX_INTRO_MS);
+    }, HARD_MAX_MS);
 
     const clearLoadTimeout = () => {
       if (loadTimeoutRef.current) {
@@ -80,15 +77,12 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       }
     };
 
-    const handleTimeUpdate = () => {
-      // First time a frame renders → we're definitely playing, keep it.
-      clearLoadTimeout();
-      if (video.currentTime >= CLIP_SECONDS && !hasCompletedRef.current) {
-        triggerExit();
-      }
-    };
-
+    // Once frames are rendering, relax the load-timeout watchdog.
     const handlePlaying = () => clearLoadTimeout();
+    const handleTimeUpdate = () => clearLoadTimeout();
+
+    // Natural completion — exit with fade.
+    const handleEnded = () => triggerExit();
 
     const handleError = () => triggerExit(true);
 
@@ -98,9 +92,8 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       video.playsInline = true;
       try {
         await video.play();
-        return;
       } catch {
-        // Autoplay blocked. Fall through — timeout will carry us to the site.
+        // Autoplay blocked — the timeout will carry the user through.
       }
     };
 
@@ -115,6 +108,7 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('loadeddata', handleCanPlay);
+    video.addEventListener('ended', handleEnded);
     video.addEventListener('error', handleError);
 
     if (video.readyState >= 2) handleCanPlay();
@@ -131,6 +125,7 @@ const VideoIntro = ({ onComplete }: VideoIntroProps) => {
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('loadeddata', handleCanPlay);
+      video.removeEventListener('ended', handleEnded);
       video.removeEventListener('error', handleError);
       clearTimeout(delayTimer);
       if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);

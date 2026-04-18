@@ -57,20 +57,18 @@ const AppContent = () => {
 
   useEffect(() => {
     if ((location.pathname === '/' || location.pathname === '/index') && isInitialLoad) {
-      // Skip on any of:
-      //  - already seen in prior visit (localStorage)
-      //  - user prefers reduced motion
-      //  - slow connection (2G / save-data)
-      const seenBefore = (() => {
-        try { return localStorage.getItem('introSeen') === '1'; } catch { return false; }
-      })();
+      // Play the intro every time the user lands on the homepage. We only
+      // suppress it for:
+      //  - users who explicitly prefer reduced motion
+      //  - save-data / 2G connections where the 2.6MB video would be abusive
+      // Otherwise the brand video always runs first.
       const prefersReduced = typeof window.matchMedia === 'function'
         && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const conn = (navigator as any).connection;
       const saveData = conn?.saveData === true;
       const slowNetwork = conn?.effectiveType === '2g' || conn?.effectiveType === 'slow-2g';
 
-      if (!seenBefore && !prefersReduced && !saveData && !slowNetwork) {
+      if (!prefersReduced && !saveData && !slowNetwork) {
         setShowIntro(true);
       }
       setIsInitialLoad(false);
@@ -89,7 +87,6 @@ const AppContent = () => {
   }, [location, displayLocation]);
 
   const handleIntroComplete = () => {
-    try { localStorage.setItem('introSeen', '1'); } catch { /* ignore */ }
     setShowIntro(false);
   };
 
