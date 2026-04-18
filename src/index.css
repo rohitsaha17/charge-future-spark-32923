@@ -76,21 +76,41 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     scroll-behavior: smooth;
+    /* Baseline readable text on mobile (16px). Audits flag anything smaller
+       on the body as "text too small to read". */
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
-  
-  /* Smooth scroll snap for storytelling sections */
+
   html {
     scroll-behavior: smooth;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
 
-  html {
-    scroll-behavior: smooth;
+  /* Tap targets — make sure every actionable icon hits the 44×44 recommended
+     by iOS HIG and the WCAG 2.5.5 AA minimum (24×24) on mobile. */
+  @media (max-width: 640px) {
+    button, a[role="button"], [role="button"] {
+      min-height: 44px;
+    }
+    /* tiny icon-only buttons still honour their explicit size classes */
+    button.h-6, button.h-7, button.h-8 { min-height: unset; }
+  }
+
+  /* Below-fold render optimisation — the browser skips layout + paint for
+     these sections until they scroll into the viewport. Massive INP and
+     DOM-size win on long landing pages. `contain-intrinsic-size` gives
+     the browser a placeholder height so scrollbars don't jump. */
+  .below-fold {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 800px;
   }
 }
 

@@ -372,7 +372,7 @@ const Home = () => {
       {/* Charging Stations Map with Sidebar */}
       <section
         ref={mapSection.ref}
-        className={`py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`below-fold py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Enhanced Radial Gradient Depth Layer */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.15),_transparent_70%)] pointer-events-none"></div>
@@ -465,7 +465,7 @@ const Home = () => {
       {/* Live Stats Section - Redesigned with Full-Width Illustration and Service Pointers */}
       <section
         ref={statsSection.ref}
-        className={`py-10 sm:py-12 md:py-16 lg:py-20 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`below-fold py-10 sm:py-12 md:py-16 lg:py-20 mb-0 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/20 transition-all duration-1000 ${statsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Full-Width Illustration - Pinned to Right for desktop/tablet - FIXED CROPPING */}
         <div className="absolute inset-0 hidden md:flex items-center justify-end overflow-hidden pointer-events-none">
@@ -605,7 +605,7 @@ const Home = () => {
       {/* Client Logos - Scrolling with Gradient Separator */}
       <section
         ref={partnersSection.ref}
-        className={`py-8 pb-2 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`below-fold py-8 pb-2 relative overflow-hidden transition-all duration-1000 ${partnersSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Gradient separator layer */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_15%_97%)] via-[hsl(216_83%_98%)] to-[hsl(220_15%_97%)]"></div>
@@ -694,7 +694,7 @@ const Home = () => {
       {/* App Download Section - Creative Design */}
       <section
         ref={appSection.ref}
-        className={`py-4 md:py-6 relative overflow-visible transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`below-fold py-4 md:py-6 relative overflow-visible transition-all duration-1000 ${appSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Background Effects with Pattern */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30"></div>
@@ -820,7 +820,7 @@ const Home = () => {
       {/* Testimonials Carousel */}
       <section
         ref={testimonialsSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${testimonialsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`below-fold py-20 relative overflow-hidden transition-all duration-1000 ${testimonialsSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Video background with parallax */}
         <video
@@ -865,7 +865,7 @@ const Home = () => {
       {/* FAQ Section */}
       <section
         ref={faqSection.ref}
-        className={`py-20 relative overflow-hidden transition-all duration-1000 ${faqSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`below-fold py-20 relative overflow-hidden transition-all duration-1000 ${faqSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/10 to-background"></div>
         
