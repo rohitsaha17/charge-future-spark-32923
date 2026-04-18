@@ -30,7 +30,7 @@ export const JourneyTimeline = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('journey_milestones')
         .select('*')
         .eq('visible', true)
