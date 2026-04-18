@@ -6,7 +6,11 @@ import { MapPin, Users, Zap, ChevronDown, ArrowRight, Settings, Wrench, Megaphon
 import { useState } from "react";
 import heroIllustration from "@/assets/hero-illustration.png";
 import logomark from "@/assets/a-plus-logomark.png";
-import heroEvCharging from "@/assets/hero-ev-charging-v2.png";
+// Hero image lives in /public so we can preload it at HEAD time with a
+// stable URL (Vite asset bundling rewrites paths + hashes, which breaks
+// <link rel="preload"> in index.html). WebP at 59KB is ~94% smaller than
+// the original 965KB PNG with alpha transparency preserved.
+const heroEvCharging = "/hero.webp";
 import trustBg from "@/assets/trust-bg.jpg";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import brahmaputraSunset from "@/assets/brahmaputra-sunset.jpg";
@@ -19,11 +23,11 @@ import aaiLogo from "@/assets/partners/aai-logo.png";
 import imperiaVistaLogo from "@/assets/partners/imperia-vista-logo.png";
 import osmLogo from "@/assets/partners/osm-logo.png";
 import appSectionBg from "@/assets/app-section-bg.jpg";
-import phoneMockup from "@/assets/phone-mockup-dual.png";
+import phoneMockup from "@/assets/phone-mockup-dual.webp";
 import googlePlayBadge from "@/assets/google-play-official.png";
 import appStoreBadge from "@/assets/app-store-official.png";
 import StorytellingSection from "@/components/StorytellingSection";
-import chargingStationIllustration from "@/assets/charging-station-illustration.png";
+import chargingStationIllustration from "@/assets/charging-station-illustration.webp";
 import GoogleMapsCharging from "@/components/GoogleMapsCharging";
 import BenefitsSection from "@/components/BenefitsSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
@@ -82,8 +86,8 @@ const Home = () => {
   return (
     <main className="min-h-screen bg-background">
       <SEOHead
-        title="A Plus Charge | EV Charging Northeast India"
-        description="Northeast India's largest EV charging network. 3.3kW to 60kW fast chargers across Assam & beyond. Partner with us."
+        title="A Plus Charge — EV Charging Network, Northeast India"
+        description="Northeast India's largest EV charging network. 3.3–60 kW AC & DC chargers across Assam, Meghalaya & beyond. Partner with us."
         path="/"
         keywords="EV charging station, electric vehicle charger, Northeast India, Guwahati, DC fast charger, AC charger, EV charging partner"
       />
@@ -248,7 +252,7 @@ const Home = () => {
                     animation: "slideUp 0.6s ease-out both"
                   }}
                 >
-                  <img src={logomark} alt="A+ Charge" className="w-5 h-5" />
+                  <img src={logomark} alt="A+ Charge" className="w-5 h-5" loading="lazy" decoding="async" />
                   <span className="text-xs font-bold text-primary tracking-wide uppercase">Northeast India's Leading EV Network</span>
                 </div>
 
@@ -332,6 +336,7 @@ const Home = () => {
                   style={{ transform: 'scale(1.35)' }}
                   loading="eager"
                   decoding="sync"
+                  {...({ fetchpriority: 'high' } as any)}
                 />
               </div>
 
@@ -347,6 +352,7 @@ const Home = () => {
                   className="relative w-full max-w-lg h-auto object-contain drop-shadow-2xl"
                   loading="eager"
                   decoding="sync"
+                  {...({ fetchpriority: 'high' } as any)}
                 />
               </div>
             </div>

@@ -28,9 +28,9 @@ import osmLogo from "@/assets/partners/osm-logo.png";
 
 import l1PlugPoint from "@/assets/chargers/l1-plug-point.jpg";
 import l2AcCharger from "@/assets/chargers/l2-ac-charger.jpg";
-import ac7kwCharger from "@/assets/chargers/ac-7kw-charger.png";
+import ac7kwCharger from "@/assets/chargers/ac-7kw-charger.webp";
 import dcFastCharger from "@/assets/chargers/dc-fast-charger.jpg";
-import dc60kwCharger from "@/assets/chargers/dc-60kw-charger.png";
+import dc60kwCharger from "@/assets/chargers/dc-60kw-charger.webp";
 
 export type PartnerType = 'client' | 'partner' | 'both';
 

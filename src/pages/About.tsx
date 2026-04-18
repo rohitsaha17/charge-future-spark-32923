@@ -263,7 +263,7 @@ const About = () => {
                     <>
                       <div className="relative h-64 sm:h-80 md:h-auto overflow-hidden">
                         {img && (
-                          <img src={img} alt={lead.name} className="w-full h-full object-cover" />
+                          <img src={img} alt={lead.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                         )}
                       </div>
                       <div className="p-6 md:p-8 lg:p-12 flex flex-col justify-center">

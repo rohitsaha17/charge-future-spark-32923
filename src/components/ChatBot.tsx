@@ -154,7 +154,7 @@ const ChatBot = () => {
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9zdmc+')] opacity-30" />
           <div className="relative flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm overflow-hidden">
-              <img src={logomark} alt="A Plus" className="w-7 h-7 object-contain" />
+              <img src={logomark} alt="A Plus" className="w-7 h-7 object-contain" loading="lazy" decoding="async" />
             </div>
             <div>
               <h3 className="font-bold">A Plus Charge Assistant</h3>

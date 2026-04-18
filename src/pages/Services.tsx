@@ -14,8 +14,8 @@ import l1PlugPoint from "@/assets/chargers/l1-plug-point.jpg";
 import dcFastCharger from "@/assets/chargers/dc-fast-charger.jpg";
 import l2AcCharger from "@/assets/chargers/l2-ac-charger.jpg";
 import evChargerStation from "@/assets/chargers/ev-charger-station.jpg";
-import ac7kwCharger from "@/assets/chargers/ac-7kw-charger.png";
-import dc60kwCharger from "@/assets/chargers/dc-60kw-charger.png";
+import ac7kwCharger from "@/assets/chargers/ac-7kw-charger.webp";
+import dc60kwCharger from "@/assets/chargers/dc-60kw-charger.webp";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import ChargerComparisonTable from "@/components/ChargerComparisonTable";
 
@@ -239,10 +239,12 @@ const Services = () => {
                 >
                   {/* Charger Image */}
                   <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
-                    <img 
-                      src={charger.image} 
+                    <img
+                      src={charger.image}
                       alt={charger.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute top-3 right-3 px-3 py-1 bg-primary text-white text-xs font-bold rounded-full">
                       {charger.power}
