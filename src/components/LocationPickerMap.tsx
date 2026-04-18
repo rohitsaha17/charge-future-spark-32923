@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { MapPin, Search, Loader2, Crosshair } from 'lucide-react';
+import { MapPin, Search, Loader2, Crosshair, X, Check } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -28,17 +28,7 @@ interface LocationPickerMapProps {
 }
 
 const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
-
-const coordsLabel = (lat: number, lng: number) =>
-  `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-
-const buildPopupHtml = (address: string) => `
-  <div style="padding: 12px; min-width: 220px;">
-    <h3 style="font-weight: 600; margin: 0 0 6px; color: #1a1a1a; font-size: 13px;">Selected location</h3>
-    <p style="font-size: 12px; color: #555; margin: 0 0 6px; line-height: 1.4;">${address}</p>
-    <p style="font-size: 11px; color: #888; margin: 0;">Drag the pin to adjust</p>
-  </div>
-`;
+const coordsLabel = (lat: number, lng: number) => `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
 const LocationPickerMap = ({
   onLocationSelect,
@@ -48,7 +38,6 @@ const LocationPickerMap = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const marker = useRef<maplibregl.Marker | null>(null);
-  const popup = useRef<maplibregl.Popup | null>(null);
   const onLocationSelectRef = useRef(onLocationSelect);
 
   const [selectedLat, setSelectedLat] = useState<number | null>(null);
@@ -60,17 +49,15 @@ const LocationPickerMap = ({
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Keep the latest callback in a ref so the map's stable click/drag handlers
-  // never see a stale version (they're attached once at mount).
   useEffect(() => {
     onLocationSelectRef.current = onLocationSelect;
   }, [onLocationSelect]);
 
-  /** Reverse-geocode coords → human-readable address. Returns the coord
-   *  string as a fallback so the caller always has a string to show. */
   const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
     const fallback = coordsLabel(lat, lng);
     try {
@@ -86,14 +73,10 @@ const LocationPickerMap = ({
     }
   };
 
-  /** Drop the pin at (lat, lng) immediately and update state synchronously.
-   *  Reverse geocoding runs in the background — the form doesn't wait. */
   const placePin = useCallback((lat: number, lng: number, precomputedAddress?: string) => {
     if (!map.current) return;
 
-    // Create or move the marker
     if (!marker.current) {
-      // Build the marker DOM once; subsequent drops reuse it
       const el = document.createElement('div');
       el.style.cssText = 'width:44px;height:54px;cursor:grab;position:relative;';
       el.innerHTML = `
@@ -109,65 +92,43 @@ const LocationPickerMap = ({
       `;
       el.style.animation = 'markerBounce 0.5s ease-out';
 
-      popup.current = new maplibregl.Popup({
-        offset: [0, -44],
-        closeButton: true,
-        closeOnClick: false,
-        maxWidth: '300px',
-        anchor: 'bottom',
-      });
-
       marker.current = new maplibregl.Marker({
         element: el,
         draggable: true,
         anchor: 'bottom',
       })
         .setLngLat([lng, lat])
-        .setPopup(popup.current)
         .addTo(map.current);
 
-      // Drag: snap state to new position, fire callback immediately with
-      // coords fallback, then refine address asynchronously.
-      marker.current.on('dragend', async () => {
+      marker.current.on('dragend', () => {
         const ll = marker.current!.getLngLat();
         placePin(ll.lat, ll.lng);
       });
     } else {
       marker.current.setLngLat([lng, lat]);
-      // Retrigger the bounce
       const el = marker.current.getElement();
       el.style.animation = 'none';
-      // force reflow
       el.offsetHeight;
       el.style.animation = 'markerBounce 0.4s ease-out';
     }
 
-    // Sync state + call parent NOW with whatever address we have (may be
-    // the coord string; that's fine, the form just needs non-null lat/lng).
     const immediateAddress = precomputedAddress || coordsLabel(lat, lng);
     setSelectedLat(lat);
     setSelectedLng(lng);
     setSelectedAddress(immediateAddress);
     onLocationSelectRef.current(lat, lng, immediateAddress);
 
-    // Show popup + fly-in
-    popup.current?.setHTML(buildPopupHtml(immediateAddress));
-    marker.current.togglePopup();
-
     if (!precomputedAddress) {
-      // Refine address in the background
       setIsGeocoding(true);
       reverseGeocode(lat, lng)
         .then((addr) => {
           setSelectedAddress(addr);
-          popup.current?.setHTML(buildPopupHtml(addr));
           onLocationSelectRef.current(lat, lng, addr);
         })
         .finally(() => setIsGeocoding(false));
     }
   }, []);
 
-  /** Debounced address search. */
   const handleSearch = useCallback(
     (query: string) => {
       setSearchQuery(query);
@@ -184,7 +145,7 @@ const LocationPickerMap = ({
       searchTimeoutRef.current = setTimeout(async () => {
         try {
           const res = await fetch(
-            `${NOMINATIM_BASE}/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in&addressdetails=1`,
+            `${NOMINATIM_BASE}/search?format=json&q=${encodeURIComponent(query)}&limit=6&countrycodes=in&addressdetails=1`,
             { headers: { Accept: 'application/json' } }
           );
           if (!res.ok) throw new Error('Search failed');
@@ -195,13 +156,13 @@ const LocationPickerMap = ({
           setSearchResults([]);
           toast({
             title: 'Search unavailable',
-            description: 'Click on the map to select your location instead.',
+            description: 'Click on the map instead to drop a pin.',
             variant: 'default',
           });
         } finally {
           setIsSearching(false);
         }
-      }, 400);
+      }, 300);
     },
     [toast]
   );
@@ -209,13 +170,12 @@ const LocationPickerMap = ({
   const handleSelectResult = (result: any) => {
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
-    map.current?.flyTo({ center: [lng, lat], zoom: 16, duration: 1500 });
+    map.current?.flyTo({ center: [lng, lat], zoom: 16, duration: 1200, essential: true });
     placePin(lat, lng, result.display_name);
     setShowResults(false);
-    setSearchQuery('');
+    setSearchQuery(result.display_name.split(',')[0]);
   };
 
-  /** "Use my location" — Geolocation API. */
   const useMyLocation = () => {
     if (!navigator.geolocation) {
       toast({
@@ -225,14 +185,16 @@ const LocationPickerMap = ({
       });
       return;
     }
-    toast({ title: 'Locating you…', description: 'Allow the browser prompt to continue.' });
+    setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        map.current?.flyTo({ center: [longitude, latitude], zoom: 16, duration: 1500 });
+        map.current?.flyTo({ center: [longitude, latitude], zoom: 17, duration: 1200, essential: true });
         placePin(latitude, longitude);
+        setIsLocating(false);
       },
       (err) => {
+        setIsLocating(false);
         toast({
           title: 'Could not get your location',
           description: err.message || 'Click on the map to select it manually.',
@@ -241,6 +203,18 @@ const LocationPickerMap = ({
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
+  };
+
+  const clearSelection = () => {
+    if (marker.current) {
+      marker.current.remove();
+      marker.current = null;
+    }
+    setSelectedLat(null);
+    setSelectedLng(null);
+    setSelectedAddress('');
+    setSearchQuery('');
+    setShowResults(false);
   };
 
   useEffect(() => {
@@ -253,13 +227,11 @@ const LocationPickerMap = ({
         sources: {
           osm: {
             type: 'raster',
-            tiles: [
-              'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            ],
+            // Modern OSM tile URL (single host). MapLibre also requires
+            // the crossOrigin attribute on tiles for WebGL to draw them.
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             tileSize: 256,
-            attribution: '&copy; OpenStreetMap Contributors',
+            attribution: '&copy; OpenStreetMap',
             maxzoom: 19,
           },
         },
@@ -267,117 +239,191 @@ const LocationPickerMap = ({
       },
       center: [initialLng, initialLat],
       zoom: 12,
+      attributionControl: true,
     });
 
-    map.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+    map.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
-    // Click anywhere on the map → drop the pin at that exact spot.
     map.current.on('click', (e) => {
       placePin(e.lngLat.lat, e.lngLat.lng);
     });
 
-    // Cleanup
+    // Ensure the map resizes once its container has a real size (the form
+    // card's width resolves after first paint inside grid layouts).
+    const resizeObserver = new ResizeObserver(() => {
+      map.current?.resize();
+    });
+    resizeObserver.observe(mapContainer.current);
+
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+      resizeObserver.disconnect();
       marker.current?.remove();
-      popup.current?.remove();
       map.current?.remove();
       marker.current = null;
-      popup.current = null;
       map.current = null;
     };
-    // placePin is stable (empty deps) so this effect only runs once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialLat, initialLng]);
+  }, []);
+
+  const hasSelection = selectedLat !== null && selectedLng !== null;
 
   return (
-    <div className="relative">
-      {/* Search + "Use my location" */}
-      <div className="absolute top-4 left-4 right-4 z-20">
+    <div className="space-y-3">
+      {/* Search bar — Uber-style, always visible, never overlaps the map */}
+      <div className="relative">
         <div className="flex gap-2">
           <div className="relative flex-1">
-            {isSearching ? (
-              <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary animate-spin" />
-            ) : (
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            )}
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              {isSearching ? (
+                <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              ) : (
+                <Search className="w-5 h-5 text-muted-foreground" />
+              )}
+            </div>
             <Input
+              ref={searchInputRef}
               type="text"
-              placeholder="Search for an address…"
+              placeholder="Search an address or place…"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 pr-4 bg-white/95 backdrop-blur-sm shadow-elegant border-primary/20"
+              onFocus={() => {
+                if (searchResults.length) setShowResults(true);
+              }}
+              onBlur={() => {
+                // delay so click on a result registers first
+                setTimeout(() => setShowResults(false), 150);
+              }}
+              className="pl-11 pr-10 h-12 text-base rounded-xl border-2 border-primary/20 focus-visible:border-primary shadow-sm"
+              aria-label="Search location"
             />
-
-            {showResults && searchResults.length > 0 && (
-              <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-elegant border border-primary/20 max-h-60 overflow-y-auto z-30">
-                {searchResults.map((result, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleSelectResult(result)}
-                    className="w-full text-left px-4 py-3 hover:bg-primary/10 transition-colors border-b border-border last:border-b-0"
-                  >
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                      <span className="text-sm text-foreground line-clamp-2">{result.display_name}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {showResults && searchResults.length === 0 && !isSearching && searchQuery.length >= 3 && (
-              <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-elegant border border-primary/20 p-4 text-center z-30">
-                <p className="text-sm text-muted-foreground">No results. Click the map to drop a pin.</p>
-              </div>
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSearchResults([]);
+                  setShowResults(false);
+                  searchInputRef.current?.focus();
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label="Clear search"
+              >
+                <X className="w-4 h-4" />
+              </button>
             )}
           </div>
-
           <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={useMyLocation}
-            className="bg-white/95 backdrop-blur-sm shadow-elegant border-primary/20 h-10 w-10"
+            disabled={isLocating}
+            className="h-12 w-12 rounded-xl border-2 border-primary/20 hover:border-primary shadow-sm shrink-0"
             title="Use my current location"
+            aria-label="Use my current location"
           >
-            <Crosshair className="w-4 h-4" />
+            {isLocating ? (
+              <Loader2 className="w-5 h-5 animate-spin text-primary" />
+            ) : (
+              <Crosshair className="w-5 h-5 text-primary" />
+            )}
           </Button>
         </div>
+
+        {/* Search results dropdown */}
+        {showResults && (
+          <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-primary/20 overflow-hidden z-30 max-h-80 overflow-y-auto">
+            {searchResults.length > 0 ? (
+              searchResults.map((result, index) => (
+                <button
+                  key={`${result.place_id || index}`}
+                  type="button"
+                  onClick={() => handleSelectResult(result)}
+                  onMouseDown={(e) => e.preventDefault()} // keep focus in input
+                  className="w-full text-left px-4 py-3 hover:bg-primary/5 transition-colors border-b border-border last:border-b-0 flex items-start gap-3 group"
+                >
+                  <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground line-clamp-1">
+                      {result.display_name.split(',')[0]}
+                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-1">
+                      {result.display_name}
+                    </p>
+                  </div>
+                </button>
+              ))
+            ) : !isSearching && searchQuery.length >= 3 ? (
+              <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+                No results. Try another search or click the map below.
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
 
-      {/* Location readout */}
-      <div className="absolute bottom-4 left-4 right-4 z-10 bg-white/95 backdrop-blur-sm px-4 py-3 rounded-xl shadow-elegant border border-primary/20">
-        <div className="flex items-start gap-2">
-          <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            {selectedLat !== null ? (
-              <>
-                <p className="font-semibold text-sm text-foreground mb-0.5 flex items-center gap-2">
-                  Selected location
-                  {isGeocoding && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
-                </p>
-                <p className="text-xs text-muted-foreground break-words">
-                  {selectedAddress}
-                </p>
-                <p className="text-[10px] text-muted-foreground/70 mt-1 font-mono">
-                  {coordsLabel(selectedLat, selectedLng!)}
-                </p>
-              </>
-            ) : (
-              <p className="font-semibold text-sm text-foreground">
-                Click the map, search, or use <Crosshair className="inline w-3 h-3" /> to drop a pin
+      {/* Helper text */}
+      {!hasSelection && (
+        <p className="text-xs text-muted-foreground px-1">
+          Search for your site, use <Crosshair className="inline w-3 h-3" /> for your current location, or tap the map to drop a pin. You can drag the pin to fine-tune.
+        </p>
+      )}
+
+      {/* Map */}
+      <div className="relative">
+        <div
+          ref={mapContainer}
+          className="w-full h-[340px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden border-2 border-primary/10 shadow-elegant bg-muted"
+        />
+
+        {/* Floating "confirmed" chip when a pin is dropped */}
+        {hasSelection && (
+          <div className="absolute top-3 left-3 right-3 z-10 bg-white rounded-xl shadow-lg border border-primary/20 px-3 py-2 flex items-center gap-2 pointer-events-none">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Check className="w-4 h-4 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-foreground leading-tight flex items-center gap-1.5">
+                Site location set
+                {isGeocoding && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
               </p>
-            )}
+              <p className="text-xs text-muted-foreground line-clamp-1">
+                {selectedAddress}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Below-map readout — the full picture */}
+      {hasSelection ? (
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
+              <MapPin className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-foreground">Selected site location</p>
+              <p className="text-sm text-foreground/80 mt-0.5 break-words">
+                {selectedAddress}
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-1 font-mono">
+                {coordsLabel(selectedLat!, selectedLng!)}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={clearSelection}
+              className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
+              aria-label="Clear selected location"
+            >
+              <X className="w-3 h-3" />
+              Change
+            </button>
           </div>
         </div>
-      </div>
-
-      <div
-        ref={mapContainer}
-        className="w-full h-[400px] md:h-[500px] rounded-2xl shadow-elegant overflow-hidden border-2 border-content-highlight-border"
-      />
+      ) : null}
 
       <style>{`
         @keyframes markerBounce {
@@ -386,28 +432,21 @@ const LocationPickerMap = ({
           70% { transform: translateY(-5px) scale(0.98); }
           100% { transform: translateY(0) scale(1); }
         }
-        .maplibregl-ctrl-bottom-right { bottom: 90px !important; right: 12px !important; }
+        .maplibregl-ctrl-bottom-right { bottom: 12px !important; right: 12px !important; }
         .maplibregl-ctrl-group {
           background: white !important;
-          border-radius: 12px !important;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+          border-radius: 10px !important;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.15) !important;
           overflow: hidden;
           border: 1px solid rgba(38,116,236,0.15) !important;
         }
-        .maplibregl-ctrl-group button { width: 38px !important; height: 38px !important; }
+        .maplibregl-ctrl-group button { width: 36px !important; height: 36px !important; }
         .maplibregl-ctrl-group button:hover { background: rgba(38,116,236,0.1) !important; }
-        .maplibregl-popup-content {
-          border-radius: 12px !important;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.18) !important;
-          padding: 0 !important;
-          border: 1px solid rgba(38,116,236,0.1) !important;
+        .maplibregl-ctrl-attrib {
+          background: rgba(255,255,255,0.85) !important;
+          font-size: 10px !important;
+          padding: 2px 6px !important;
         }
-        .maplibregl-popup-close-button {
-          font-size: 20px !important;
-          padding: 6px 10px !important;
-          color: #666 !important;
-        }
-        .maplibregl-popup-close-button:hover { color: #333 !important; background: transparent !important; }
       `}</style>
     </div>
   );
