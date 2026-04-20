@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import SEOHead from "@/components/SEOHead";
 import { Card } from "@/components/ui/card";
 import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation } from "lucide-react";
-import GoogleMapsCharging from "@/components/GoogleMapsCharging";
+import ChargingStationsMap from "@/components/ChargingStationsMap";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -284,7 +284,7 @@ const FindCharger = () => {
           {/* Map */}
           <div className="lg:col-span-2">
             <Card className="p-2 border-content-highlight-border bg-content-highlight/30 shadow-elegant">
-              <GoogleMapsCharging 
+              <ChargingStationsMap 
                 onStationSelect={handleMapStationSelect}
                 selectedStationId={selectedStation}
               />
