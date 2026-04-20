@@ -189,6 +189,28 @@ const FindCharger = () => {
           })}
         </div>
 
+        {/* Find Nearest Charger CTA */}
+        <div className="flex justify-center mb-6">
+          <Button
+            onClick={handleFindNearest}
+            disabled={locating || stations.length === 0}
+            size="lg"
+            className="gap-2 shadow-glow bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-600"
+          >
+            {locating ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Locating you...
+              </>
+            ) : (
+              <>
+                <LocateFixed className="w-5 h-5" />
+                Find My Nearest Charger
+              </>
+            )}
+          </Button>
+        </div>
+
         {/* Search and Filters */}
         <Card className="p-6 mb-8 border-content-highlight-border bg-content-highlight/50 backdrop-blur-sm">
           <div className="flex flex-col md:flex-row gap-4">
