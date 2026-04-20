@@ -372,7 +372,7 @@ const Home = () => {
       {/* Charging Stations Map with Sidebar */}
       <section
         ref={mapSection.ref}
-        className={`below-fold py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        className={`py-20 relative overflow-visible transition-all duration-1000 ${mapSection.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
       >
         {/* Enhanced Radial Gradient Depth Layer */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center_bottom,_hsl(216_83%_56%_/_0.15),_transparent_70%)] pointer-events-none"></div>
