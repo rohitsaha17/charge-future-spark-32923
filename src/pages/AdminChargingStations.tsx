@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Pencil, X } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Pencil, X, Loader2 } from 'lucide-react';
 import { z } from 'zod';
 
 const csvToArray = (val: string): string[] =>
@@ -44,6 +44,7 @@ const AdminChargingStations = () => {
   const navigate = useNavigate();
   const [stations, setStations] = useState<Station[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [editingStation, setEditingStation] = useState<Station | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -103,6 +104,7 @@ const AdminChargingStations = () => {
       return;
     }
 
+    setIsAdmin(true);
     fetchStations();
   };
 
@@ -265,8 +267,15 @@ const AdminChargingStations = () => {
     setPendingDeleteId(null);
   };
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  // Hold the UI until both the session check and the admin role check have
+  // resolved. Prevents the brief flash of the stations-editor shell before
+  // the unauthenticated user gets redirected to /admin/login.
+  if (loading || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { microFeedback } from "@/lib/microFeedback";
 import { MapPin, Users, Zap, ChevronDown, ArrowRight, Settings, Wrench, Megaphone, DollarSign, Monitor, HeadphonesIcon } from "lucide-react";
 import { useState } from "react";
-import heroIllustration from "@/assets/hero-illustration.png";
+import heroIllustration from "@/assets/hero-illustration.webp";
 import logomark from "@/assets/a-plus-logomark.png";
 // Hero image lives in /public so we can preload it at HEAD time with a
 // stable URL (Vite asset bundling rewrites paths + hashes, which breaks

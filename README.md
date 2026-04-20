@@ -1,73 +1,54 @@
-# Welcome to your Lovable project
+# APlus Charge — Marketing + Ops site
 
-## Project info
+Single-page React app for [apluscharge.com](https://apluscharge.com) / [apluscharge.in](https://apluscharge.in) covering:
 
-**URL**: https://lovable.dev/projects/af11daf9-edc1-4daf-afb4-edae18648fe9
+- Public marketing surface (Home, About, Services, Invest, Partner, Blog)
+- Public charger-locator map (MapLibre + Esri World Street Map tiles)
+- Partner & investor lead-capture forms (Supabase, rate-limited server-side)
+- Admin CMS for stations, blog posts, enquiries, and site content (partners, testimonials, team, services, timeline, stats, FAQs)
+- Page/section visibility toggles (feature flags stored in `site_settings`)
 
-## How can I edit this code?
+Auto-deployed from `main` via [Lovable](https://lovable.dev/projects/af11daf9-edc1-4daf-afb4-edae18648fe9).
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/af11daf9-edc1-4daf-afb4-edae18648fe9) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Quick start
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+cp .env.example .env   # fill in your Supabase project values
+npm run dev            # http://localhost:8080
 ```
 
-**Edit a file directly in GitHub**
+Full setup and architecture reference: [BOOTSTRAP.md](./BOOTSTRAP.md).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Stack
 
-**Use GitHub Codespaces**
+| Area | Choice |
+| --- | --- |
+| Framework | React 18 + TypeScript + Vite (SWC) |
+| Routing | react-router-dom v6 with lazy-loaded route chunks |
+| UI | Tailwind CSS + shadcn/ui (Radix primitives) + Framer Motion |
+| Data | Supabase (Postgres + Auth + Storage + RLS), TanStack Query |
+| Maps | MapLibre GL + Esri World Street Map tiles + Photon geocoder |
+| Forms | react-hook-form + Zod |
+| Sanitisation | DOMPurify (blog HTML) |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Scripts
 
-## What technologies are used for this project?
+```sh
+npm run dev       # vite dev server (port 8080)
+npm run build     # production build → dist/
+npm run lint      # eslint
+npx tsc --noEmit  # type-check (CI runs this)
+```
 
-This project is built with:
+## Environment
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+See [`.env.example`](./.env.example). The Supabase anon key is a public credential; all security is enforced via RLS.
 
-## How can I deploy this project?
+## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/af11daf9-edc1-4daf-afb4-edae18648fe9) and click on Share -> Publish.
+Pushes to `main` auto-deploy via Lovable. CI (`.github/workflows/ci.yml`) runs lint, type-check, and build on every push and PR.
 
-## Can I connect a custom domain to my Lovable project?
+## Supabase
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Migrations live in `supabase/migrations/`. Apply with `supabase db push` or via the Supabase dashboard. The most recent hardening migration adds CHECK constraints on enquiry tables, an `enquiry_rate_limit_ok()` SECURITY DEFINER function enforced via RLS, and indexes on every filter column the app hits.

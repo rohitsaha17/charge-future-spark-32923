@@ -163,6 +163,39 @@ const BlogPost = () => {
             modifiedTime: blog.updated_at,
             tags: blog.tags || undefined,
           }}
+          // Article JSON-LD makes the post eligible for Google's article
+          // rich result (big image + date). Without it, a blog post gets
+          // treated as a generic WebPage and misses those cards entirely.
+          jsonLd={{
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: blog.title,
+            description: blog.meta_description || blog.excerpt,
+            image: blog.featured_image
+              ? [blog.featured_image]
+              : ["https://apluscharge.in/og-image.png"],
+            datePublished: blog.published_at,
+            dateModified: blog.updated_at || blog.published_at,
+            keywords: blog.tags?.join(", ") || undefined,
+            author: {
+              "@type": "Organization",
+              name: "A Plus Charge",
+              url: "https://apluscharge.in",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "A Plus Charge",
+              url: "https://apluscharge.in",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://apluscharge.in/og-image.png",
+              },
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `https://apluscharge.in/blog/${blog.slug}`,
+            },
+          }}
         />
 
         {/* Decorative background orbs */}
@@ -540,7 +573,7 @@ const BlogPost = () => {
           >
             <img
               src={lightbox}
-              alt=""
+              alt={`${blog.title} – enlarged view`}
               className="max-w-full max-h-full rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />

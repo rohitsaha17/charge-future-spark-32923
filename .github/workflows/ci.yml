@@ -1,0 +1,52 @@
+# CI runs on every push and PR.
+# Goal: catch lint, type errors, and build breakage *before* Lovable's
+# auto-deploy ships the main branch. Kept intentionally cheap (~2 min) so
+# the feedback loop stays tight.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  # Cancel older in-flight runs on the same ref — PRs with rapid pushes
+  # shouldn't pile up queued CI jobs.
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: lint · typecheck · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        # vite doesn't fail the build on TS errors by design; we enforce
+        # here. --noEmit keeps it fast — we only want the diagnostic pass.
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+        env:
+          # Safe public anon key values; real secrets live in Lovable env.
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || 'placeholder' }}
+          VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID || 'placeholder' }}

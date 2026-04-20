@@ -67,6 +67,10 @@
     <link rel="icon" type="image/png" href="/og-image.png">
     <link rel="apple-touch-icon" href="/og-image.png">
 
+    <!-- PWA manifest — lets Android / iOS "Add to Home Screen" launch the
+         site standalone with the brand theme colour and app shortcuts. -->
+    <link rel="manifest" href="/manifest.webmanifest">
+
     <!-- Organization JSON-LD -->
     <script type="application/ld+json">
     {
@@ -93,6 +97,71 @@
         "@type": "ContactPoint",
         "contactType": "customer service",
         "availableLanguage": ["English", "Hindi", "Assamese"]
+      }
+    }
+    </script>
+
+    <!-- LocalBusiness JSON-LD — helps Maps/Search surface the company card
+         with opening hours, phone, and a map pin. Lat/lng is the Guwahati HQ. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "@id": "https://apluscharge.in/#localbusiness",
+      "name": "A Plus Charge",
+      "image": "https://apluscharge.in/og-image.png",
+      "url": "https://apluscharge.in",
+      "telephone": "+91-70990-18180",
+      "email": "info@apluscharge.in",
+      "priceRange": "₹₹",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "23 Rajat Kamal Path, RG Baruah Road",
+        "addressLocality": "Guwahati",
+        "addressRegion": "Assam",
+        "postalCode": "781024",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 26.1445,
+        "longitude": 91.7362
+      },
+      "areaServed": [
+        { "@type": "State", "name": "Assam" },
+        { "@type": "State", "name": "Meghalaya" },
+        { "@type": "State", "name": "Arunachal Pradesh" },
+        { "@type": "State", "name": "Nagaland" },
+        { "@type": "State", "name": "Manipur" },
+        { "@type": "State", "name": "Mizoram" },
+        { "@type": "State", "name": "Tripura" }
+      ],
+      "openingHoursSpecification": [{
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "09:00",
+        "closes": "19:00"
+      }],
+      "sameAs": [
+        "https://www.instagram.com/apluscharge",
+        "https://www.linkedin.com/company/apluscharge",
+        "https://x.com/apluscharge",
+        "https://www.facebook.com/apluscharge"
+      ]
+    }
+    </script>
+
+    <!-- WebSite JSON-LD enables the sitelinks search box in Google results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "A Plus Charge",
+      "url": "https://apluscharge.in",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://apluscharge.in/find-charger?q={search_term_string}",
+        "query-input": "required name=search_term_string"
       }
     }
     </script>

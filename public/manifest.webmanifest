@@ -1,0 +1,50 @@
+{
+  "name": "A Plus Charge — EV Charging Network",
+  "short_name": "A Plus Charge",
+  "description": "Northeast India's largest EV charging network. Find chargers, become a partner, invest.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#2674EC",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["travel", "utilities", "business"],
+  "icons": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/og-image.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Find a Charger",
+      "short_name": "Find",
+      "description": "Map of every A Plus Charge station",
+      "url": "/find-charger",
+      "icons": [{ "src": "/og-image.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Become a Partner",
+      "short_name": "Partner",
+      "description": "Host a charger at your location",
+      "url": "/partner",
+      "icons": [{ "src": "/og-image.png", "sizes": "192x192" }]
+    }
+  ]
+}

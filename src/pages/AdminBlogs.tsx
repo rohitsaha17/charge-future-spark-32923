@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import RichTextEditor from '@/components/RichTextEditor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Edit, Upload, X } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Edit, Upload, X, Loader2 } from 'lucide-react';
 import { z } from 'zod';
 import { uploadImage } from '@/lib/storage';
 import {
@@ -39,6 +39,7 @@ const AdminBlogs = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -79,6 +80,7 @@ const AdminBlogs = () => {
       return;
     }
 
+    setIsAdmin(true);
     fetchBlogs();
   };
 
@@ -220,8 +222,14 @@ const AdminBlogs = () => {
     setPendingDeleteId(null);
   };
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  // Same pre-auth-flash guard we apply to every admin page: wait for the
+  // role check to finish before rendering the CMS UI at all.
+  if (loading || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (

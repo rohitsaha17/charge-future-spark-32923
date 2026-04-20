@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown, Eye, EyeOff, Sparkles, AlertTriangle, Edit2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown, Eye, EyeOff, Sparkles, AlertTriangle, Edit2, Loader2 } from 'lucide-react';
 import { SEED_ROWS, PARTNER_FALLBACKS, TEAM_FALLBACKS, SERVICE_FALLBACKS, DEFAULT_TESTIMONIALS } from '@/lib/siteDefaults';
 
 // Map testimonial name → fallback avatar URL for the list view preview
@@ -66,6 +66,7 @@ const csvToArray = (val: string): string[] =>
 const AdminContent = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [data, setData] = useState<Record<TableName, AnyRow[]>>({
     partners: [],
     statistics: [],
@@ -109,6 +110,7 @@ const AdminContent = () => {
       return;
     }
     await fetchAll();
+    setIsAdmin(true);
     setLoading(false);
   };
 
@@ -207,8 +209,15 @@ const AdminContent = () => {
     refreshOne(table);
   };
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
+  // Don't render the CMS editor shell until we've confirmed admin role.
+  // Stops drafts / half-loaded tables from flashing to an unauth'd visitor
+  // before the redirect fires.
+  if (loading || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (

@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -49,5 +50,12 @@ export default defineConfig(({ mode }) => ({
   // Strip console logs and debugger statements in production for security
   esbuild: {
     drop: mode === "production" ? ["console", "debugger"] : [],
+  },
+  test: {
+    // jsdom because several helpers touch window / localStorage.
+    environment: "jsdom",
+    globals: true,
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    css: false,
   },
 }));

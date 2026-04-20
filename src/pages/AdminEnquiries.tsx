@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, Eye, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { ArrowLeft, Trash2, Eye, CheckCircle, Clock, XCircle, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
@@ -62,6 +62,7 @@ interface InvestorEnquiry {
 const AdminEnquiries = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [partnerEnquiries, setPartnerEnquiries] = useState<PartnerEnquiry[]>([]);
   const [investorEnquiries, setInvestorEnquiries] = useState<InvestorEnquiry[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<PartnerEnquiry | null>(null);
@@ -94,6 +95,7 @@ const AdminEnquiries = () => {
     }
 
     await Promise.all([fetchPartnerEnquiries(), fetchInvestorEnquiries()]);
+    setIsAdmin(true);
     setLoading(false);
   };
 
@@ -177,8 +179,14 @@ const AdminEnquiries = () => {
     }
   };
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  // Guard against pre-auth UI flash: render a spinner until we've confirmed
+  // both that the session loaded and the admin role check passed.
+  if (loading || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (

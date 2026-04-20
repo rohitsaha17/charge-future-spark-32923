@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import VideoIntro from "./components/VideoIntro";
 import LoadingProgressBar from "./components/LoadingProgressBar";
 import PageSkeleton from "./components/PageSkeleton";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home"; // Eager: first-paint critical
 
 // --- Lazy route chunks ------------------------------------------------------
@@ -176,6 +177,7 @@ const AppContent = () => {
     <>
       <LoadingProgressBar isLoading={false} />
       <Navigation />
+      <ErrorBoundary>
       <Suspense fallback={<PageSkeleton />}>
         <Routes location={location}>
           <Route path="/" element={<Home />} />
@@ -197,6 +199,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      </ErrorBoundary>
       <Footer />
     </>
   );
