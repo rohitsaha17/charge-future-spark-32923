@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import SEOHead from "@/components/SEOHead";
 import { Card } from "@/components/ui/card";
-import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation } from "lucide-react";
+import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation, LocateFixed, Loader2 } from "lucide-react";
 import ChargingStationsMap from "@/components/ChargingStationsMap";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 const FindCharger = () => {
   const [selectedStation, setSelectedStation] = useState<string | null>(null);
@@ -14,6 +15,7 @@ const FindCharger = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<"all" | "AC" | "DC">("all");
   const [filterStationType, setFilterStationType] = useState<"all" | "Public" | "Residential">("all");
+  const [locating, setLocating] = useState(false);
   const stationRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
@@ -74,6 +76,70 @@ const FindCharger = () => {
     window.open(url, '_blank');
   };
 
+  // Haversine distance in km
+  const distanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+    const toRad = (v: number) => (v * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  };
+
+  const handleFindNearest = () => {
+    if (!('geolocation' in navigator)) {
+      toast({ title: 'Location not supported', description: 'Your browser does not support geolocation.', variant: 'destructive' });
+      return;
+    }
+    if (stations.length === 0) {
+      toast({ title: 'No stations available', description: 'Please wait for stations to load.', variant: 'destructive' });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        let nearest: any = null;
+        let minDist = Infinity;
+        stations.forEach((s) => {
+          const d = distanceKm(latitude, longitude, s.latitude, s.longitude);
+          if (d < minDist) {
+            minDist = d;
+            nearest = s;
+          }
+        });
+        setLocating(false);
+        if (nearest) {
+          // Clear filters so the nearest station is visible in the list
+          setSearchQuery('');
+          setFilterType('all');
+          setFilterStationType('all');
+          setSelectedStation(nearest.id);
+          toast({
+            title: 'Nearest charger found',
+            description: `${nearest.name} • ${minDist.toFixed(1)} km away`,
+          });
+          // Scroll the list card into view
+          setTimeout(() => {
+            const el = stationRefs.current[nearest.id];
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        toast({
+          title: 'Could not get location',
+          description: err.message || 'Please allow location access and try again.',
+          variant: 'destructive',
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  };
+
   return (
     <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
       <SEOHead
@@ -121,6 +187,28 @@ const FindCharger = () => {
               </Card>
             );
           })}
+        </div>
+
+        {/* Find Nearest Charger CTA */}
+        <div className="flex justify-center mb-6">
+          <Button
+            onClick={handleFindNearest}
+            disabled={locating || stations.length === 0}
+            size="lg"
+            className="gap-2 shadow-glow bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-600"
+          >
+            {locating ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Locating you...
+              </>
+            ) : (
+              <>
+                <LocateFixed className="w-5 h-5" />
+                Find My Nearest Charger
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Search and Filters */}
