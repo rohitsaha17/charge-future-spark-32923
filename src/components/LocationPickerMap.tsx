@@ -127,7 +127,10 @@ const LocationPickerMap = ({
 
     const detachStyleFallback = attachMapStyleFallback(instance);
 
-    instance.addControl(new maplibregl.NavigationControl(), 'top-right');
+    // Bottom-right keeps the +/- buttons clear of both the "Site location
+    // set" banner we overlay at top-3 and the gradient-radial layer that
+    // sits above the default top-right corner.
+    instance.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
     instance.on('load', () => {
       setMapLoaded(true);
@@ -358,7 +361,7 @@ const LocationPickerMap = ({
         </p>
       )}
 
-      <div className={mapBoxClass}>
+      <div className={`location-picker-map ${mapBoxClass}`}>
         <div ref={mapContainer} className="h-full w-full" />
 
         {!mapLoaded && (
@@ -422,6 +425,24 @@ const LocationPickerMap = ({
           </div>
         </div>
       )}
+
+      <style>{`
+        /* The map wrapper stacks a gradient-radial overlay at z-[5] and
+           the "Site location set" banner at z-10, either of which can
+           visually obscure MapLibre's +/- zoom controls. Lift the
+           control container above both so the buttons are always
+           tappable. */
+        .location-picker-map .maplibregl-ctrl-bottom-right,
+        .location-picker-map .maplibregl-ctrl-top-right,
+        .location-picker-map .maplibregl-ctrl-bottom-left,
+        .location-picker-map .maplibregl-ctrl-top-left {
+          z-index: 20;
+        }
+        .location-picker-map .maplibregl-ctrl-group {
+          background: #fff;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+      `}</style>
     </div>
   );
 };

@@ -74,12 +74,6 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
     stations.forEach((station) => {
       const markerElement = createCustomMarker(station);
 
-      // Click → notify parent (FindCharger sync) and open popup
-      markerElement.addEventListener('click', (e) => {
-        e.stopPropagation();
-        onStationSelect?.(station.id);
-      });
-
       const marker = new maplibregl.Marker({
         element: markerElement,
         // Center anchor so the visual icon centre sits exactly on the
@@ -97,6 +91,25 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
           }).setHTML(createPopupContent(station))
         )
         .addTo(map.current!);
+
+      // Click → zoom in + show popup, plus notify parent (FindCharger
+      // uses this to scroll its sidebar list). We zoom here so the Home
+      // map has the same feel as /find-charger even though it has no
+      // parent-controlled sidebar to sync with.
+      markerElement.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (map.current) {
+          map.current.flyTo({
+            center: [station.longitude, station.latitude],
+            zoom: Math.max(map.current.getZoom(), 14),
+            essential: true,
+            duration: 800,
+          });
+        }
+        const popup = marker.getPopup();
+        if (popup && !popup.isOpen()) marker.togglePopup();
+        onStationSelect?.(station.id);
+      });
 
       markers.current.push(marker);
       markerById.current.set(station.id, marker);

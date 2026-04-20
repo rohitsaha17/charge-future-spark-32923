@@ -17,7 +17,7 @@ interface VideoIntroProps {
 //  - On slow connections / save-data, skip straight to the site.
 const LOAD_TIMEOUT_MS = 4000;
 const HARD_MAX_MS = 12000;
-const FADE_LEAD_MS = 1000;   // start fading 1s before the video's natural end
+const FADE_LEAD_MS = 2000;   // start fading 2s before the video's natural end
 const FADE_DURATION_MS = 900; // how long the fade itself lasts
 
 const VideoIntro = ({ onComplete }: VideoIntroProps) => {
