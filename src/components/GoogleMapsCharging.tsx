@@ -83,6 +83,8 @@ const GoogleMapsCharging = ({ onStationSelect, selectedStationId }: GoogleMapsCh
 
   const mapOptions = useMemo<google.maps.MapOptions>(() => ({
     styles: MAP_STYLES,
+    mapTypeId: 'roadmap',
+    backgroundColor: '#f8f9fa',
     disableDefaultUI: false,
     mapTypeControl: false,
     streetViewControl: false,
