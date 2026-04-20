@@ -9,6 +9,20 @@ interface ChargingStationsMapProps {
   selectedStationId?: string | null;
 }
 
+const OSM_LIGHT_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    },
+  },
+  layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+};
+
 const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingStationsMapProps = {}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -23,27 +37,13 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
     fetchStations();
   }, []);
 
-  // Initialize map — clean white-themed OSM Carto Positron style
+  // Initialize map with a reliable white OSM raster style
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
     const mapInstance = new maplibregl.Map({
       container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          'osm-positron': {
-            type: 'raster',
-            tiles: [
-              'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-            ],
-            tileSize: 256,
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          },
-        },
-        layers: [{ id: 'osm-positron', type: 'raster', source: 'osm-positron' }],
-      },
+      style: OSM_LIGHT_STYLE,
       center: [91.7362, 26.1445],
       zoom: 7,
     });
