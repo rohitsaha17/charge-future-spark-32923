@@ -15,6 +15,7 @@ const FindCharger = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<"all" | "AC" | "DC">("all");
   const [filterStationType, setFilterStationType] = useState<"all" | "Public" | "Residential">("all");
+  const [locating, setLocating] = useState(false);
   const stationRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
