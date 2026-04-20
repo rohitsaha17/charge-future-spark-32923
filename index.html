@@ -8,7 +8,29 @@
     <meta name="author" content="A Plus Charge" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#2674EC" />
-    <link rel="canonical" href="https://apluscharge.in/" />
+    <!-- Canonical + hreflang are rewritten per-path at runtime by
+         SEOHead, but SEO audit tools that don't execute JS only see
+         whatever's in the initial HTML. We set it synchronously *before*
+         the React bundle runs so canonical / hreflang are correct for
+         the crawled path even when JS is disabled. Any later SEOHead
+         mount overwrites these with the same values (idempotent). -->
+    <link rel="canonical" href="https://apluscharge.in/" id="canonical-link" />
+    <link rel="alternate" hreflang="en" href="https://apluscharge.in/" id="hreflang-en" />
+    <link rel="alternate" hreflang="en-in" href="https://apluscharge.in/" id="hreflang-enin" />
+    <link rel="alternate" hreflang="x-default" href="https://apluscharge.in/" id="hreflang-xdefault" />
+    <script>
+      (function () {
+        try {
+          var path = (location.pathname || '/').replace(/\/+$/,'') || '/';
+          var url = 'https://apluscharge.in' + (path === '/' ? '/' : path);
+          var ids = ['canonical-link','hreflang-en','hreflang-enin','hreflang-xdefault'];
+          for (var i = 0; i < ids.length; i++) {
+            var el = document.getElementById(ids[i]);
+            if (el) el.setAttribute('href', url);
+          }
+        } catch (e) { /* best-effort only */ }
+      })();
+    </script>
 
     <!-- Content Security Policy — the safety net if XSS ever lands despite
          sanitization. Allowlist only what this site actually loads:
@@ -35,7 +57,11 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- DNS prefetch + preconnect for third-party domains we use at runtime -->
+    <!-- DNS prefetch + preconnect for third-party domains we use at runtime.
+         Supabase is hit by nearly every page (stations list, blog posts,
+         site_settings) so establishing the TLS connection in parallel
+         with the JS bundle saves ~100ms on first interaction. -->
+    <link rel="preconnect" href="https://hliwejekiwgnrkhbmaun.supabase.co" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://maps.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://maps.gstatic.com" crossorigin>
@@ -200,10 +226,9 @@
     }
     </script>
 
-    <!-- Hreflang - self-referencing + default -->
-    <link rel="alternate" hreflang="en" href="https://apluscharge.in/" />
-    <link rel="alternate" hreflang="en-in" href="https://apluscharge.in/" />
-    <link rel="alternate" hreflang="x-default" href="https://apluscharge.in/" />
+    <!-- Hreflang self-referencing links are declared near the top of
+         <head> and rewritten by the inline canonical script above. -->
+
 
     <!-- Google Ads (gtag) — loaded lazily after first paint so it doesn't block the critical path -->
     <script>

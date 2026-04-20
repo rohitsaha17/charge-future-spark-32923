@@ -6,11 +6,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
-import VideoIntro from "./components/VideoIntro";
 import LoadingProgressBar from "./components/LoadingProgressBar";
 import PageSkeleton from "./components/PageSkeleton";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home"; // Eager: first-paint critical
+
+// VideoIntro is only used on the very first `/` visit of a tab. Lazy-load
+// it so the ~190-line component + `<video>` state machine aren't parsed
+// for repeat visitors, deep links, or reduced-motion users.
+const VideoIntro = lazy(() => import("./components/VideoIntro"));
 
 // --- Lazy route chunks ------------------------------------------------------
 // Each is a function we can call on hover/focus to preload the chunk BEFORE
@@ -72,11 +76,17 @@ const pathLoaders: Array<[RegExp, () => Promise<unknown>]> = [
 ];
 
 /** Preload whichever route chunk matches the clicked/hovered href. Run from
- *  a single document-level listener so we don't need to wire it per-link. */
+ *  a single document-level listener so we don't need to wire it per-link.
+ *  Once-per-pathname: calling `loaders.foo()` is already cache-safe, but
+ *  skipping the URL-parse work on repeat mouseovers keeps the event
+ *  handler under 0.5 ms so it can't regress INP. */
+const warmedPaths = new Set<string>();
 const preloadForHref = (href: string) => {
   try {
     const url = new URL(href, window.location.origin);
     if (url.origin !== window.location.origin) return;
+    if (warmedPaths.has(url.pathname)) return;
+    warmedPaths.add(url.pathname);
     const match = pathLoaders.find(([rx]) => rx.test(url.pathname));
     match?.[1]();
   } catch {
@@ -142,25 +152,25 @@ const AppContent = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Preload route chunks on hover/focus. One delegated listener on the
-  // document keeps nav instant-feeling without touching every Link.
+  // Preload route chunks on intent (pointerdown / focus), not on every
+  // mouseover. pointerdown fires ~50-100 ms before the click, which is
+  // enough to start the chunk fetch but avoids the noisy per-frame
+  // mouseover traffic that can contribute to Interaction to Next Paint.
   useEffect(() => {
     const targetHref = (e: Event) => {
-      const el = e.target as HTMLElement;
+      const el = e.target as HTMLElement | null;
       const anchor = el?.closest?.('a[href]') as HTMLAnchorElement | null;
       return anchor?.href || null;
     };
-    const onEnter = (e: Event) => {
+    const onIntent = (e: Event) => {
       const href = targetHref(e);
       if (href) preloadForHref(href);
     };
-    document.addEventListener('mouseover', onEnter, { passive: true });
-    document.addEventListener('touchstart', onEnter, { passive: true });
-    document.addEventListener('focusin', onEnter);
+    document.addEventListener('pointerdown', onIntent, { passive: true, capture: true });
+    document.addEventListener('focusin', onIntent, { capture: true });
     return () => {
-      document.removeEventListener('mouseover', onEnter);
-      document.removeEventListener('touchstart', onEnter);
-      document.removeEventListener('focusin', onEnter);
+      document.removeEventListener('pointerdown', onIntent, true);
+      document.removeEventListener('focusin', onIntent, true);
     };
   }, []);
 
@@ -170,7 +180,11 @@ const AppContent = () => {
   };
 
   if (showIntro) {
-    return <VideoIntro onComplete={handleIntroComplete} />;
+    return (
+      <Suspense fallback={null}>
+        <VideoIntro onComplete={handleIntroComplete} />
+      </Suspense>
+    );
   }
 
   return (
