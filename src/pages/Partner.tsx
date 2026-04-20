@@ -559,7 +559,7 @@ const Partner = () => {
                 Site Location
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Click on the map to mark your proposed charging station location
+                Search like Uber, then drag the map until the center pin sits on your proposed charging station location
               </p>
               <div className="h-[400px] rounded-lg overflow-hidden mb-4">
                 <LocationPickerMap onLocationSelect={handleLocationSelect} />
