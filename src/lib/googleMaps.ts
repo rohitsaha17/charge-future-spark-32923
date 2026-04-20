@@ -46,14 +46,28 @@ export const DEFAULT_CENTER = { lat: 26.1445, lng: 91.7362 };
  * Minimal custom map style — hides POI clutter, keeps roads + transit,
  * softens colours to match the site's blue/cyan palette.
  */
+/**
+ * Clean white-themed roadmap style — minimal, light, no terrain/satellite
+ * imagery. Soft greys for land, white roads, muted blue water.
+ */
 export const MAP_STYLES: google.maps.MapTypeStyle[] = [
-  { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.medical', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.school', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.sports_complex', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.place_of_worship', stylers: [{ visibility: 'off' }] },
-  { featureType: 'transit', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+  { elementType: 'geometry', stylers: [{ color: '#f8f9fa' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#5f6368' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
+  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#dadce0' }] },
+  { featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
+  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f1f3f4' }] },
+  { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#eef0f2' }] },
+  { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#e8f0e6' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#e8eaed' }] },
   { featureType: 'road', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+  { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#dadce0' }] },
+  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d6e8f5' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#7a9bb8' }] },
 ];
 
 /** Build an inline SVG-data-URL marker for charging stations. */
