@@ -57,18 +57,29 @@ const AppContent = () => {
 
   useEffect(() => {
     if ((location.pathname === '/' || location.pathname === '/index') && isInitialLoad) {
-      // Play the intro every time the user lands on the homepage. We only
-      // suppress it for:
-      //  - users who explicitly prefer reduced motion
-      //  - save-data / 2G connections where the 2.6MB video would be abusive
-      // Otherwise the brand video always runs first.
+      // Play the intro once per browser TAB, not once ever and not every
+      // visit.
+      //   • sessionStorage is scoped to the tab, so opening the site in a
+      //     new tab replays the intro (what the user wants).
+      //   • Navigating away and back to / within the same tab skips it
+      //     (sessionStorage persists for the tab's lifetime).
+      //   • Closing the tab and reopening discards sessionStorage, so a
+      //     fresh tab plays the intro again.
+      // Additionally suppress for reduced-motion / save-data / 2G users.
+      const playedThisTab = (() => {
+        try {
+          return sessionStorage.getItem('introPlayed') === '1';
+        } catch {
+          return false;
+        }
+      })();
       const prefersReduced = typeof window.matchMedia === 'function'
         && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const conn = (navigator as any).connection;
       const saveData = conn?.saveData === true;
       const slowNetwork = conn?.effectiveType === '2g' || conn?.effectiveType === 'slow-2g';
 
-      if (!prefersReduced && !saveData && !slowNetwork) {
+      if (!playedThisTab && !prefersReduced && !saveData && !slowNetwork) {
         setShowIntro(true);
       }
       setIsInitialLoad(false);
@@ -87,6 +98,7 @@ const AppContent = () => {
   }, [location, displayLocation]);
 
   const handleIntroComplete = () => {
+    try { sessionStorage.setItem('introPlayed', '1'); } catch { /* storage disabled */ }
     setShowIntro(false);
   };
 
