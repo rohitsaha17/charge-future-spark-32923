@@ -100,7 +100,16 @@ Vitest scaffold with tests for `sanitize`, `antiSpam`, and the Partner ROI calcu
 - **Manual:** `npm run build` → upload `dist/` to any static host (Netlify, Vercel, S3+CloudFront).
 - **CI:** `.github/workflows/ci.yml` runs lint + `tsc --noEmit` + build on every push and PR.
 
-## 9. Security checklist for new features
+## 9. One-time Supabase dashboard settings
+
+These can't be applied via migration — they're project-level auth knobs. Flip them once after the project is provisioned:
+
+1. **Leaked-password protection** — Authentication → Policies → Password security → toggle **Leaked password protection**. Supabase hashes each new password and checks it against the HaveIBeenPwned k-anonymity API before accepting it. [Docs](https://supabase.com/docs/guides/auth/password-security).
+2. **Minimum password length** — same screen, set to 10+ characters.
+3. **Email confirmations** — Authentication → Providers → Email → enable "Confirm email". Keeps signup-then-forget bots from landing in `auth.users` with valid sessions.
+4. **Rate limits** — Authentication → Rate Limits. The defaults are fine for this site's traffic profile; revisit if we ever see credential-stuffing.
+
+## 10. Security checklist for new features
 
 - [ ] New Supabase tables have RLS enabled and explicit policies (no `USING (true)` for anon reads).
 - [ ] Any form accepting text from the public goes through `antiSpam.ts` and has CHECK constraints on the DB.
@@ -108,7 +117,7 @@ Vitest scaffold with tests for `sanitize`, `antiSpam`, and the Partner ROI calcu
 - [ ] New external origins are added to the `connect-src` / `img-src` / `script-src` allowlist in `index.html`.
 - [ ] Service role key is **never** imported into a Vite file (those end up in the bundle).
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 | Symptom | Fix |
 | --- | --- |
