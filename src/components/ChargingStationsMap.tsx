@@ -77,33 +77,35 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
     // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
+    markerById.current.clear();
 
     const bounds = new maplibregl.LngLatBounds();
 
     stations.forEach((station) => {
       const markerElement = createCustomMarker(station);
-      
-      // Add click event to open Google Maps
+
+      // Click → notify parent (FindCharger sync) and open popup
       markerElement.addEventListener('click', (e) => {
         e.stopPropagation();
-        openInGoogleMaps(station.latitude, station.longitude, station.name);
+        onStationSelect?.(station.id);
       });
-      
-      const marker = new maplibregl.Marker({ 
+
+      const marker = new maplibregl.Marker({
         element: markerElement,
-        anchor: 'bottom'
+        anchor: 'bottom',
       })
         .setLngLat([station.longitude, station.latitude])
         .setPopup(
-          new maplibregl.Popup({ 
+          new maplibregl.Popup({
             offset: 25,
             className: 'custom-popup',
-            maxWidth: '320px'
+            maxWidth: '320px',
           }).setHTML(createPopupContent(station))
         )
         .addTo(map.current!);
 
       markers.current.push(marker);
+      markerById.current.set(station.id, marker);
       bounds.extend([station.longitude, station.latitude]);
     });
 
@@ -112,18 +114,35 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
     }
 
     markersAddedRef.current = true;
-  }, [stations, mapLoaded]);
+  }, [stations, mapLoaded, onStationSelect]);
+
+  // Pan + open popup when parent selects a station from the side list
+  useEffect(() => {
+    if (!map.current || !selectedStationId) return;
+    const station = stations.find((s) => s.id === selectedStationId);
+    const marker = markerById.current.get(selectedStationId);
+    if (!station || !marker) return;
+    map.current.flyTo({
+      center: [station.longitude, station.latitude],
+      zoom: Math.max(map.current.getZoom(), 13),
+      essential: true,
+    });
+    marker.togglePopup();
+    // Re-toggle after a brief delay so consecutive selections always open
+    setTimeout(() => {
+      const popup = marker.getPopup();
+      if (popup && !popup.isOpen()) marker.togglePopup();
+    }, 50);
+  }, [selectedStationId, stations]);
 
   const openInGoogleMaps = (lat: number, lng: number, name: string) => {
     // Detect if user is on mobile
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
+
     if (isMobile) {
-      // On mobile, try to open native maps app first, fallback to Google Maps web
       const mapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
       window.open(mapsUrl, '_blank');
     } else {
-      // On desktop, open Google Maps in new tab
       const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(name)}`;
       window.open(googleMapsUrl, '_blank');
     }
