@@ -12,15 +12,46 @@ interface LocationPickerMapProps {
   initialLng?: number;
 }
 
-interface NominatimResult {
+interface SearchSuggestion {
   lat: string;
   lon: string;
   display_name: string;
   place_id: number;
 }
 
-const DEFAULT_CENTER = { lat: 26.1445, lng: 91.7362 }; // Guwahati
+interface PhotonFeature {
+  geometry?: {
+    coordinates?: [number, number];
+  };
+  properties?: {
+    name?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    postcode?: string;
+  };
+}
+
+interface PhotonResponse {
+  features?: PhotonFeature[];
+}
+
+const DEFAULT_CENTER = { lat: 26.1445, lng: 91.7362 };
 const coordsLabel = (lat: number, lng: number) => `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+const OSM_LIGHT_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    },
+  },
+  layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+};
 
 const LocationPickerMap = ({
   onLocationSelect,
@@ -30,10 +61,10 @@ const LocationPickerMap = ({
   const { toast } = useToast();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
-  const marker = useRef<maplibregl.Marker | null>(null);
   const onLocationSelectRef = useRef(onLocationSelect);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
+  const geocodeRequestRef = useRef(0);
 
   const [mapLoaded, setMapLoaded] = useState(false);
   const [selectedLat, setSelectedLat] = useState<number | null>(null);
@@ -41,60 +72,27 @@ const LocationPickerMap = ({
   const [selectedAddress, setSelectedAddress] = useState('');
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
+  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [isDraggingMap, setIsDraggingMap] = useState(false);
 
   useEffect(() => {
     onLocationSelectRef.current = onLocationSelect;
   }, [onLocationSelect]);
 
-  // Init map
-  useEffect(() => {
-    if (!mapContainer.current || map.current) return;
-
-    const m = new maplibregl.Map({
-      container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          'osm-positron': {
-            type: 'raster',
-            tiles: ['https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
-            tileSize: 256,
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          },
-        },
-        layers: [{ id: 'osm-positron', type: 'raster', source: 'osm-positron' }],
-      },
-      center: [initialLng, initialLat],
-      zoom: 12,
-    });
-
-    m.addControl(new maplibregl.NavigationControl(), 'top-right');
-    m.on('load', () => setMapLoaded(true));
-    m.on('click', (e) => {
-      placePin(e.lngLat.lat, e.lngLat.lng);
-    });
-
-    map.current = m;
-
-    return () => {
-      marker.current?.remove();
-      marker.current = null;
-      m.remove();
-      map.current = null;
-      setMapLoaded(false);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const commitLocation = useCallback((lat: number, lng: number, address: string) => {
+    setSelectedLat(lat);
+    setSelectedLng(lng);
+    setSelectedAddress(address);
+    onLocationSelectRef.current(lat, lng, address);
   }, []);
 
   const reverseGeocode = useCallback(async (lat: number, lng: number): Promise<string> => {
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
         { headers: { 'Accept-Language': 'en' } }
       );
       const data = await res.json();
@@ -104,110 +102,137 @@ const LocationPickerMap = ({
     }
   }, []);
 
-  const buildPinElement = useCallback(() => {
-    const el = document.createElement('div');
-    el.innerHTML = `
-      <div style="position:relative;width:36px;height:46px;cursor:grab;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 36 46">
-          <defs>
-            <linearGradient id="pin-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#2674EC"/>
-              <stop offset="100%" stop-color="#00E5FF"/>
-            </linearGradient>
-            <filter id="pin-shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#2674EC" flood-opacity="0.45"/>
-            </filter>
-          </defs>
-          <g filter="url(#pin-shadow)">
-            <path d="M18 1 C9.7 1 3 7.7 3 16 C3 27 18 44 18 44 S33 27 33 16 C33 7.7 26.3 1 18 1 Z"
-                  fill="url(#pin-grad)" stroke="white" stroke-width="2.5"/>
-            <circle cx="18" cy="16" r="5.5" fill="white"/>
-          </g>
-        </svg>
-      </div>
-    `;
-    return el;
-  }, []);
-
-  const placePin = useCallback(
-    async (lat: number, lng: number, precomputedAddress?: string) => {
+  const updateLocationFromCenter = useCallback(
+    async (precomputedAddress?: string) => {
       if (!map.current) return;
-      const immediateAddress = precomputedAddress || coordsLabel(lat, lng);
-      setSelectedLat(lat);
-      setSelectedLng(lng);
-      setSelectedAddress(immediateAddress);
-      onLocationSelectRef.current(lat, lng, immediateAddress);
 
-      // Place / move marker
-      if (!marker.current) {
-        marker.current = new maplibregl.Marker({
-          element: buildPinElement(),
-          anchor: 'bottom',
-          draggable: true,
-        })
-          .setLngLat([lng, lat])
-          .addTo(map.current);
+      const center = map.current.getCenter();
+      const lat = center.lat;
+      const lng = center.lng;
+      const fallbackAddress = precomputedAddress || coordsLabel(lat, lng);
 
-        marker.current.on('dragend', () => {
-          const lngLat = marker.current!.getLngLat();
-          placePin(lngLat.lat, lngLat.lng);
-        });
-      } else {
-        marker.current.setLngLat([lng, lat]);
-      }
+      commitLocation(lat, lng, fallbackAddress);
 
-      if (!precomputedAddress) {
-        setIsGeocoding(true);
-        const addr = await reverseGeocode(lat, lng);
-        setSelectedAddress(addr);
-        onLocationSelectRef.current(lat, lng, addr);
+      if (precomputedAddress) return;
+
+      const requestId = ++geocodeRequestRef.current;
+      setIsGeocoding(true);
+      const address = await reverseGeocode(lat, lng);
+
+      if (geocodeRequestRef.current === requestId) {
+        commitLocation(lat, lng, address);
         setIsGeocoding(false);
       }
     },
-    [buildPinElement, reverseGeocode]
+    [commitLocation, reverseGeocode]
   );
 
-  // Debounced Nominatim search
   useEffect(() => {
-    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    if (!mapContainer.current || map.current) return;
+
+    const instance = new maplibregl.Map({
+      container: mapContainer.current,
+      style: OSM_LIGHT_STYLE,
+      center: [initialLng, initialLat],
+      zoom: 13,
+    });
+
+    instance.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    instance.on('load', () => {
+      setMapLoaded(true);
+      updateLocationFromCenter();
+    });
+
+    instance.on('movestart', () => setIsDraggingMap(true));
+    instance.on('moveend', () => {
+      setIsDraggingMap(false);
+      updateLocationFromCenter();
+    });
+
+    map.current = instance;
+
+    return () => {
+      instance.remove();
+      map.current = null;
+      setMapLoaded(false);
+    };
+  }, [initialLat, initialLng, updateLocationFromCenter]);
+
+  useEffect(() => {
+    if (debounceRef.current) {
+      window.clearTimeout(debounceRef.current);
+    }
+
     if (!searchQuery.trim() || searchQuery.trim().length < 3) {
       setSuggestions([]);
+      setShowSuggestions(false);
       return;
     }
+
     debounceRef.current = window.setTimeout(async () => {
       setIsSearching(true);
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&limit=5&q=${encodeURIComponent(
-            searchQuery
-          )}`,
-          { headers: { 'Accept-Language': 'en' } }
+          `https://photon.komoot.io/api/?limit=6&lang=en&q=${encodeURIComponent(searchQuery)}`
         );
-        const data: NominatimResult[] = await res.json();
-        setSuggestions(data);
+        const data: PhotonResponse = await res.json();
+        const nextSuggestions = (data.features || [])
+          .map((feature, index) => {
+            const coordinates = feature.geometry?.coordinates;
+            if (!coordinates) return null;
+
+            const [lng, lat] = coordinates;
+            const props = feature.properties || {};
+            const displayName = [
+              props.name,
+              props.street,
+              props.city,
+              props.state,
+              props.country,
+              props.postcode,
+            ]
+              .filter(Boolean)
+              .join(', ');
+
+            return {
+              lat: String(lat),
+              lon: String(lng),
+              display_name: displayName || coordsLabel(lat, lng),
+              place_id: Number(`${Date.now()}${index}`),
+            } satisfies SearchSuggestion;
+          })
+          .filter((item): item is SearchSuggestion => item !== null);
+
+        setSuggestions(nextSuggestions);
         setShowSuggestions(true);
       } catch {
         setSuggestions([]);
+        setShowSuggestions(true);
       } finally {
         setIsSearching(false);
       }
-    }, 400);
+    }, 350);
+
     return () => {
-      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+      if (debounceRef.current) {
+        window.clearTimeout(debounceRef.current);
+      }
     };
   }, [searchQuery]);
 
   const handleSelectSuggestion = useCallback(
-    (s: NominatimResult) => {
-      const lat = parseFloat(s.lat);
-      const lng = parseFloat(s.lon);
+    (suggestion: SearchSuggestion) => {
+      const lat = parseFloat(suggestion.lat);
+      const lng = parseFloat(suggestion.lon);
+
       map.current?.flyTo({ center: [lng, lat], zoom: 16, essential: true });
-      placePin(lat, lng, s.display_name);
-      setSearchQuery(s.display_name.split(',')[0]);
+      commitLocation(lat, lng, suggestion.display_name);
+      setSearchQuery(suggestion.display_name.split(',')[0]);
       setShowSuggestions(false);
       setSuggestions([]);
     },
-    [placePin]
+    [commitLocation]
   );
 
   const useMyLocation = useCallback(() => {
@@ -219,35 +244,34 @@ const LocationPickerMap = ({
       });
       return;
     }
+
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
         map.current?.flyTo({ center: [longitude, latitude], zoom: 17, essential: true });
-        placePin(latitude, longitude);
+        commitLocation(latitude, longitude, coordsLabel(latitude, longitude));
         setIsLocating(false);
       },
       (err) => {
         setIsLocating(false);
         toast({
           title: 'Could not get your location',
-          description: err.message || 'Tap the map to select it manually.',
+          description: err.message || 'Search for a place or drag the map manually.',
           variant: 'destructive',
         });
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
-  }, [placePin, toast]);
+  }, [commitLocation, toast]);
 
   const clearSelection = useCallback(() => {
-    marker.current?.remove();
-    marker.current = null;
-    setSelectedLat(null);
-    setSelectedLng(null);
-    setSelectedAddress('');
     setSearchQuery('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+    map.current?.flyTo({ center: [initialLng, initialLat], zoom: 13, essential: true });
     searchInputRef.current?.focus();
-  }, []);
+  }, [initialLat, initialLng]);
 
   const hasSelection = selectedLat !== null && selectedLng !== null;
   const mapBoxClass =
@@ -255,135 +279,154 @@ const LocationPickerMap = ({
 
   return (
     <div className="space-y-3">
-      {/* Search + use-my-location */}
       <div className="relative">
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+            <div className="absolute left-3 top-1/2 z-10 -translate-y-1/2 pointer-events-none">
               {isSearching ? (
-                <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               ) : (
-                <Search className="w-5 h-5 text-muted-foreground" />
+                <Search className="h-5 w-5 text-muted-foreground" />
               )}
             </div>
+
             <Input
               ref={searchInputRef}
               type="text"
-              placeholder="Search an address or place…"
+              placeholder="Search a landmark, address, or area"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className="pl-11 pr-10 h-12 text-base rounded-xl border-2 border-primary/20 focus-visible:border-primary shadow-sm"
+              onBlur={() => window.setTimeout(() => setShowSuggestions(false), 200)}
+              className="h-12 rounded-xl border-2 border-primary/20 pl-11 pr-10 text-base shadow-sm focus-visible:border-primary"
               aria-label="Search location"
             />
+
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => {
                   setSearchQuery('');
                   setSuggestions([]);
+                  setShowSuggestions(false);
                   searchInputRef.current?.focus();
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+                className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
                 aria-label="Clear search"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             )}
 
-            {/* Suggestions dropdown */}
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-background border-2 border-primary/20 rounded-xl shadow-lg overflow-hidden z-20 max-h-64 overflow-y-auto">
-                {suggestions.map((s) => (
-                  <button
-                    key={s.place_id}
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => handleSelectSuggestion(s)}
-                    className="w-full text-left px-4 py-2.5 hover:bg-primary/5 border-b border-border last:border-b-0 transition-colors flex items-start gap-2"
-                  >
-                    <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-foreground line-clamp-2">{s.display_name}</span>
-                  </button>
-                ))}
+            {showSuggestions && (
+              <div className="absolute left-0 right-0 top-full z-20 mt-1 overflow-hidden rounded-xl border-2 border-primary/20 bg-popover shadow-lg">
+                {suggestions.length > 0 ? (
+                  <div className="max-h-64 overflow-y-auto">
+                    {suggestions.map((suggestion) => (
+                      <button
+                        key={suggestion.place_id}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSelectSuggestion(suggestion)}
+                        className="flex w-full items-start gap-2 border-b border-border px-4 py-2.5 text-left transition-colors last:border-b-0 hover:bg-primary/5"
+                      >
+                        <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                        <span className="line-clamp-2 text-sm text-foreground">{suggestion.display_name}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-4 py-3 text-sm text-muted-foreground">No locations found. Try a nearby landmark or area.</div>
+                )}
               </div>
             )}
           </div>
+
           <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={useMyLocation}
             disabled={isLocating}
-            className="h-12 w-12 rounded-xl border-2 border-primary/20 hover:border-primary shadow-sm shrink-0"
+            className="h-12 w-12 shrink-0 rounded-xl border-2 border-primary/20 shadow-sm hover:border-primary"
             title="Use my current location"
             aria-label="Use my current location"
           >
             {isLocating ? (
-              <Loader2 className="w-5 h-5 animate-spin text-primary" />
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
             ) : (
-              <Crosshair className="w-5 h-5 text-primary" />
+              <Crosshair className="h-5 w-5 text-primary" />
             )}
           </Button>
         </div>
       </div>
 
-      {!hasSelection && mapLoaded && (
-        <p className="text-xs text-muted-foreground px-1">
-          Start typing above for suggestions, use{' '}
-          <Crosshair className="inline w-3 h-3" /> for your current location, or tap the map to drop a pin.
-          Drag the pin to fine-tune.
+      {mapLoaded && (
+        <p className="px-1 text-xs text-muted-foreground">
+          Search above or use <Crosshair className="inline h-3 w-3" /> for your location, then drag the map under the center pin to place your site exactly.
         </p>
       )}
 
-      {/* Map */}
       <div className={mapBoxClass}>
-        <div ref={mapContainer} className="w-full h-full" />
+        <div ref={mapContainer} className="h-full w-full" />
 
         {!mapLoaded && (
           <div className="absolute inset-0 flex items-center justify-center bg-muted">
-            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
         )}
 
-        {hasSelection && (
-          <div className="absolute top-3 left-3 right-3 z-10 bg-background rounded-xl shadow-lg border border-primary/20 px-3 py-2 flex items-center gap-2 pointer-events-none">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Check className="w-4 h-4 text-primary" />
+        <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-radial opacity-70" />
+
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          <div
+            className={`relative transition-transform duration-200 ${isDraggingMap ? '-translate-y-8' : '-translate-y-5'}`}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-primary/20 bg-background/95 shadow-elegant backdrop-blur-sm">
+              <MapPin className="h-6 w-6 text-primary" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground leading-tight flex items-center gap-1.5">
+            <div className="mx-auto -mt-1 h-4 w-4 rotate-45 border-b border-r border-primary/20 bg-background/95 shadow-sm" />
+            <div className="absolute left-1/2 top-[3.55rem] h-4 w-4 -translate-x-1/2 rounded-full border border-primary/20 bg-background/95 shadow-sm" />
+          </div>
+        </div>
+
+        {hasSelection && (
+          <div className="pointer-events-none absolute left-3 right-3 top-3 z-10 flex items-center gap-2 rounded-xl border border-primary/20 bg-background px-3 py-2 shadow-lg">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <Check className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="flex items-center gap-1.5 text-xs font-semibold leading-tight text-foreground">
                 Site location set
-                {isGeocoding && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+                {isGeocoding && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
               </p>
-              <p className="text-xs text-muted-foreground line-clamp-1">{selectedAddress}</p>
+              <p className="line-clamp-1 text-xs text-muted-foreground">{selectedAddress}</p>
             </div>
           </div>
         )}
       </div>
 
       {hasSelection && (
-        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
-              <MapPin className="w-5 h-5 text-primary-foreground" />
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 shadow-md">
+              <MapPin className="h-5 w-5 text-primary" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm text-foreground">Selected site location</p>
-              <p className="text-sm text-foreground/80 mt-0.5 break-words">{selectedAddress}</p>
-              <p className="text-[11px] text-muted-foreground mt-1 font-mono">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-foreground">Selected site location</p>
+              <p className="mt-0.5 break-words text-sm text-foreground/80">{selectedAddress}</p>
+              <p className="mt-1 font-mono text-[11px] text-muted-foreground">
                 {coordsLabel(selectedLat!, selectedLng!)}
               </p>
             </div>
             <button
               type="button"
               onClick={clearSelection}
-              className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
-              aria-label="Clear selected location"
+              className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-destructive"
+              aria-label="Reset selected location"
             >
-              <X className="w-3 h-3" />
-              Change
+              <X className="h-3 w-3" />
+              Reset
             </button>
           </div>
         </div>
