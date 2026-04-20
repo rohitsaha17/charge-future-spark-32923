@@ -4,10 +4,16 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabase } from '@/integrations/supabase/client';
 import { Zap, MapPin, BatteryCharging } from 'lucide-react';
 
-const ChargingStationsMap = () => {
+interface ChargingStationsMapProps {
+  onStationSelect?: (stationId: string) => void;
+  selectedStationId?: string | null;
+}
+
+const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingStationsMapProps = {}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const markers = useRef<maplibregl.Marker[]>([]);
+  const markerById = useRef<Map<string, maplibregl.Marker>>(new Map());
   const [stations, setStations] = useState<any[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const markersAddedRef = useRef(false);
@@ -17,16 +23,29 @@ const ChargingStationsMap = () => {
     fetchStations();
   }, []);
 
-  // Initialize map
+  // Initialize map — clean white-themed OSM Carto Positron style
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
     const mapInstance = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://demotiles.maplibre.org/style.json',
+      style: {
+        version: 8,
+        sources: {
+          'osm-positron': {
+            type: 'raster',
+            tiles: [
+              'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+            ],
+            tileSize: 256,
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          },
+        },
+        layers: [{ id: 'osm-positron', type: 'raster', source: 'osm-positron' }],
+      },
       center: [91.7362, 26.1445],
       zoom: 7,
-      pitch: 45,
     });
 
     mapInstance.addControl(new maplibregl.NavigationControl(), 'top-right');
@@ -40,6 +59,7 @@ const ChargingStationsMap = () => {
     return () => {
       markers.current.forEach(marker => marker.remove());
       markers.current = [];
+      markerById.current.clear();
       map.current?.remove();
       map.current = null;
       setMapLoaded(false);
