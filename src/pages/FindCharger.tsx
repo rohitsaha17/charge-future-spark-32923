@@ -76,6 +76,70 @@ const FindCharger = () => {
     window.open(url, '_blank');
   };
 
+  // Haversine distance in km
+  const distanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+    const toRad = (v: number) => (v * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  };
+
+  const handleFindNearest = () => {
+    if (!('geolocation' in navigator)) {
+      toast({ title: 'Location not supported', description: 'Your browser does not support geolocation.', variant: 'destructive' });
+      return;
+    }
+    if (stations.length === 0) {
+      toast({ title: 'No stations available', description: 'Please wait for stations to load.', variant: 'destructive' });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        let nearest: any = null;
+        let minDist = Infinity;
+        stations.forEach((s) => {
+          const d = distanceKm(latitude, longitude, s.latitude, s.longitude);
+          if (d < minDist) {
+            minDist = d;
+            nearest = s;
+          }
+        });
+        setLocating(false);
+        if (nearest) {
+          // Clear filters so the nearest station is visible in the list
+          setSearchQuery('');
+          setFilterType('all');
+          setFilterStationType('all');
+          setSelectedStation(nearest.id);
+          toast({
+            title: 'Nearest charger found',
+            description: `${nearest.name} • ${minDist.toFixed(1)} km away`,
+          });
+          // Scroll the list card into view
+          setTimeout(() => {
+            const el = stationRefs.current[nearest.id];
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        toast({
+          title: 'Could not get location',
+          description: err.message || 'Please allow location access and try again.',
+          variant: 'destructive',
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  };
+
   return (
     <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
       <SEOHead
