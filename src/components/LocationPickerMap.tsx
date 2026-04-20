@@ -1,15 +1,10 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { GoogleMap, Marker, Autocomplete } from '@react-google-maps/api';
-import { MapPin, Search, Loader2, Crosshair, X, Check, AlertTriangle } from 'lucide-react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { MapPin, Search, Loader2, Crosshair, X, Check } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
-import {
-  useGoogleMapsApi,
-  DEFAULT_CENTER,
-  MAP_STYLES,
-  buildPinIcon,
-} from '@/lib/googleMaps';
 
 interface LocationPickerMapProps {
   onLocationSelect: (lat: number, lng: number, address?: string) => void;
@@ -17,108 +12,203 @@ interface LocationPickerMapProps {
   initialLng?: number;
 }
 
+interface NominatimResult {
+  lat: string;
+  lon: string;
+  display_name: string;
+  place_id: number;
+}
+
+const DEFAULT_CENTER = { lat: 26.1445, lng: 91.7362 }; // Guwahati
 const coordsLabel = (lat: number, lng: number) => `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-const containerStyle = { width: '100%', height: '100%' };
 
 const LocationPickerMap = ({
   onLocationSelect,
   initialLat = DEFAULT_CENTER.lat,
   initialLng = DEFAULT_CENTER.lng,
 }: LocationPickerMapProps) => {
-  const { isLoaded, loadError, hasKey } = useGoogleMapsApi();
   const { toast } = useToast();
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<maplibregl.Map | null>(null);
+  const marker = useRef<maplibregl.Marker | null>(null);
+  const onLocationSelectRef = useRef(onLocationSelect);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<number | null>(null);
 
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
-  const geocoderRef = useRef<google.maps.Geocoder | null>(null);
-
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [selectedLat, setSelectedLat] = useState<number | null>(null);
   const [selectedLng, setSelectedLng] = useState<number | null>(null);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const onLocationSelectRef = useRef(onLocationSelect);
 
   useEffect(() => {
     onLocationSelectRef.current = onLocationSelect;
   }, [onLocationSelect]);
 
+  // Init map
   useEffect(() => {
-    if (isLoaded && !geocoderRef.current && typeof google !== 'undefined') {
-      geocoderRef.current = new google.maps.Geocoder();
-    }
-  }, [isLoaded]);
+    if (!mapContainer.current || map.current) return;
 
-  const markerIcon = useMemo(() => (isLoaded ? buildPinIcon() : undefined), [isLoaded]);
-
-  const mapOptions = useMemo<google.maps.MapOptions>(() => ({
-    styles: MAP_STYLES,
-    disableDefaultUI: false,
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: false,
-    zoomControl: true,
-    clickableIcons: false,
-    gestureHandling: 'greedy',
-  }), []);
-
-  const reverseGeocode = useCallback((lat: number, lng: number): Promise<string> => {
-    const fallback = coordsLabel(lat, lng);
-    return new Promise((resolve) => {
-      if (!geocoderRef.current) return resolve(fallback);
-      geocoderRef.current.geocode({ location: { lat, lng } }, (results, status) => {
-        if (status === 'OK' && results && results[0]) {
-          resolve(results[0].formatted_address || fallback);
-        } else {
-          resolve(fallback);
-        }
-      });
+    const m = new maplibregl.Map({
+      container: mapContainer.current,
+      style: {
+        version: 8,
+        sources: {
+          'osm-positron': {
+            type: 'raster',
+            tiles: ['https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          },
+        },
+        layers: [{ id: 'osm-positron', type: 'raster', source: 'osm-positron' }],
+      },
+      center: [initialLng, initialLat],
+      zoom: 12,
     });
+
+    m.addControl(new maplibregl.NavigationControl(), 'top-right');
+    m.on('load', () => setMapLoaded(true));
+    m.on('click', (e) => {
+      placePin(e.lngLat.lat, e.lngLat.lng);
+    });
+
+    map.current = m;
+
+    return () => {
+      marker.current?.remove();
+      marker.current = null;
+      m.remove();
+      map.current = null;
+      setMapLoaded(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const reverseGeocode = useCallback(async (lat: number, lng: number): Promise<string> => {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+      return data.display_name || coordsLabel(lat, lng);
+    } catch {
+      return coordsLabel(lat, lng);
+    }
+  }, []);
+
+  const buildPinElement = useCallback(() => {
+    const el = document.createElement('div');
+    el.innerHTML = `
+      <div style="position:relative;width:36px;height:46px;cursor:grab;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 36 46">
+          <defs>
+            <linearGradient id="pin-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2674EC"/>
+              <stop offset="100%" stop-color="#00E5FF"/>
+            </linearGradient>
+            <filter id="pin-shadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#2674EC" flood-opacity="0.45"/>
+            </filter>
+          </defs>
+          <g filter="url(#pin-shadow)">
+            <path d="M18 1 C9.7 1 3 7.7 3 16 C3 27 18 44 18 44 S33 27 33 16 C33 7.7 26.3 1 18 1 Z"
+                  fill="url(#pin-grad)" stroke="white" stroke-width="2.5"/>
+            <circle cx="18" cy="16" r="5.5" fill="white"/>
+          </g>
+        </svg>
+      </div>
+    `;
+    return el;
   }, []);
 
   const placePin = useCallback(
-    (lat: number, lng: number, precomputedAddress?: string) => {
+    async (lat: number, lng: number, precomputedAddress?: string) => {
+      if (!map.current) return;
       const immediateAddress = precomputedAddress || coordsLabel(lat, lng);
       setSelectedLat(lat);
       setSelectedLng(lng);
       setSelectedAddress(immediateAddress);
       onLocationSelectRef.current(lat, lng, immediateAddress);
 
+      // Place / move marker
+      if (!marker.current) {
+        marker.current = new maplibregl.Marker({
+          element: buildPinElement(),
+          anchor: 'bottom',
+          draggable: true,
+        })
+          .setLngLat([lng, lat])
+          .addTo(map.current);
+
+        marker.current.on('dragend', () => {
+          const lngLat = marker.current!.getLngLat();
+          placePin(lngLat.lat, lngLat.lng);
+        });
+      } else {
+        marker.current.setLngLat([lng, lat]);
+      }
+
       if (!precomputedAddress) {
         setIsGeocoding(true);
-        reverseGeocode(lat, lng)
-          .then((addr) => {
-            setSelectedAddress(addr);
-            onLocationSelectRef.current(lat, lng, addr);
-          })
-          .finally(() => setIsGeocoding(false));
+        const addr = await reverseGeocode(lat, lng);
+        setSelectedAddress(addr);
+        onLocationSelectRef.current(lat, lng, addr);
+        setIsGeocoding(false);
       }
     },
-    [reverseGeocode]
+    [buildPinElement, reverseGeocode]
   );
 
-  const handlePlaceChanged = useCallback(() => {
-    if (!autocomplete) return;
-    const place = autocomplete.getPlace();
-    if (!place.geometry?.location) {
-      toast({
-        title: 'No match found',
-        description: 'Try a different address or tap the map.',
-        variant: 'default',
-      });
+  // Debounced Nominatim search
+  useEffect(() => {
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    if (!searchQuery.trim() || searchQuery.trim().length < 3) {
+      setSuggestions([]);
       return;
     }
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    const address = place.formatted_address || place.name || coordsLabel(lat, lng);
+    debounceRef.current = window.setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&limit=5&q=${encodeURIComponent(
+            searchQuery
+          )}`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data: NominatimResult[] = await res.json();
+        setSuggestions(data);
+        setShowSuggestions(true);
+      } catch {
+        setSuggestions([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    };
+  }, [searchQuery]);
 
-    map?.panTo({ lat, lng });
-    map?.setZoom(16);
-    placePin(lat, lng, address);
-    setSearchQuery(place.name || address.split(',')[0]);
-  }, [autocomplete, map, placePin, toast]);
+  const handleSelectSuggestion = useCallback(
+    (s: NominatimResult) => {
+      const lat = parseFloat(s.lat);
+      const lng = parseFloat(s.lon);
+      map.current?.flyTo({ center: [lng, lat], zoom: 16, essential: true });
+      placePin(lat, lng, s.display_name);
+      setSearchQuery(s.display_name.split(',')[0]);
+      setShowSuggestions(false);
+      setSuggestions([]);
+    },
+    [placePin]
+  );
 
   const useMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -133,8 +223,7 @@ const LocationPickerMap = ({
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        map?.panTo({ lat: latitude, lng: longitude });
-        map?.setZoom(17);
+        map.current?.flyTo({ center: [longitude, latitude], zoom: 17, essential: true });
         placePin(latitude, longitude);
         setIsLocating(false);
       },
@@ -148,9 +237,11 @@ const LocationPickerMap = ({
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
-  }, [map, placePin, toast]);
+  }, [placePin, toast]);
 
   const clearSelection = useCallback(() => {
+    marker.current?.remove();
+    marker.current = null;
     setSelectedLat(null);
     setSelectedLng(null);
     setSelectedAddress('');
@@ -162,36 +253,6 @@ const LocationPickerMap = ({
   const mapBoxClass =
     'relative w-full h-[340px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden border-2 border-primary/10 shadow-elegant bg-muted';
 
-  if (loadError) {
-    return (
-      <div className={`${mapBoxClass} flex items-center justify-center p-6 text-center`}>
-        <div>
-          <AlertTriangle className="w-8 h-8 text-destructive mx-auto mb-3" />
-          <p className="font-semibold text-foreground">Map failed to load</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Check your Google Maps API key and domain restrictions.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!hasKey) {
-    return (
-      <div className={`${mapBoxClass} flex items-center justify-center p-6 text-center`}>
-        <div>
-          <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-3" />
-          <p className="font-semibold text-foreground">Google Maps not configured</p>
-          <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-            Set <code className="bg-muted px-1.5 py-0.5 rounded text-xs">VITE_GOOGLE_MAPS_API_KEY</code>{' '}
-            in your hosting platform's environment variables. Enable Maps JavaScript API, Places API,
-            and Geocoding API in Google Cloud Console.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-3">
       {/* Search + use-my-location */}
@@ -199,39 +260,29 @@ const LocationPickerMap = ({
         <div className="flex gap-2">
           <div className="relative flex-1">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-              <Search className="w-5 h-5 text-muted-foreground" />
+              {isSearching ? (
+                <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+              ) : (
+                <Search className="w-5 h-5 text-muted-foreground" />
+              )}
             </div>
-            {isLoaded ? (
-              <Autocomplete
-                onLoad={setAutocomplete}
-                onPlaceChanged={handlePlaceChanged}
-                options={{
-                  componentRestrictions: { country: 'in' },
-                  fields: ['geometry', 'formatted_address', 'name'],
-                }}
-              >
-                <Input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search an address or place…"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 pr-10 h-12 text-base rounded-xl border-2 border-primary/20 focus-visible:border-primary shadow-sm"
-                  aria-label="Search location"
-                />
-              </Autocomplete>
-            ) : (
-              <Input
-                placeholder="Loading map…"
-                disabled
-                className="pl-11 pr-10 h-12 text-base rounded-xl border-2 border-primary/20 shadow-sm"
-              />
-            )}
+            <Input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search an address or place…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              className="pl-11 pr-10 h-12 text-base rounded-xl border-2 border-primary/20 focus-visible:border-primary shadow-sm"
+              aria-label="Search location"
+            />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => {
                   setSearchQuery('');
+                  setSuggestions([]);
                   searchInputRef.current?.focus();
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
@@ -240,13 +291,31 @@ const LocationPickerMap = ({
                 <X className="w-4 h-4" />
               </button>
             )}
+
+            {/* Suggestions dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-background border-2 border-primary/20 rounded-xl shadow-lg overflow-hidden z-20 max-h-64 overflow-y-auto">
+                {suggestions.map((s) => (
+                  <button
+                    key={s.place_id}
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => handleSelectSuggestion(s)}
+                    className="w-full text-left px-4 py-2.5 hover:bg-primary/5 border-b border-border last:border-b-0 transition-colors flex items-start gap-2"
+                  >
+                    <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-foreground line-clamp-2">{s.display_name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={useMyLocation}
-            disabled={!isLoaded || isLocating}
+            disabled={isLocating}
             className="h-12 w-12 rounded-xl border-2 border-primary/20 hover:border-primary shadow-sm shrink-0"
             title="Use my current location"
             aria-label="Use my current location"
@@ -260,7 +329,7 @@ const LocationPickerMap = ({
         </div>
       </div>
 
-      {!hasSelection && isLoaded && (
+      {!hasSelection && mapLoaded && (
         <p className="text-xs text-muted-foreground px-1">
           Start typing above for suggestions, use{' '}
           <Crosshair className="inline w-3 h-3" /> for your current location, or tap the map to drop a pin.
@@ -270,40 +339,16 @@ const LocationPickerMap = ({
 
       {/* Map */}
       <div className={mapBoxClass}>
-        {!isLoaded ? (
-          <div className="w-full h-full flex items-center justify-center">
+        <div ref={mapContainer} className="w-full h-full" />
+
+        {!mapLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : (
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={{ lat: initialLat, lng: initialLng }}
-            zoom={12}
-            options={mapOptions}
-            onLoad={setMap}
-            onUnmount={() => setMap(null)}
-            onClick={(e) => {
-              if (!e.latLng) return;
-              placePin(e.latLng.lat(), e.latLng.lng());
-            }}
-          >
-            {hasSelection && markerIcon && (
-              <Marker
-                position={{ lat: selectedLat!, lng: selectedLng! }}
-                draggable
-                icon={markerIcon}
-                animation={google.maps.Animation.DROP}
-                onDragEnd={(e) => {
-                  if (!e.latLng) return;
-                  placePin(e.latLng.lat(), e.latLng.lng());
-                }}
-              />
-            )}
-          </GoogleMap>
         )}
 
         {hasSelection && (
-          <div className="absolute top-3 left-3 right-3 z-10 bg-white rounded-xl shadow-lg border border-primary/20 px-3 py-2 flex items-center gap-2 pointer-events-none">
+          <div className="absolute top-3 left-3 right-3 z-10 bg-background rounded-xl shadow-lg border border-primary/20 px-3 py-2 flex items-center gap-2 pointer-events-none">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               <Check className="w-4 h-4 text-primary" />
             </div>
@@ -322,7 +367,7 @@ const LocationPickerMap = ({
         <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
-              <MapPin className="w-5 h-5 text-white" />
+              <MapPin className="w-5 h-5 text-primary-foreground" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-foreground">Selected site location</p>
