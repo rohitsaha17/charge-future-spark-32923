@@ -82,7 +82,11 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
 
       const marker = new maplibregl.Marker({
         element: markerElement,
-        anchor: 'bottom',
+        // Center anchor so the visual icon centre sits exactly on the
+        // coordinate. (Using 'bottom' made the coord align to the bottom
+        // edge of the 48×48 container, offsetting the perceived pinpoint
+        // by ~24px.)
+        anchor: 'center',
       })
         .setLngLat([station.longitude, station.latitude])
         .setPopup(
@@ -242,16 +246,18 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
         .maplibregl-canvas {
           outline: none;
         }
+        /* IMPORTANT: no transform or transition rules on .custom-marker.
+           MapLibre owns its transform and updates it every zoom/pan frame
+           to keep the marker anchored to its geographic coordinate. A
+           transition there makes it lag behind the map by ~300ms, and
+           any transform scale on hover overwrites the positioning
+           transform entirely and slams the marker to (0,0). All hover +
+           animation effects live on the inner .marker-container instead. */
         .custom-marker {
           cursor: pointer;
-          transition: transform 0.3s ease;
+          will-change: auto;
         }
-        
-        .custom-marker:hover {
-          transform: scale(1.15);
-          z-index: 10;
-        }
-        
+
         .marker-container {
           position: relative;
           width: 48px;
@@ -259,6 +265,12 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: transform 0.2s ease;
+        }
+
+        .custom-marker:hover .marker-container {
+          transform: scale(1.15);
+          z-index: 10;
         }
         
         .marker-pulse {
