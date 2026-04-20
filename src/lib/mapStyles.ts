@@ -1,6 +1,22 @@
 import type { Map as MapLibreMap, StyleSpecification } from 'maplibre-gl';
 
-const CARTO_VOYAGER_STYLE: StyleSpecification = {
+const ESRI_WORLD_STREET_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    raster: {
+      type: 'raster',
+      tiles: [
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+      attribution:
+        'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
+    },
+  },
+  layers: [{ id: 'raster', type: 'raster', source: 'raster' }],
+};
+
+const CARTO_VOYAGER_FALLBACK_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     raster: {
@@ -19,23 +35,7 @@ const CARTO_VOYAGER_STYLE: StyleSpecification = {
   layers: [{ id: 'raster', type: 'raster', source: 'raster' }],
 };
 
-const ESRI_FALLBACK_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    raster: {
-      type: 'raster',
-      tiles: [
-        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-      ],
-      tileSize: 256,
-      attribution:
-        'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
-    },
-  },
-  layers: [{ id: 'raster', type: 'raster', source: 'raster' }],
-};
-
-export const SHARED_RASTER_MAP_STYLE = CARTO_VOYAGER_STYLE;
+export const SHARED_RASTER_MAP_STYLE = ESRI_WORLD_STREET_STYLE;
 
 const getErrorMessage = (error: unknown) => {
   if (typeof error === 'object' && error && 'message' in error) {
@@ -63,7 +63,7 @@ export const attachMapStyleFallback = (map: MapLibreMap) => {
     const bearing = map.getBearing();
     const pitch = map.getPitch();
 
-    map.setStyle(ESRI_FALLBACK_STYLE);
+    map.setStyle(CARTO_VOYAGER_FALLBACK_STYLE);
     map.once('styledata', () => {
       map.jumpTo({ center, zoom, bearing, pitch });
     });

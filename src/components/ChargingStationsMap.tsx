@@ -2,31 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabase } from '@/integrations/supabase/client';
+import { attachMapStyleFallback, SHARED_RASTER_MAP_STYLE } from '@/lib/mapStyles';
 import { Zap, MapPin, BatteryCharging } from 'lucide-react';
 
 interface ChargingStationsMapProps {
   onStationSelect?: (stationId: string) => void;
   selectedStationId?: string | null;
 }
-
-const OSM_LIGHT_STYLE: maplibregl.StyleSpecification = {
-  version: 8,
-  sources: {
-    osm: {
-      type: 'raster',
-      tiles: [
-        'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-      ],
-      tileSize: 256,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    },
-  },
-  layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
-};
 
 const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingStationsMapProps = {}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -48,10 +30,12 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
 
     const mapInstance = new maplibregl.Map({
       container: mapContainer.current,
-      style: OSM_LIGHT_STYLE,
+      style: SHARED_RASTER_MAP_STYLE,
       center: [91.7362, 26.1445],
       zoom: 7,
     });
+
+    const detachStyleFallback = attachMapStyleFallback(mapInstance);
 
     mapInstance.addControl(new maplibregl.NavigationControl(), 'top-right');
 
@@ -62,6 +46,7 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
     map.current = mapInstance;
 
     return () => {
+      detachStyleFallback();
       markers.current.forEach(marker => marker.remove());
       markers.current = [];
       markerById.current.clear();

@@ -5,6 +5,7 @@ import { MapPin, Search, Loader2, Crosshair, X, Check } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { attachMapStyleFallback, SHARED_RASTER_MAP_STYLE } from '@/lib/mapStyles';
 
 interface LocationPickerMapProps {
   onLocationSelect: (lat: number, lng: number, address?: string) => void;
@@ -39,24 +40,6 @@ interface PhotonResponse {
 
 const DEFAULT_CENTER = { lat: 26.1445, lng: 91.7362 };
 const coordsLabel = (lat: number, lng: number) => `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-const OSM_LIGHT_STYLE: maplibregl.StyleSpecification = {
-  version: 8,
-  sources: {
-    osm: {
-      type: 'raster',
-      tiles: [
-        'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-      ],
-      tileSize: 256,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    },
-  },
-  layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
-};
 
 const LocationPickerMap = ({
   onLocationSelect,
@@ -137,10 +120,12 @@ const LocationPickerMap = ({
 
     const instance = new maplibregl.Map({
       container: mapContainer.current,
-      style: OSM_LIGHT_STYLE,
+      style: SHARED_RASTER_MAP_STYLE,
       center: [initialLng, initialLat],
       zoom: 13,
     });
+
+    const detachStyleFallback = attachMapStyleFallback(instance);
 
     instance.addControl(new maplibregl.NavigationControl(), 'top-right');
 
@@ -158,6 +143,7 @@ const LocationPickerMap = ({
     map.current = instance;
 
     return () => {
+      detachStyleFallback();
       instance.remove();
       map.current = null;
       setMapLoaded(false);
