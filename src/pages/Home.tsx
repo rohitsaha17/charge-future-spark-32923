@@ -28,7 +28,7 @@ import googlePlayBadge from "@/assets/google-play-official.png";
 import appStoreBadge from "@/assets/app-store-official.png";
 import StorytellingSection from "@/components/StorytellingSection";
 import chargingStationIllustration from "@/assets/charging-station-illustration.webp";
-import GoogleMapsCharging from "@/components/GoogleMapsCharging";
+import ChargingStationsMap from "@/components/ChargingStationsMap";
 import BenefitsSection from "@/components/BenefitsSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import ChatBot from "@/components/ChatBot";
@@ -456,7 +456,7 @@ const Home = () => {
             
             {/* Map Container */}
             <div className="md:col-span-3 order-1 md:order-2">
-              <GoogleMapsCharging />
+              <ChargingStationsMap />
             </div>
           </div>
         </div>
