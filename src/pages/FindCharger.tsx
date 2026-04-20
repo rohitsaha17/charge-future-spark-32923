@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import SEOHead from "@/components/SEOHead";
 import { Card } from "@/components/ui/card";
-import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation } from "lucide-react";
+import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation, LocateFixed, Loader2 } from "lucide-react";
 import ChargingStationsMap from "@/components/ChargingStationsMap";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 const FindCharger = () => {
   const [selectedStation, setSelectedStation] = useState<string | null>(null);
