@@ -3,7 +3,7 @@ import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { microFeedback } from "@/lib/microFeedback";
 import { MapPin, Users, Zap, ChevronDown, ArrowRight, Settings, Wrench, Megaphone, DollarSign, Monitor, HeadphonesIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import heroIllustration from "@/assets/hero-illustration.webp";
 import logomark from "@/assets/a-plus-logomark.png";
 // Hero image lives in /public so we can preload it at HEAD time with a
@@ -14,7 +14,6 @@ const heroEvCharging = "/hero.webp";
 import trustBg from "@/assets/trust-bg.jpg";
 import northeastHillsLandscape from "@/assets/northeast-hills-landscape.jpg";
 import brahmaputraSunset from "@/assets/brahmaputra-sunset.jpg";
-import NetworkVisualization from "@/components/NetworkVisualization";
 import atherLogo from "@/assets/partners/ather-logo-new.png";
 import mgLogo from "@/assets/partners/mg-logo-new.png";
 import tataLogo from "@/assets/partners/tata-logo-new.png";
@@ -26,9 +25,7 @@ import appSectionBg from "@/assets/app-section-bg.jpg";
 import phoneMockup from "@/assets/phone-mockup-dual.webp";
 import googlePlayBadge from "@/assets/google-play-official.png";
 import appStoreBadge from "@/assets/app-store-official.png";
-import StorytellingSection from "@/components/StorytellingSection";
 import chargingStationIllustration from "@/assets/charging-station-illustration.webp";
-import ChargingStationsMap from "@/components/ChargingStationsMap";
 import BenefitsSection from "@/components/BenefitsSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import ChatBot from "@/components/ChatBot";
@@ -36,6 +33,20 @@ import FloatingFindCharger from "@/components/FloatingFindCharger";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AnimatedDownloadCounter from "@/components/AnimatedDownloadCounter";
+
+// Below-the-fold components split off so the ~1 MB maplibre chunk and
+// the ~40 KB framer-motion chunk never block Home's LCP/TBT. Lighthouse
+// was timing out on the map init on slow-4G emulation; lazy + Suspense
+// lets the measured content render first and the map hydrate afterwards.
+const ChargingStationsMap = lazy(() => import("@/components/ChargingStationsMap"));
+const StorytellingSection = lazy(() => import("@/components/StorytellingSection"));
+const NetworkVisualization = lazy(() => import("@/components/NetworkVisualization"));
+
+// Shared skeleton so the layout doesn't jump while chunks download. Height
+// set slightly taller than each section's collapsed height to avoid CLS.
+const SectionSkeleton = ({ minH = 400 }: { minH?: number }) => (
+  <div className="w-full animate-pulse bg-foreground/5" style={{ minHeight: minH }} />
+);
 
 const Home = () => {
   const [activeService, setActiveService] = useState<number | null>(null);
@@ -456,7 +467,9 @@ const Home = () => {
             
             {/* Map Container */}
             <div className="md:col-span-3 order-1 md:order-2">
-              <ChargingStationsMap />
+              <Suspense fallback={<SectionSkeleton minH={420} />}>
+                <ChargingStationsMap />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -585,22 +598,28 @@ const Home = () => {
       </div>
 
       {/* Trust Section - Northeast Hills */}
-      <StorytellingSection
-        title="Rooted in the Heart of Guwahati"
-        description="Rooted in the heart of Guwahati and branching across the Seven Sisters with brother Sikkim and West Bengal. A Plus Charge was founded to solve a critical challenge: the EV infrastructure gap in East and North-East India. We are here to pioneer a lifestyle shift - replacing traditional fuel stops with smart, high-speed charging hubs."
-        backgroundImage={northeastHillsLandscape}
-      />
+      <Suspense fallback={<SectionSkeleton minH={480} />}>
+        <StorytellingSection
+          title="Rooted in the Heart of Guwahati"
+          description="Rooted in the heart of Guwahati and branching across the Seven Sisters with brother Sikkim and West Bengal. A Plus Charge was founded to solve a critical challenge: the EV infrastructure gap in East and North-East India. We are here to pioneer a lifestyle shift - replacing traditional fuel stops with smart, high-speed charging hubs."
+          backgroundImage={northeastHillsLandscape}
+        />
+      </Suspense>
 
       {/* USP Section - Interactive Network */}
-      <NetworkVisualization />
+      <Suspense fallback={<SectionSkeleton minH={420} />}>
+        <NetworkVisualization />
+      </Suspense>
 
 
       {/* Storytelling Section - Our Edge */}
-      <StorytellingSection
-        title="Mastery of the Terrain"
-        description="Local Expertise, Global Standards. While the geography of the Northeast can be a barrier for many, it is our home turf. From the high-altitude airstrips of Shillong to the remote roads of Upper Assam, we deploy technology that thrives in our unique landscape. Community-First Growth - powered by local talent."
-        backgroundImage={brahmaputraSunset}
-      />
+      <Suspense fallback={<SectionSkeleton minH={480} />}>
+        <StorytellingSection
+          title="Mastery of the Terrain"
+          description="Local Expertise, Global Standards. While the geography of the Northeast can be a barrier for many, it is our home turf. From the high-altitude airstrips of Shillong to the remote roads of Upper Assam, we deploy technology that thrives in our unique landscape. Community-First Growth - powered by local talent."
+          backgroundImage={brahmaputraSunset}
+        />
+      </Suspense>
 
       {/* Client Logos - Scrolling with Gradient Separator */}
       <section
@@ -854,11 +873,13 @@ const Home = () => {
       </section>
 
 
-      <StorytellingSection
-        title="The Roadmap: Scaling with Impact"
-        description="Strategic Expansion: We are on a fast-track to activate 100+ marquee locations by 2026, turning the Northeast into one of India's most EV-friendly zones. Our eyes are set on 10,000+ EV stations by 2030, creating a seamless, sustainable corridor that connects every corner of our land."
-        backgroundImage={trustBg}
-      />
+      <Suspense fallback={<SectionSkeleton minH={480} />}>
+        <StorytellingSection
+          title="The Roadmap: Scaling with Impact"
+          description="Strategic Expansion: We are on a fast-track to activate 100+ marquee locations by 2026, turning the Northeast into one of India's most EV-friendly zones. Our eyes are set on 10,000+ EV stations by 2030, creating a seamless, sustainable corridor that connects every corner of our land."
+          backgroundImage={trustBg}
+        />
+      </Suspense>
 
       
 

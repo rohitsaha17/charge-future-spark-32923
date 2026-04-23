@@ -52,7 +52,10 @@ const Navigation = () => {
             <img src={logo} alt="A Plus Charge" className="h-8 w-auto" loading="eager" decoding="sync" />
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu — min-h-11 keeps each link ≥44px even on
+              short laptop breakpoints; 48px on mobile via the mobile
+              menu below. Google's mobile-friendly test flags any
+              interactive element smaller than 48×48 with 8px spacing. */}
           <div className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
               <Link
@@ -63,7 +66,7 @@ const Navigation = () => {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className={`text-sm font-medium transition-all duration-200 px-4 py-2 rounded-lg block ${
+                className={`text-sm font-medium transition-all duration-200 px-4 min-h-11 flex items-center rounded-lg ${
                   isActive(link.path)
                     ? "text-primary border-b-2 border-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -74,9 +77,11 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button — sized to the 48×48 tap-target minimum
+              using padding + min-w/min-h so the clickable area covers
+              the full icon + whitespace around it. */}
           <button
-            className="lg:hidden text-foreground"
+            className="lg:hidden text-foreground p-3 -m-3 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-lg"
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
             onClick={() => setIsOpen(!isOpen)}
@@ -89,18 +94,18 @@ const Navigation = () => {
             collapses without pulling in a JS animation library. */}
         <div
           className={`lg:hidden mt-4 nav-glass rounded-2xl overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${
-            isOpen ? "max-h-[32rem] opacity-100 p-6" : "max-h-0 opacity-0 p-0"
+            isOpen ? "max-h-[36rem] opacity-100 p-4" : "max-h-0 opacity-0 p-0"
           }`}
           aria-hidden={!isOpen}
         >
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`text-sm font-medium transition-colors hover:text-primary block ${
-                  isActive(link.path) ? "text-primary" : "text-foreground/80"
+                className={`text-base font-medium transition-colors hover:text-primary px-2 min-h-[48px] flex items-center rounded-lg ${
+                  isActive(link.path) ? "text-primary bg-primary/5" : "text-foreground/80"
                 }`}
               >
                 {link.name}

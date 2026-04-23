@@ -31,7 +31,11 @@ const SEOHead = ({
   jsonLd,
 }: SEOHeadProps) => {
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
-  const canonicalUrl = `${SITE_URL}${path}`;
+  // Match the trailing-slash policy of the inline canonical script in
+  // index.html: root is "/", every other path is slash-less. Mismatches
+  // show up as duplicate-canonical / mixed-URL warnings in SEO audits.
+  const normalizedPath = path === "/" ? "/" : path.replace(/\/+$/, "");
+  const canonicalUrl = `${SITE_URL}${normalizedPath}`;
   const image = ogImage || DEFAULT_OG_IMAGE;
 
   useEffect(() => {

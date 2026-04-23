@@ -1,7 +1,29 @@
+# Block the admin surface from every crawler. Everything else is open.
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /admin/*
+
+# Explicit allow entries for audit / search bots. Not strictly required
+# but SEO audit tools (Semrush, Ahrefs, GTmetrix) raise warnings when
+# they don't find themselves named.
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+
+User-agent: SemrushBot
+Allow: /
+Disallow: /admin/
+
+User-agent: AhrefsBot
+Allow: /
+Disallow: /admin/
+
+User-agent: GTmetrix
+Allow: /
+Disallow: /admin/
 
 Sitemap: https://apluscharge.in/sitemap.xml
-Sitemap: https://charge-future-spark-32923.lovable.app/sitemap.xml

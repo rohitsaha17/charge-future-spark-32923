@@ -32,13 +32,20 @@
       })();
     </script>
 
-    <!-- Content Security Policy — the safety net if XSS ever lands despite
-         sanitization. Allowlist only what this site actually loads:
-         Supabase (APIs + storage), Google Tag Manager, OSM tiles,
-         Google Fonts, dicebear avatars, self-hosted assets. -->
+    <!-- Content Security Policy — safety net if XSS ever slips past
+         sanitization. Allowlist every host this site actually loads.
+         Notes:
+         - `blob:` is required in script-src / worker-src so Lighthouse,
+           Maplibre, and DOMPurify can instantiate Blob workers. Without
+           it the PageSpeed audit aborts with "NO_FCP" and all metrics
+           come back empty.
+         - `frame-ancestors` only works as an HTTP header (browsers
+           ignore it in <meta>) so it's set at the host. Omitting from
+           meta stops SEO crawlers from mis-parsing it. -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com;
+      worker-src 'self' blob:;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data:;
       img-src 'self' data: blob: https:;
@@ -47,7 +54,6 @@
       object-src 'none';
       base-uri 'self';
       form-action 'self';
-      frame-ancestors 'none';
       upgrade-insecure-requests;
     " />
     
@@ -79,7 +85,7 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="A Plus Charge" />
-    <meta property="og:url" content="https://apluscharge.in" />
+    <meta property="og:url" content="https://apluscharge.in/" />
     <meta property="og:locale" content="en_IN" />
 
     <!-- Twitter Card -->
