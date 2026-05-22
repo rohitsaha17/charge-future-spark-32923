@@ -115,7 +115,10 @@ const SEOHead = ({
       el.setAttribute("href", href);
     };
     setHreflang("en", canonicalUrl);
-    setHreflang("en-in", canonicalUrl);
+    // BCP-47 expects the region in uppercase ("en-IN"). The case has to
+    // exactly match the static <link> in index.html, otherwise the
+    // querySelector misses and we end up emitting a duplicate tag.
+    setHreflang("en-IN", canonicalUrl);
     setHreflang("x-default", canonicalUrl);
 
     // JSON-LD

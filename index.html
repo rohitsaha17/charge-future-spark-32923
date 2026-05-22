@@ -204,7 +204,10 @@
     }
     </script>
 
-    <!-- FAQ Schema for Home page -->
+    <!-- FAQ Schema for Home page — expanded with citation-worthy
+         specifics (numbers, geographies, named entities). AI answer
+         engines extract single Q/A pairs verbatim, so each answer is
+         self-contained and quotable. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -212,29 +215,206 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "What types of EV chargers do you offer?",
+          "name": "What is A Plus Charge?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "We offer Residential chargers, AC Public chargers, and DC Fast chargers (30kW and 60kW) to meet various charging needs."
+            "text": "A Plus Charge is Northeast India's largest EV charging network, operated by ALTERNATEV SOLUTIONS PVT LTD from Guwahati, Assam. It deploys 3.3 kW residential, 7.4 kW AC public, and 30 kW + 60 kW DC fast chargers across Assam, Meghalaya, Arunachal Pradesh, Nagaland, Manipur, Mizoram, Tripura, Sikkim, and northern West Bengal."
           }
         },
         {
           "@type": "Question",
-          "name": "How can I become a charging station partner?",
+          "name": "Where are A Plus Charge stations located?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Visit our Become Our Partner page to explore partnership opportunities. We offer both CAPEX and OPEX models with attractive ROI."
+            "text": "The largest concentration is in Guwahati, Assam. The network covers all eight states of Northeast India plus Sikkim and northern West Bengal, including the NH-27 Guwahati–Shillong corridor and the NH-37 Guwahati–Jorhat–Dibrugarh corridor. Live locations: https://www.apluscharge.com/find-charger."
           }
         },
         {
           "@type": "Question",
-          "name": "Where are your charging stations located?",
+          "name": "What types of EV chargers does A Plus Charge offer?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "We have a strong presence in Northeast India, particularly in Guwahati, with expansion plans across major highways and urban centers."
+            "text": "Four tiers: 3.3 kW AC residential (overnight home charging), 7.4 kW AC public (workplaces, malls, hotels, 4–6 hour top-ups), 30 kW DC fast (urban hubs, 30–60 min), and 60 kW DC fast (highway corridors, ≤45 min to 80%). Connectors: Type 2, Bharat AC-001, CCS2, CHAdeMO at select sites."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I become an A Plus Charge partner?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Apply at https://www.apluscharge.com/partner. Two models: CAPEX (partner funds hardware, A Plus Charge runs operations, projected 15–20% ROI over 5 years for qualifying high-traffic sites) and OPEX (A Plus Charge funds hardware, partner provides space and grid connection). Typical timeline from agreement to live: 6–12 weeks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What returns do A Plus Charge partners typically see?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A Plus Charge cites a projected 15–20% ROI over five years for qualifying high-traffic sites under the CAPEX partnership model. Actual returns depend on local traffic, tariff, and DISCOM costs. An interactive ROI calculator is available at https://www.apluscharge.com/partner."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does it cost to charge an EV at A Plus Charge stations?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Public tariffs are set per site and DISCOM. Indicative ranges: 7.4 kW AC public ₹10–15/kWh, 30 kW DC fast ₹18–22/kWh, 60 kW DC fast ₹20–25/kWh. The exact tariff is shown in the A Plus Charge app before charging starts. Payment is via in-app UPI, card, or supported wallets."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which EV brands work at A Plus Charge stations?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "All standards-compliant EVs sold in India. 4-wheelers (Tata Nexon EV, Tata Tigor EV, MG ZS EV, MG Comet, Mahindra XUV400, Hyundai Kona, BYD e6) use CCS2 at DC fast chargers and Type 2/Bharat AC-001 at AC chargers. 2-wheelers (Ather, Ola, TVS, Bajaj) use AC chargers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does A Plus Charge focus on Northeast India?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "National EV operators (Tata Power, Statiq, ChargeZone, Magenta) have limited Northeast presence due to terrain, monsoon engineering complexity, and DISCOM fragmentation across eight states. A Plus Charge built the first regional public DC fast-charging network and holds exclusive partnerships with state agencies including GMDA (Guwahati Metropolitan Development Authority) and AAI (Airports Authority of India)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is A Plus Charge open to investors?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. A Plus Charge welcomes growth-stage equity investment from climate/EV funds, family offices, and infrastructure investors. The roadmap targets 100+ marquee locations by 2026 and 10,000+ charging points by 2030. Details at https://www.apluscharge.com/invest."
           }
         }
       ]
+    }
+    </script>
+
+    <!-- Service catalog — emits one Service node per charger tier so
+         AI engines can extract them individually when a user asks
+         "what AC chargers does X offer" vs "what DC fast chargers..." -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "A Plus Charge — service catalog",
+      "itemListElement": [
+        {
+          "@type": "Service",
+          "position": 1,
+          "name": "Residential EV Charging (3.3 kW AC)",
+          "serviceType": "EV charging",
+          "areaServed": "Northeast India",
+          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "description": "3.3 kW single-phase AC wall-box for overnight home charging. Type 2 / Bharat AC-001 connector. Charge time 6–10 hours."
+        },
+        {
+          "@type": "Service",
+          "position": 2,
+          "name": "AC Public EV Charging (7.4 kW)",
+          "serviceType": "EV charging",
+          "areaServed": "Northeast India",
+          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "description": "7.4 kW AC charger for workplaces, malls, hotels, and parking lots. 4–6 hour top-ups. Type 2 / Bharat AC-001 connector."
+        },
+        {
+          "@type": "Service",
+          "position": 3,
+          "name": "DC Fast Charging (30 kW)",
+          "serviceType": "EV fast charging",
+          "areaServed": "Northeast India",
+          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "description": "30 kW DC fast charger. CCS2 / CHAdeMO connectors. 30–60 minute top-up to 80% on most EVs."
+        },
+        {
+          "@type": "Service",
+          "position": 4,
+          "name": "DC Fast Charging (60 kW)",
+          "serviceType": "EV fast charging",
+          "areaServed": "Northeast India",
+          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "description": "60 kW DC fast charger for highway corridors and fleet bases. ≤45 minute charge to 80%. Engineered for Northeast monsoon and voltage conditions."
+        },
+        {
+          "@type": "Service",
+          "position": 5,
+          "name": "Charging Station Partnership (CAPEX / OPEX)",
+          "serviceType": "EV infrastructure partnership",
+          "areaServed": "Northeast India",
+          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "description": "Two partnership models for property owners and fleet operators: CAPEX (partner funds hardware, A Plus Charge runs operations, projected 15–20% ROI) and OPEX (A Plus Charge funds hardware, partner provides space)."
+        }
+      ]
+    }
+    </script>
+
+    <!-- HowTo schema — gives AI engines a step-by-step structure for
+         "how do I become a charging-station partner" queries, which is
+         one of the highest-intent searches in our category. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to become an A Plus Charge partner",
+      "description": "Steps to host an A Plus Charge EV charging station at your property under the CAPEX or OPEX model.",
+      "totalTime": "P12W",
+      "estimatedCost": {
+        "@type": "MonetaryAmount",
+        "currency": "INR",
+        "value": "0-2500000"
+      },
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Apply online",
+          "text": "Submit a partnership enquiry at https://www.apluscharge.com/partner with your property address, footprint, and available grid capacity.",
+          "url": "https://www.apluscharge.com/partner"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Site feasibility survey",
+          "text": "A Plus Charge visits the site, audits traffic, grid load, and civil works needed. Typically completes within one week of enquiry."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Choose partnership model",
+          "text": "Select CAPEX (you fund the hardware, projected 15–20% ROI over 5 years) or OPEX (A Plus Charge funds the hardware in exchange for a larger revenue share)."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "DISCOM and municipal approvals",
+          "text": "A Plus Charge files the electricity board (DISCOM) load enhancement, municipal NOC, and signage approvals. Usually 4–8 weeks."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Installation and commissioning",
+          "text": "Civil works, hardware installation, transformer upgrade if needed, app onboarding, and go-live. 1–2 weeks."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 6,
+          "name": "Operate and earn",
+          "text": "A Plus Charge runs 24×7 uptime monitoring, customer support, and payments. Partner receives the revenue share per the agreed model."
+        }
+      ]
+    }
+    </script>
+
+    <!-- Speakable — flags the FAQ block as the canonical answer
+         source for voice-first AI assistants. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "url": "https://www.apluscharge.com/",
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["[data-speakable]", "article", "main"]
+      }
     }
     </script>
 
@@ -272,11 +452,14 @@
 
   <body>
     <div id="root"></div>
-    <!-- Static SEO content for search engine crawlers (hidden when JS renders the app) -->
+    <!-- Static content for search and AI crawlers. Visible only when JS
+         is disabled OR to bots that snapshot raw HTML; the React app
+         hides it once it mounts. Phrased in self-contained sentences so
+         AI engines can extract single facts. -->
     <noscript>
       <header>
         <h1>A Plus Charge – EV Charging Solutions in Northeast India</h1>
-        <p>Northeast India's largest and most trusted electric vehicle charging network, powering clean mobility across Assam, Meghalaya, Arunachal Pradesh, and all Seven Sister states.</p>
+        <p>A Plus Charge (operated by ALTERNATEV SOLUTIONS PVT LTD) is Northeast India's largest EV charging network, headquartered in Guwahati, Assam. The company deploys 3.3 kW residential, 7.4 kW AC public, and 30 kW + 60 kW DC fast chargers across Assam, Meghalaya, Arunachal Pradesh, Nagaland, Manipur, Mizoram, Tripura, Sikkim, and northern West Bengal. <em>Last updated: 2026-04-22.</em></p>
       </header>
       <main>
         <section>

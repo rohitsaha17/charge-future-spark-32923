@@ -3,9 +3,9 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-# Explicit allow entries for audit / search bots. Not strictly required
-# but SEO audit tools (Semrush, Ahrefs, GTmetrix) raise warnings when
-# they don't find themselves named.
+# ---------------------------------------------------------------------------
+# Search-engine + audit bots
+# ---------------------------------------------------------------------------
 User-agent: Googlebot
 Allow: /
 Disallow: /admin/
@@ -26,4 +26,102 @@ User-agent: GTmetrix
 Allow: /
 Disallow: /admin/
 
+# ---------------------------------------------------------------------------
+# AI assistant + LLM crawlers
+# Allowed so A Plus Charge can be cited in AI-generated answers (ChatGPT,
+# Perplexity, Claude, Gemini, Copilot). Blocking these means the platform
+# can't cite us — opposite of what we want for AI visibility.
+# Reference: https://platform.openai.com/docs/bots, https://docs.anthropic.com/claude/docs/claudebot
+# ---------------------------------------------------------------------------
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /admin/
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /admin/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin/
+
+User-agent: GoogleOther
+Allow: /
+Disallow: /admin/
+
+User-agent: Applebot
+Allow: /
+Disallow: /admin/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin/
+
+User-agent: Bytespider
+Allow: /
+Disallow: /admin/
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /admin/
+
+User-agent: cohere-ai
+Allow: /
+Disallow: /admin/
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /admin/
+
+User-agent: FacebookBot
+Allow: /
+Disallow: /admin/
+
+User-agent: DuckAssistBot
+Allow: /
+Disallow: /admin/
+
+User-agent: YouBot
+Allow: /
+Disallow: /admin/
+
+# CCBot (Common Crawl) is the dataset used for LLM training. Allow so
+# our brand context lands in the next training cut; remove this block if
+# you ever want to opt out of model training while keeping live citation.
+User-agent: CCBot
+Allow: /
+Disallow: /admin/
+
+# ---------------------------------------------------------------------------
+# Sitemap + LLM context file
+# ---------------------------------------------------------------------------
 Sitemap: https://www.apluscharge.com/sitemap.xml
+
+# llms.txt advertises a fact-dense AI summary at /llms.txt and /llms-full.txt.
+# Not a formal robots directive — read by AI agents that look for it.
+LLM-Context: https://www.apluscharge.com/llms.txt
+LLM-Context-Full: https://www.apluscharge.com/llms-full.txt
