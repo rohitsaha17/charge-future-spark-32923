@@ -1,8 +1,22 @@
 import { useEffect } from "react";
 
-const SITE_URL = "https://apluscharge.in";
 const SITE_NAME = "A Plus Charge";
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+// Primary host used when generating absolute URLs from SSR / non-browser
+// contexts (image fallback, JSON-LD). At runtime we read the actual
+// origin so canonical/hreflang track whatever host is serving the page —
+// see the inline canonical-rewriter script in index.html for the same
+// logic. Hard-coding a single host caused a canonical loop because
+// apluscharge.in 302-redirects to www.apluscharge.com and the audit
+// crawler would chase the canonical pointer back into the redirect.
+const PRIMARY_SITE_URL = "https://www.apluscharge.com";
+const DEFAULT_OG_IMAGE = `${PRIMARY_SITE_URL}/og-image.png`;
+
+const resolveSiteUrl = (): string => {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+  return PRIMARY_SITE_URL;
+};
 
 interface SEOHeadProps {
   title: string;
@@ -35,7 +49,8 @@ const SEOHead = ({
   // index.html: root is "/", every other path is slash-less. Mismatches
   // show up as duplicate-canonical / mixed-URL warnings in SEO audits.
   const normalizedPath = path === "/" ? "/" : path.replace(/\/+$/, "");
-  const canonicalUrl = `${SITE_URL}${normalizedPath}`;
+  const siteUrl = resolveSiteUrl();
+  const canonicalUrl = `${siteUrl}${normalizedPath}`;
   const image = ogImage || DEFAULT_OG_IMAGE;
 
   useEffect(() => {
@@ -116,10 +131,10 @@ const SEOHead = ({
       publisher: {
         "@type": "Organization",
         name: SITE_NAME,
-        url: SITE_URL,
+        url: siteUrl,
         logo: {
           "@type": "ImageObject",
-          url: `${SITE_URL}/og-image.png`,
+          url: `${siteUrl}/og-image.png`,
         },
       },
     };

@@ -527,9 +527,11 @@ const Home = () => {
                   return (
                     <div
                       key={index}
-                      className={`group relative p-2.5 sm:p-3 md:p-4 rounded-xl cursor-pointer transition-colors duration-300 h-[85px] sm:h-[95px] md:h-[105px] ${
-                        isActive 
-                          ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg shadow-primary/30' 
+                      role="button"
+                      tabIndex={0}
+                      className={`group relative p-3 md:p-4 rounded-xl cursor-pointer transition-colors duration-300 min-h-[112px] md:min-h-[120px] ${
+                        isActive
+                          ? 'bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg shadow-primary/30'
                           : 'bg-white/90 backdrop-blur-sm border border-primary/10 hover:border-primary/30 hover:shadow-md'
                       }`}
                       style={{
@@ -537,25 +539,23 @@ const Home = () => {
                       }}
                       onMouseEnter={() => setActiveService(index)}
                       onMouseLeave={() => setActiveService(null)}
+                      onFocus={() => setActiveService(index)}
+                      onBlur={() => setActiveService(null)}
                       onClick={() => microFeedback({ vibratePattern: [12, 40, 12], frequencyHz: 720 })}
                       onTouchStart={() => microFeedback({ vibratePattern: 16, frequencyHz: 720 })}
                     >
-                      <div className="flex items-start gap-2 md:gap-2.5 h-full">
-                        <div className={`p-1.5 md:p-2 rounded-lg flex-shrink-0 transition-all duration-300 ${isActive ? 'bg-white/20 scale-90' : 'bg-primary/10'}`}>
-                          <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 ${isActive ? 'text-white' : 'text-primary'}`} />
+                      {/* Card now sized for the Google mobile-friendly
+                          floor: ≥48px tap target, ≥12px legible text. */}
+                      <div className="flex items-start gap-2.5 md:gap-3 h-full">
+                        <div className={`p-2 md:p-2.5 rounded-lg flex-shrink-0 transition-all duration-300 ${isActive ? 'bg-white/20' : 'bg-primary/10'}`}>
+                          <Icon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? 'text-white' : 'text-primary'}`} />
                         </div>
-                        <div className="flex-1 flex flex-col min-w-0 relative h-full justify-start">
-                          <h3 className={`font-semibold leading-tight transition-all duration-300 origin-top-left ${
-                            isActive 
-                              ? 'text-white text-[7px] sm:text-[8px] md:text-[9px]' 
-                              : 'text-foreground text-[9px] sm:text-[10px] md:text-xs'
-                          }`}>
+                        <div className="flex-1 flex flex-col min-w-0 relative h-full">
+                          <h3 className={`font-semibold leading-tight text-xs md:text-sm ${isActive ? 'text-white' : 'text-foreground'}`}>
                             {service.title}
                           </h3>
-                          <p className={`text-[6.5px] sm:text-[7.5px] md:text-[9px] leading-snug transition-all duration-300 mt-0.5 sm:mt-1 line-clamp-3 ${
-                            isActive 
-                              ? 'text-white/90 opacity-100' 
-                              : 'text-muted-foreground opacity-0'
+                          <p className={`text-[11px] md:text-xs leading-snug mt-1 line-clamp-3 transition-opacity duration-300 ${
+                            isActive ? 'text-white/90 opacity-100' : 'text-muted-foreground opacity-0'
                           }`}>
                             {service.description}
                           </p>

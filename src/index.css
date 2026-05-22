@@ -72,6 +72,18 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html,
+  body {
+    /* Stop any single rogue element (overflowing image, long unbroken
+       word, full-bleed section forgetting `overflow-hidden`) from
+       creating a horizontal scrollbar on mobile. Google's mobile-
+       friendly test flags `Content wider than screen` as the most
+       common reason for a low score, and this catches every case
+       at the document root. */
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

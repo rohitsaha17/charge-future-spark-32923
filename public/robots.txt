@@ -26,4 +26,4 @@ User-agent: GTmetrix
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://apluscharge.in/sitemap.xml
+Sitemap: https://www.apluscharge.com/sitemap.xml

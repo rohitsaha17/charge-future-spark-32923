@@ -15,12 +15,13 @@ const FloatingFindCharger = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // min-h-12 = 48px, the Google mobile-friendly tap-target floor.
   return (
     <Link
       to="/find-charger"
-      className={`fixed bottom-6 left-4 z-50 md:hidden flex items-center gap-2 px-4 py-3 rounded-full
-        bg-gradient-to-r from-primary to-cyan-500 text-white font-semibold text-sm
-        shadow-[0_4px_20px_rgba(38,116,236,0.4)] 
+      className={`fixed bottom-6 left-4 z-50 md:hidden flex items-center gap-2 px-5 min-h-12 rounded-full
+        bg-gradient-to-r from-primary to-cyan-500 text-white font-semibold text-base
+        shadow-[0_4px_20px_rgba(38,116,236,0.4)]
         transition-all duration-300 ease-out
         hover:shadow-[0_6px_30px_rgba(0,198,255,0.5)] hover:scale-105
         active:scale-95
