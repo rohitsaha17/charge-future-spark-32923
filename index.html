@@ -8,25 +8,23 @@
     <meta name="author" content="A Plus Charge" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#2674EC" />
-    <!-- Canonical / hreflang are emitted dynamically from the actual
-         host (location.origin) so a request to apluscharge.in and one
-         to www.apluscharge.com each self-canonicalize. The earlier
-         hard-coded version pointed apluscharge.com's HTML at the
-         apluscharge.in canonical, but apluscharge.in 302-redirects
-         back to .com — Google + Semrush saw that as a canonical loop
-         and flagged "canonical issues" + "missing hreflang."
-
-         We also drop the trailing slash for non-root paths (root
-         keeps the slash) so this matches SEOHead's normalization. -->
-    <link rel="canonical" id="canonical-link" />
-    <link rel="alternate" hreflang="en" id="hreflang-en" />
-    <link rel="alternate" hreflang="en-IN" id="hreflang-enin" />
-    <link rel="alternate" hreflang="x-default" id="hreflang-xdefault" />
+    <!-- Canonical + self-referencing hreflang.
+         Each tag ships with a non-empty href default so audit tools
+         that snapshot the pre-JS HTML never see a bare <link> (which
+         was being flagged as a critical canonical / hreflang error).
+         The inline script below refines them per-path at runtime —
+         for non-root paths it appends the actual pathname, and for
+         the apluscharge.in mirror it switches the host to .in so
+         each domain self-canonicalizes. -->
+    <link rel="canonical" id="canonical-link" href="https://www.apluscharge.com/" />
+    <link rel="alternate" hreflang="en" id="hreflang-en" href="https://www.apluscharge.com/" />
+    <link rel="alternate" hreflang="en-IN" id="hreflang-enin" href="https://www.apluscharge.com/" />
+    <link rel="alternate" hreflang="x-default" id="hreflang-xdefault" href="https://www.apluscharge.com/" />
     <script>
       (function () {
         try {
-          var origin = location.origin || 'https://www.apluscharge.com';
-          var rawPath = location.pathname || '/';
+          var origin = (location && location.origin) || 'https://www.apluscharge.com';
+          var rawPath = (location && location.pathname) || '/';
           var path = rawPath === '/' ? '/' : rawPath.replace(/\/+$/, '');
           var url = origin + path;
           var ids = ['canonical-link', 'hreflang-en', 'hreflang-enin', 'hreflang-xdefault'];
@@ -34,7 +32,7 @@
             var el = document.getElementById(ids[i]);
             if (el) el.setAttribute('href', url);
           }
-        } catch (e) { /* best-effort only */ }
+        } catch (e) { /* best-effort only — the static defaults above stay valid */ }
       })();
     </script>
 
@@ -114,14 +112,25 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
+      "@id": "https://www.apluscharge.com/#organization",
       "name": "A Plus Charge",
-      "url": "https://www.apluscharge.com",
-      "logo": "https://www.apluscharge.com/og-image.png",
-      "description": "Leading EV charging solutions provider in Northeast India",
+      "legalName": "ALTERNATEV SOLUTIONS PVT LTD",
+      "url": "https://www.apluscharge.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.apluscharge.com/og-image.png",
+        "width": 1200,
+        "height": 630
+      },
+      "description": "Northeast India's largest EV charging network — 3.3 kW residential, 7.4 kW AC public, and 30 kW + 60 kW DC fast chargers across Assam, Meghalaya, and the Seven Sister states.",
+      "telephone": "+91-70990-18180",
+      "email": "info@apluscharge.in",
       "address": {
         "@type": "PostalAddress",
+        "streetAddress": "23 Rajat Kamal Path, RG Baruah Road",
         "addressLocality": "Guwahati",
         "addressRegion": "Assam",
+        "postalCode": "781024",
         "addressCountry": "IN"
       },
       "sameAs": [
@@ -131,27 +140,32 @@
         "https://x.com/apluscharge",
         "https://www.facebook.com/apluscharge"
       ],
-      "contactPoint": {
+      "contactPoint": [{
         "@type": "ContactPoint",
+        "telephone": "+91-70990-18180",
+        "email": "info@apluscharge.in",
         "contactType": "customer service",
+        "areaServed": "IN",
         "availableLanguage": ["English", "Hindi", "Assamese"]
-      }
+      }]
     }
     </script>
 
-    <!-- LocalBusiness JSON-LD — helps Maps/Search surface the company card
-         with opening hours, phone, and a map pin. Lat/lng is the Guwahati HQ. -->
+    <!-- LocalBusiness — same legal entity as the Organization above,
+         linked via matching @id so validators don't see two competing
+         entities. Provides the data Google Maps + voice assistants
+         surface (hours, geo, price range, area served). -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      "@id": "https://www.apluscharge.com/#localbusiness",
+      "@id": "https://www.apluscharge.com/#organization",
       "name": "A Plus Charge",
       "image": "https://www.apluscharge.com/og-image.png",
-      "url": "https://www.apluscharge.com",
+      "url": "https://www.apluscharge.com/",
       "telephone": "+91-70990-18180",
       "email": "info@apluscharge.in",
-      "priceRange": "₹₹",
+      "priceRange": "$$",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "23 Rajat Kamal Path, RG Baruah Road",
@@ -176,30 +190,39 @@
       ],
       "openingHoursSpecification": [{
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "dayOfWeek": [
+          "https://schema.org/Monday",
+          "https://schema.org/Tuesday",
+          "https://schema.org/Wednesday",
+          "https://schema.org/Thursday",
+          "https://schema.org/Friday",
+          "https://schema.org/Saturday"
+        ],
         "opens": "09:00",
         "closes": "19:00"
-      }],
-      "sameAs": [
-        "https://www.instagram.com/apluscharge",
-        "https://www.linkedin.com/company/apluscharge",
-        "https://x.com/apluscharge",
-        "https://www.facebook.com/apluscharge"
-      ]
+      }]
     }
     </script>
 
-    <!-- WebSite JSON-LD enables the sitelinks search box in Google results -->
+    <!-- WebSite JSON-LD enables the sitelinks search box in Google
+         results. @id matches the WebPage's isPartOf reference so the
+         entity graph resolves cleanly. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
+      "@id": "https://www.apluscharge.com/#website",
       "name": "A Plus Charge",
       "alternateName": ["APlus Charge", "A+ Charge", "ALTERNATEV SOLUTIONS"],
-      "url": "https://www.apluscharge.com",
+      "url": "https://www.apluscharge.com/",
+      "publisher": { "@id": "https://www.apluscharge.com/#organization" },
+      "inLanguage": "en-IN",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://www.apluscharge.com/find-charger?q={search_term_string}",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.apluscharge.com/find-charger?q={search_term_string}"
+        },
         "query-input": "required name=search_term_string"
       }
     }
@@ -326,7 +349,7 @@
           "name": "Residential EV Charging (3.3 kW AC)",
           "serviceType": "EV charging",
           "areaServed": "Northeast India",
-          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "provider": { "@id": "https://www.apluscharge.com/#organization" },
           "description": "3.3 kW single-phase AC wall-box for overnight home charging. Type 2 / Bharat AC-001 connector. Charge time 6–10 hours."
         },
         {
@@ -335,7 +358,7 @@
           "name": "AC Public EV Charging (7.4 kW)",
           "serviceType": "EV charging",
           "areaServed": "Northeast India",
-          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "provider": { "@id": "https://www.apluscharge.com/#organization" },
           "description": "7.4 kW AC charger for workplaces, malls, hotels, and parking lots. 4–6 hour top-ups. Type 2 / Bharat AC-001 connector."
         },
         {
@@ -344,7 +367,7 @@
           "name": "DC Fast Charging (30 kW)",
           "serviceType": "EV fast charging",
           "areaServed": "Northeast India",
-          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "provider": { "@id": "https://www.apluscharge.com/#organization" },
           "description": "30 kW DC fast charger. CCS2 / CHAdeMO connectors. 30–60 minute top-up to 80% on most EVs."
         },
         {
@@ -353,7 +376,7 @@
           "name": "DC Fast Charging (60 kW)",
           "serviceType": "EV fast charging",
           "areaServed": "Northeast India",
-          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "provider": { "@id": "https://www.apluscharge.com/#organization" },
           "description": "60 kW DC fast charger for highway corridors and fleet bases. ≤45 minute charge to 80%. Engineered for Northeast monsoon and voltage conditions."
         },
         {
@@ -362,7 +385,7 @@
           "name": "Charging Station Partnership (CAPEX / OPEX)",
           "serviceType": "EV infrastructure partnership",
           "areaServed": "Northeast India",
-          "provider": { "@type": "Organization", "name": "A Plus Charge" },
+          "provider": { "@id": "https://www.apluscharge.com/#organization" },
           "description": "Two partnership models for property owners and fleet operators: CAPEX (partner funds hardware, A Plus Charge runs operations, projected 15–20% ROI) and OPEX (A Plus Charge funds hardware, partner provides space)."
         }
       ]
@@ -382,7 +405,7 @@
       "estimatedCost": {
         "@type": "MonetaryAmount",
         "currency": "INR",
-        "value": "0-2500000"
+        "value": "2500000"
       },
       "step": [
         {
@@ -427,12 +450,24 @@
     </script>
 
     <!-- Speakable — flags the FAQ block as the canonical answer
-         source for voice-first AI assistants. -->
+         source for voice-first AI assistants. Tied to the home
+         page via @id + isPartOf so validators can resolve the
+         entity graph. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
+      "@id": "https://www.apluscharge.com/#webpage",
       "url": "https://www.apluscharge.com/",
+      "name": "A Plus Charge — EV Charging Network, Northeast India",
+      "description": "Northeast India's largest EV charging network. 3.3–60 kW AC and DC chargers across Assam, Meghalaya, and beyond. Partner with us.",
+      "inLanguage": "en-IN",
+      "isPartOf": { "@id": "https://www.apluscharge.com/#website" },
+      "about": { "@id": "https://www.apluscharge.com/#organization" },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://www.apluscharge.com/og-image.png"
+      },
       "speakable": {
         "@type": "SpeakableSpecification",
         "cssSelector": ["[data-speakable]", "article", "main"]
