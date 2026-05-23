@@ -158,11 +158,35 @@ const SEOHead = ({
     script.textContent = JSON.stringify(ldData);
     document.head.appendChild(script);
 
+    // BreadcrumbList JSON-LD (separate <script> so it stacks with the
+    // page's main JSON-LD instead of overwriting it). Eligible breadcrumb
+    // markup is one of Google's documented inputs for branded sitelinks.
+    const existingBc = document.getElementById("seo-breadcrumbs-jsonld");
+    if (existingBc) existingBc.remove();
+    if (breadcrumbs && breadcrumbs.length > 0) {
+      const bcScript = document.createElement("script");
+      bcScript.id = "seo-breadcrumbs-jsonld";
+      bcScript.type = "application/ld+json";
+      bcScript.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbs.map((b, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: b.name,
+          item: `${siteUrl}${b.path === "/" ? "/" : b.path.replace(/\/+$/, "")}`,
+        })),
+      });
+      document.head.appendChild(bcScript);
+    }
+
     return () => {
       const el = document.getElementById("seo-jsonld");
       if (el) el.remove();
+      const bc = document.getElementById("seo-breadcrumbs-jsonld");
+      if (bc) bc.remove();
     };
-  }, [fullTitle, description, canonicalUrl, ogType, image, keywords, article, jsonLd]);
+  }, [fullTitle, description, canonicalUrl, ogType, image, keywords, article, jsonLd, breadcrumbs, siteUrl]);
 
   return null;
 };
