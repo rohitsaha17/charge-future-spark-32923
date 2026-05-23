@@ -147,6 +147,7 @@ const FindCharger = () => {
         description="Locate A Plus Charge EV charging stations across Northeast India. Real-time availability, AC & DC chargers, navigation to nearest station."
         path="/find-charger"
         keywords="EV charging station near me, find EV charger Northeast India, Guwahati charging station, Shillong EV charger"
+        breadcrumbs={[{ name: "Home", path: "/" }, { name: "Find a Charger", path: "/find-charger" }]}
       />
       {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(220_15%_97%)] to-background"></div>

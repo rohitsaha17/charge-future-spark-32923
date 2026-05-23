@@ -44,6 +44,7 @@ const Blog = () => {
         description="Stay updated with the latest EV charging news, industry insights, and updates from A Plus Charge. Tips for EV owners and partners."
         path="/blog"
         keywords="EV charging blog, electric vehicle news India, EV charging tips, A Plus Charge updates"
+        breadcrumbs={[{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }]}
       />
       {/* Enhanced Hero Section */}
       <section className="relative py-32 md:py-40 mb-12 overflow-hidden bg-gradient-to-br from-primary via-blue-600 to-cyan-500">

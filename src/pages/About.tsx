@@ -112,6 +112,7 @@ const About = () => {
         description="A Plus Charge is Northeast India's leading EV charging network. 45+ live stations, 97% uptime, covering 9 states. Meet our team and learn our story."
         path="/about"
         keywords="A Plus Charge about, EV charging company India, Northeast India EV, Guwahati EV charging team"
+        breadcrumbs={[{ name: "Home", path: "/" }, { name: "About Us", path: "/about" }]}
       />
       {/* Enhanced Hero Section */}
       <EnhancedPageHeader
