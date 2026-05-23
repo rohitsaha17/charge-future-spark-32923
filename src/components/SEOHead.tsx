@@ -32,6 +32,15 @@ interface SEOHeadProps {
     tags?: string[];
   };
   jsonLd?: Record<string, unknown>;
+  /**
+   * Optional breadcrumb trail. Emits a BreadcrumbList JSON-LD block in
+   * addition to whatever main jsonLd is set. Helps Google show
+   * breadcrumb chips under the main result and is a documented input
+   * for branded sitelinks eligibility.
+   * Pass items in order, root → leaf, e.g.
+   *   [{ name: "Home", path: "/" }, { name: "About", path: "/about" }]
+   */
+  breadcrumbs?: Array<{ name: string; path: string }>;
 }
 
 const SEOHead = ({
@@ -43,6 +52,7 @@ const SEOHead = ({
   keywords,
   article,
   jsonLd,
+  breadcrumbs,
 }: SEOHeadProps) => {
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   // Match the trailing-slash policy of the inline canonical script in
