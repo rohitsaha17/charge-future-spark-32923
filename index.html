@@ -195,12 +195,34 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "A Plus Charge",
+      "alternateName": ["APlus Charge", "A+ Charge", "ALTERNATEV SOLUTIONS"],
       "url": "https://www.apluscharge.com",
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://www.apluscharge.com/find-charger?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
+    }
+    </script>
+
+    <!-- SiteNavigationElement — explicit signal to Google about the primary
+         site navigation. This is the single strongest structured-data hint
+         for branded sitelinks (About, Services, Find a Charger, Partner,
+         Invest, Blog, Contact) appearing under the main result for the
+         query "A Plus Charge". -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-home",     "name": "Home",               "url": "https://www.apluscharge.com/" },
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-about",    "name": "About Us",           "url": "https://www.apluscharge.com/about" },
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-services", "name": "Services",           "url": "https://www.apluscharge.com/services" },
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-find",     "name": "Find a Charger",     "url": "https://www.apluscharge.com/find-charger" },
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-partner",  "name": "Become Our Partner", "url": "https://www.apluscharge.com/partner" },
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-invest",   "name": "Invest in APlus",    "url": "https://www.apluscharge.com/invest" },
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-blog",     "name": "Blog",               "url": "https://www.apluscharge.com/blog" },
+        { "@type": "SiteNavigationElement", "@id": "https://www.apluscharge.com/#nav-contact",  "name": "Contact",            "url": "https://www.apluscharge.com/#contact" }
+      ]
     }
     </script>
 
