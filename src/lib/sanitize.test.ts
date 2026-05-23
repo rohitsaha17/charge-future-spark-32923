@@ -42,9 +42,9 @@ describe("sanitizeBlogHtml", () => {
 
   it("returns empty string on falsy input without throwing", () => {
     expect(sanitizeBlogHtml("")).toBe("");
-    // @ts-expect-error — runtime safety check
+    // @ts-ignore — runtime safety check
     expect(sanitizeBlogHtml(null)).toBe("");
-    // @ts-expect-error — runtime safety check
+    // @ts-ignore — runtime safety check
     expect(sanitizeBlogHtml(undefined)).toBe("");
   });
 });
