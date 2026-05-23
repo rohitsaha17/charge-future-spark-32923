@@ -223,6 +223,7 @@ const Partner = () => {
         description="Partner with A Plus Charge. ₹0 partnership fee, 15-20% expected ROI. Calculate your returns with our ROI calculator. 24/7 technical support."
         path="/partner"
         keywords="EV charging partner India, EV station franchise, charging station ROI, EV business opportunity Northeast India"
+        breadcrumbs={[{ name: "Home", path: "/" }, { name: "Become Our Partner", path: "/partner" }]}
       />
       {/* Enhanced Hero Section */}
       <EnhancedPageHeader
