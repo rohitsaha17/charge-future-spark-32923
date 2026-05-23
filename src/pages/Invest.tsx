@@ -110,6 +110,7 @@ const Invest = () => {
         description="Invest in Northeast India's fastest-growing EV charging network. First-mover advantage, 97% uptime, diversified revenue streams. Contact us today."
         path="/invest"
         keywords="invest EV charging India, EV infrastructure investment, A Plus Charge investor, electric vehicle business opportunity"
+        breadcrumbs={[{ name: "Home", path: "/" }, { name: "Invest", path: "/invest" }]}
       />
       {/* Enhanced Hero Section */}
       <EnhancedPageHeader
