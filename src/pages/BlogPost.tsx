@@ -158,6 +158,11 @@ const BlogPost = () => {
           ogType="article"
           ogImage={blog.featured_image || undefined}
           keywords={blog.meta_keywords?.join(', ') || undefined}
+          breadcrumbs={[
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+            { name: blog.title, path: `/blog/${blog.slug}` },
+          ]}
           article={{
             publishedTime: blog.published_at,
             modifiedTime: blog.updated_at,

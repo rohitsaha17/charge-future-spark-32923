@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Main pages sitemap. Each entry carries:
+  - <lastmod>           — freshness signal for re-crawl
+  - <xhtml:link>        — hreflang self-references and the .com/.in mirror
+  - <image:image>       — primary visual for the page (sitelinks eligibility)
+  - <changefreq> + <priority> — relative importance for the crawler
+
+  Sitelinks (the "About Us · Services · Partner ·" chips that appear under
+  the main brand result in Google) need three things to surface:
+  1. A clean, consistent site structure (covered here)
+  2. Discoverable internal links from every page (Navigation + Footer)
+  3. Enough click data per page that Google trusts it as a destination
+
+  We can't accelerate #3 — it accumulates over months. But this file maxes
+  out #1, which makes Google more likely to pick sitelinks when it does.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <url>
+    <loc>https://www.apluscharge.com/</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://www.apluscharge.com/" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://www.apluscharge.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.apluscharge.com/" />
+    <image:image>
+      <image:loc>https://www.apluscharge.com/og-image.png</image:loc>
+      <image:title>A Plus Charge — Northeast India's EV Charging Network</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.apluscharge.com/hero.webp</image:loc>
+      <image:title>A Plus Charge EV charging station hero</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/about</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://www.apluscharge.com/about" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://www.apluscharge.com/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.apluscharge.com/about" />
+    <image:image>
+      <image:loc>https://www.apluscharge.com/og-image.png</image:loc>
+      <image:title>About A Plus Charge — founders, journey, mission</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/services</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://www.apluscharge.com/services" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://www.apluscharge.com/services" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.apluscharge.com/services" />
+    <image:image>
+      <image:loc>https://www.apluscharge.com/og-image.png</image:loc>
+      <image:title>A Plus Charge service catalog — 3.3 kW, 7.4 kW, 30 kW, 60 kW</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/find-charger</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://www.apluscharge.com/find-charger" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://www.apluscharge.com/find-charger" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.apluscharge.com/find-charger" />
+    <image:image>
+      <image:loc>https://www.apluscharge.com/og-image.png</image:loc>
+      <image:title>Find an A Plus Charge EV station near you</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/partner</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://www.apluscharge.com/partner" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://www.apluscharge.com/partner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.apluscharge.com/partner" />
+    <image:image>
+      <image:loc>https://www.apluscharge.com/og-image.png</image:loc>
+      <image:title>Become an A Plus Charge partner — CAPEX or OPEX model</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/invest</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://www.apluscharge.com/invest" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://www.apluscharge.com/invest" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.apluscharge.com/invest" />
+    <image:image>
+      <image:loc>https://www.apluscharge.com/og-image.png</image:loc>
+      <image:title>Invest in A Plus Charge — Northeast India EV infrastructure</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/blog</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://www.apluscharge.com/blog" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://www.apluscharge.com/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.apluscharge.com/blog" />
+    <image:image>
+      <image:loc>https://www.apluscharge.com/og-image.png</image:loc>
+      <image:title>A Plus Charge blog — EV charging industry analysis</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/privacy-policy</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://www.apluscharge.com/terms-and-conditions</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

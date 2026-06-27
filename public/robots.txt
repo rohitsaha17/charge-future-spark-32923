@@ -120,6 +120,8 @@ Disallow: /admin/
 # Sitemap + LLM context file
 # ---------------------------------------------------------------------------
 Sitemap: https://www.apluscharge.com/sitemap.xml
+Sitemap: https://www.apluscharge.com/sitemap-pages.xml
+Sitemap: https://www.apluscharge.com/sitemap-blog.xml
 
 # llms.txt advertises a fact-dense AI summary at /llms.txt and /llms-full.txt.
 # Not a formal robots directive — read by AI agents that look for it.
