@@ -1,0 +1,32 @@
+# Netlify config — same shape as Vercel + Cloudflare Pages. Pick one host,
+# the other configs can stay in the repo without conflicting.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback — every non-file request serves index.html so React Router
+# handles the URL. Static files (sitemap, robots, manifest, images) are
+# matched first by the file system before this fallback kicks in.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"

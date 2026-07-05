@@ -1,0 +1,4 @@
+# Cloudflare Pages / Netlify SPA fallback.
+# React Router handles all client-side paths, so any URL that isn't a
+# static file falls through to index.html.
+/*    /index.html   200

@@ -53,7 +53,7 @@
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data:;
       img-src 'self' data: blob: https:;
-      connect-src 'self' https://hliwejekiwgnrkhbmaun.supabase.co wss://hliwejekiwgnrkhbmaun.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://maps.googleapis.com https://maps.gstatic.com https://server.arcgisonline.com https://*.basemaps.cartocdn.com https://photon.komoot.io https://nominatim.openstreetmap.org;
+      connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://maps.googleapis.com https://maps.gstatic.com https://server.arcgisonline.com https://*.basemaps.cartocdn.com https://photon.komoot.io https://nominatim.openstreetmap.org;
       frame-src 'self' https://www.google.com https://www.youtube.com;
       object-src 'none';
       base-uri 'self';
@@ -68,10 +68,11 @@
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
     <!-- DNS prefetch + preconnect for third-party domains we use at runtime.
-         Supabase is hit by nearly every page (stations list, blog posts,
-         site_settings) so establishing the TLS connection in parallel
-         with the JS bundle saves ~100ms on first interaction. -->
-    <link rel="preconnect" href="https://hliwejekiwgnrkhbmaun.supabase.co" crossorigin>
+         The Supabase preconnect is emitted at build time by the
+         `supabasePreconnect` plugin in vite.config.ts, reading
+         VITE_SUPABASE_URL from the env. That way this file stays
+         provider-agnostic — swap the env vars and every host works. -->
+    <!-- supabase-preconnect-placeholder -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://maps.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://maps.gstatic.com" crossorigin>
