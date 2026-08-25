@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import { auth, stations as stationsApi, type Row } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,7 +37,7 @@ const stationSchema = z.object({
   price_per_unit: z.number().positive().optional(),
 });
 
-type Station = Database['public']['Tables']['charging_stations']['Row'];
+type Station = Row;
 
 const AdminChargingStations = () => {
   const navigate = useNavigate();
@@ -84,21 +83,14 @@ const AdminChargingStations = () => {
   }, []);
 
   const checkAuthAndFetchStations = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    const user = await auth.me();
+
+    if (!user) {
       navigate('/admin/login');
       return;
     }
 
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .eq('role', 'admin')
-      .single();
-
-    if (!roleData) {
+    if (!user.roles.includes('admin')) {
       toast.error('You do not have admin access');
       navigate('/');
       return;
@@ -109,17 +101,13 @@ const AdminChargingStations = () => {
   };
 
   const fetchStations = async () => {
-    const { data, error } = await supabase
-      .from('charging_stations')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
+    try {
+      setStations(await stationsApi.listAll());
+    } catch {
       toast.error('Failed to load charging stations');
-    } else {
-      setStations(data || []);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,9 +122,9 @@ const AdminChargingStations = () => {
         price_per_unit: formData.price_per_unit ? parseFloat(formData.price_per_unit) : undefined,
       });
 
-      const { data: { session } } = await supabase.auth.getSession();
-
-      const stationData: Database['public']['Tables']['charging_stations']['Insert'] = {
+      // available_chargers defaults to total_chargers and created_by comes
+      // from the authenticated user, both server-side.
+      await stationsApi.create({
         name: validatedData.name,
         address: validatedData.address,
         city: validatedData.city,
@@ -147,17 +135,9 @@ const AdminChargingStations = () => {
         connector_type: validatedData.connector_type,
         power_output: validatedData.power_output,
         total_chargers: validatedData.total_chargers,
-        available_chargers: validatedData.total_chargers,
-        price_per_unit: validatedData.price_per_unit,
+        price_per_unit: validatedData.price_per_unit ?? null,
         amenities: formData.amenities ? csvToArray(formData.amenities) : null,
-        created_by: session?.user.id,
-      };
-
-      const { error } = await supabase
-        .from('charging_stations')
-        .insert([stationData]);
-
-      if (error) throw error;
+      });
 
       toast.success('Charging station added successfully!');
       setFormData({
@@ -217,26 +197,21 @@ const AdminChargingStations = () => {
         price_per_unit: editFormData.price_per_unit ? parseFloat(editFormData.price_per_unit) : undefined,
       });
 
-      const { error } = await supabase
-        .from('charging_stations')
-        .update({
-          name: validatedData.name,
-          address: validatedData.address,
-          city: validatedData.city,
-          state: validatedData.state,
-          latitude: validatedData.latitude,
-          longitude: validatedData.longitude,
-          charger_type: validatedData.charger_type,
-          connector_type: validatedData.connector_type,
-          power_output: validatedData.power_output,
-          total_chargers: validatedData.total_chargers,
-          price_per_unit: validatedData.price_per_unit,
-          amenities: editFormData.amenities ? csvToArray(editFormData.amenities) : null,
-          status: editFormData.status,
-        })
-        .eq('id', editingStation.id);
-
-      if (error) throw error;
+      await stationsApi.update(editingStation.id, {
+        name: validatedData.name,
+        address: validatedData.address,
+        city: validatedData.city,
+        state: validatedData.state,
+        latitude: validatedData.latitude,
+        longitude: validatedData.longitude,
+        charger_type: validatedData.charger_type,
+        connector_type: validatedData.connector_type,
+        power_output: validatedData.power_output,
+        total_chargers: validatedData.total_chargers,
+        price_per_unit: validatedData.price_per_unit ?? null,
+        amenities: editFormData.amenities ? csvToArray(editFormData.amenities) : null,
+        status: editFormData.status,
+      });
 
       toast.success('Charging station updated successfully!');
       setIsEditDialogOpen(false);
@@ -253,16 +228,12 @@ const AdminChargingStations = () => {
 
   const confirmDelete = async () => {
     if (!pendingDeleteId) return;
-    const { error } = await supabase
-      .from('charging_stations')
-      .delete()
-      .eq('id', pendingDeleteId);
-
-    if (error) {
-      toast.error('Failed to delete charging station');
-    } else {
+    try {
+      await stationsApi.remove(pendingDeleteId);
       toast.success('Charging station deleted successfully');
       fetchStations();
+    } catch {
+      toast.error('Failed to delete charging station');
     }
     setPendingDeleteId(null);
   };

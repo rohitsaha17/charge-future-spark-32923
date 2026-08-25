@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { auth, cms, type CmsResource } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +40,20 @@ const ALL_TABLES = [
   'journey_milestones',
 ] as const;
 type TableName = (typeof ALL_TABLES)[number];
+
+// The tab identifiers below are the old Postgres table names, which the JSX,
+// SEED_ROWS and the fallback lookups all key off. The API addresses the same
+// collections by URL slug, and two of them differ - so translate at the edge
+// rather than renaming everything.
+const TABLE_TO_RESOURCE: Record<TableName, CmsResource> = {
+  partners: 'partners',
+  statistics: 'statistics',
+  testimonials: 'testimonials',
+  team_members: 'team-members',
+  faqs: 'faqs',
+  services_catalog: 'services',
+  journey_milestones: 'journey-milestones',
+};
 
 // Per-table fallback image lookup for the CMS list view. Uses the
 // same bundled defaults the public site falls back to, so what the
@@ -93,18 +107,12 @@ const AdminContent = () => {
   }, []);
 
   const checkAuthAndFetch = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const user = await auth.me();
+    if (!user) {
       navigate('/admin/login');
       return;
     }
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .eq('role', 'admin')
-      .single();
-    if (!roleData) {
+    if (!user.roles.includes('admin')) {
       toast.error('You do not have admin access');
       navigate('/');
       return;
@@ -119,16 +127,13 @@ const AdminContent = () => {
   };
 
   async function refreshOne(table: TableName) {
-    const { data: rows, error } = await (supabase as any)
-      .from(table)
-      .select('*')
-      .order('sort_order', { ascending: true });
-    if (error) {
-      setErrors((prev) => ({ ...prev, [table]: error.message }));
-      setData((prev) => ({ ...prev, [table]: [] }));
-    } else {
+    try {
+      const rows = await cms.listAll(TABLE_TO_RESOURCE[table]);
       setErrors((prev) => ({ ...prev, [table]: null }));
       setData((prev) => ({ ...prev, [table]: rows || [] }));
+    } catch (error: any) {
+      setErrors((prev) => ({ ...prev, [table]: error?.message ?? 'Failed to load' }));
+      setData((prev) => ({ ...prev, [table]: [] }));
     }
   }
 
@@ -137,13 +142,12 @@ const AdminContent = () => {
     if (!rows || !rows.length) return;
     setSeeding(table);
     try {
-      const { error } = await (supabase as any).from(table).insert(rows);
-      if (error) {
-        toast.error(`Seed failed: ${error.message}`);
-      } else {
-        toast.success(`Populated ${rows.length} default ${table.replace('_', ' ')} entries`);
-        await refreshOne(table);
-      }
+      // One request inserts the whole set, same as the old bulk insert.
+      await cms.create(TABLE_TO_RESOURCE[table], rows);
+      toast.success(`Populated ${rows.length} default ${table.replace('_', ' ')} entries`);
+      await refreshOne(table);
+    } catch (error: any) {
+      toast.error(`Seed failed: ${error?.message ?? 'unknown error'}`);
     } finally {
       setSeeding(null);
     }
@@ -156,10 +160,12 @@ const AdminContent = () => {
       for (const t of emptyTables) {
         const rows = (SEED_ROWS as any)[t];
         if (!rows || !rows.length) continue;
-        await (supabase as any).from(t).insert(rows);
+        await cms.create(TABLE_TO_RESOURCE[t], rows);
       }
       toast.success(`Populated defaults for ${emptyTables.length} section(s)`);
       await fetchAll();
+    } catch (error: any) {
+      toast.error(`Seed failed: ${error?.message ?? 'unknown error'}`);
     } finally {
       setSeeding(null);
     }
@@ -167,14 +173,15 @@ const AdminContent = () => {
 
   const saveRow = async (table: TableName, row: AnyRow) => {
     const { id, ...rest } = row;
-    // created_at/updated_at handled by DB
+    // created_at/updated_at are set server-side
     delete rest.created_at;
     delete rest.updated_at;
-    const { error } = id
-      ? await (supabase as any).from(table).update(rest).eq('id', id)
-      : await (supabase as any).from(table).insert([rest]);
-    if (error) {
-      toast.error(error.message || 'Save failed');
+    const resource = TABLE_TO_RESOURCE[table];
+    try {
+      if (id) await cms.update(resource, id, rest);
+      else await cms.create(resource, rest);
+    } catch (error: any) {
+      toast.error(error?.message || 'Save failed');
       return false;
     }
     toast.success('Saved');
@@ -184,15 +191,12 @@ const AdminContent = () => {
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    const { error } = await (supabase as any)
-      .from(pendingDelete.table)
-      .delete()
-      .eq('id', pendingDelete.id);
-    if (error) {
-      toast.error('Delete failed');
-    } else {
+    try {
+      await cms.remove(TABLE_TO_RESOURCE[pendingDelete.table], pendingDelete.id);
       toast.success('Deleted');
       await refreshOne(pendingDelete.table);
+    } catch {
+      toast.error('Delete failed');
     }
     setPendingDelete(null);
   };
@@ -204,8 +208,9 @@ const AdminContent = () => {
     if (targetIdx < 0 || targetIdx >= list.length) return;
     const a = list[idx];
     const b = list[targetIdx];
-    await (supabase as any).from(table).update({ sort_order: b.sort_order }).eq('id', a.id);
-    await (supabase as any).from(table).update({ sort_order: a.sort_order }).eq('id', b.id);
+    const resource = TABLE_TO_RESOURCE[table];
+    await cms.update(resource, a.id, { sort_order: b.sort_order });
+    await cms.update(resource, b.id, { sort_order: a.sort_order });
     refreshOne(table);
   };
 
@@ -250,14 +255,15 @@ const AdminContent = () => {
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
                   <div className="flex-1 text-sm">
-                    <p className="font-semibold text-destructive">Database setup needed</p>
+                    <p className="font-semibold text-destructive">Could not load content</p>
                     <p className="text-foreground/80 mt-1">
-                      Some content tables don't exist yet. Apply the latest Supabase migration
-                      (<code className="bg-muted px-1 rounded text-xs">supabase/migrations/20260417120000_content_management.sql</code>)
-                      via your Supabase dashboard, then reload this page.
+                      Some sections failed to load from the API. Check that the backend is
+                      running, and that its migrations have been applied with
+                      (<code className="bg-muted px-1 rounded text-xs">npm run migrate</code>)
+                      in the change-suture-backend folder, then reload this page.
                     </p>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Missing: {missingTables.join(', ')}
+                      Failing: {missingTables.join(', ')}
                     </p>
                   </div>
                 </div>

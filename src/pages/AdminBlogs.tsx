@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import { ApiError, auth, blog as blogApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,21 +59,14 @@ const AdminBlogs = () => {
   }, []);
 
   const checkAuthAndFetchBlogs = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const user = await auth.me();
 
-    if (!session) {
+    if (!user) {
       navigate('/admin/login');
       return;
     }
 
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .eq('role', 'admin')
-      .single();
-
-    if (!roleData) {
+    if (!user.roles.includes('admin')) {
       toast.error('You do not have admin access');
       navigate('/');
       return;
@@ -85,17 +77,13 @@ const AdminBlogs = () => {
   };
 
   const fetchBlogs = async () => {
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
+    try {
+      setBlogs(await blogApi.listAll());
+    } catch {
       toast.error('Failed to load blog posts');
-    } else {
-      setBlogs(data || []);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const generateSlug = (title: string) => {
@@ -132,35 +120,26 @@ const AdminBlogs = () => {
 
     try {
       const validatedData = blogSchema.parse(formData);
-      const { data: { session } } = await supabase.auth.getSession();
 
-      const blogData: Database['public']['Tables']['blog_posts']['Insert'] = {
+      // author_id and published_at are set server-side from the authenticated
+      // user and the status transition, so they're no longer sent from here.
+      const blogData = {
         title: validatedData.title,
         slug: validatedData.slug,
         excerpt: validatedData.excerpt,
         content: validatedData.content,
-        meta_description: validatedData.meta_description,
+        meta_description: validatedData.meta_description || null,
         featured_image: validatedData.featured_image || null,
         tags: formData.tags ? csvToArray(formData.tags) : null,
         meta_keywords: formData.meta_keywords ? csvToArray(formData.meta_keywords) : null,
         status: formData.status,
-        author_id: session?.user.id,
-        published_at: formData.status === 'published' ? new Date().toISOString() : null,
       };
 
-      let error;
       if (editingId) {
-        ({ error } = await supabase
-          .from('blog_posts')
-          .update(blogData)
-          .eq('id', editingId));
+        await blogApi.update(editingId, blogData);
       } else {
-        ({ error } = await supabase
-          .from('blog_posts')
-          .insert([blogData]));
+        await blogApi.create(blogData);
       }
-
-      if (error) throw error;
 
       toast.success(editingId ? 'Blog updated successfully!' : 'Blog created successfully!');
       resetForm();
@@ -168,7 +147,7 @@ const AdminBlogs = () => {
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
-      } else if (error.code === '23505') {
+      } else if (error instanceof ApiError && error.status === 409) {
         toast.error('A blog with this slug already exists');
       } else {
         toast.error(error.message || 'Failed to save blog post');
@@ -208,16 +187,12 @@ const AdminBlogs = () => {
 
   const confirmDelete = async () => {
     if (!pendingDeleteId) return;
-    const { error } = await supabase
-      .from('blog_posts')
-      .delete()
-      .eq('id', pendingDeleteId);
-
-    if (error) {
-      toast.error('Failed to delete blog post');
-    } else {
+    try {
+      await blogApi.remove(pendingDeleteId);
       toast.success('Blog post deleted successfully');
       fetchBlogs();
+    } catch {
+      toast.error('Failed to delete blog post');
     }
     setPendingDeleteId(null);
   };

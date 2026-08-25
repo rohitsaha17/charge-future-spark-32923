@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { siteSettings } from '@/lib/api';
 
 interface VisibilitySettings {
   pages: {
@@ -49,22 +49,9 @@ export const useSiteSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('setting_value')
-        .eq('setting_key', 'visibility')
-        .single();
-
-      if (error) {
-        if (import.meta.env.DEV) {
-          console.error('Error fetching site settings:', error);
-        }
-        return;
-      }
-
-      if (data?.setting_value) {
-        setVisibility(data.setting_value as unknown as VisibilitySettings);
-      }
+      // The API always returns a complete object, merging any missing keys
+      // with the defaults, so there is nothing to guard against here.
+      setVisibility((await siteSettings.get()) as unknown as VisibilitySettings);
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Error fetching site settings:', error);

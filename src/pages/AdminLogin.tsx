@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { ApiError, auth } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,14 +17,17 @@ const resetSchema = z.object({
   email: z.string().email('Invalid email address'),
 });
 
-type Mode = 'login' | 'signup' | 'reset';
+// The API requires 8+ for a new password, so match it rather than let the
+// server be the one to reject a 6-character entry.
+const newPasswordSchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
 
-// Self-serve admin signup is DISABLED by default. To bootstrap the first
-// admin, create a user through the Supabase dashboard (Authentication →
-// Users → Add user), then insert a row into public.user_roles with
-// role = 'admin' for that user_id. For local development you can flip this
-// to true via VITE_ALLOW_ADMIN_SIGNUP=true in .env.
-const ALLOW_SIGNUP = import.meta.env.VITE_ALLOW_ADMIN_SIGNUP === 'true';
+type Mode = 'login' | 'reset';
+
+// There is no self-serve signup route on the API at all. Bootstrap the first
+// admin from the backend with `npm run seed:admin`, which creates the account
+// and grants the admin role in one step.
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -33,10 +36,19 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<Mode>('login');
 
+  // A reset link sends the admin back here with the token in the query
+  // string; presence of it switches the form into "set a new password" mode.
+  const [resetToken, setResetToken] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+
   useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get('reset_token');
+    if (token) {
+      setResetToken(token);
+      return;
+    }
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+      if (await auth.me()) {
         navigate('/admin/dashboard');
       }
     };
@@ -48,41 +60,33 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      if (mode === 'reset') {
-        resetSchema.parse({ email });
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/admin/login`,
-        });
-        if (error) throw error;
-        toast.success('Password reset email sent. Check your inbox.');
+      if (resetToken) {
+        newPasswordSchema.parse({ password: newPassword });
+        await auth.resetPassword(resetToken, newPassword);
+        toast.success('Password updated. Sign in with your new password.');
+        // Drop the token from the URL so a reload can't replay it.
+        window.history.replaceState({}, '', '/admin/login');
+        setResetToken(null);
+        setNewPassword('');
         setMode('login');
-      } else if (mode === 'signup') {
-        if (!ALLOW_SIGNUP) {
-          toast.error('Self-serve signup is disabled. Ask an existing admin to create your account.');
-          setMode('login');
+      } else if (mode === 'reset') {
+        resetSchema.parse({ email });
+        await auth.forgotPassword(email);
+        toast.success('If that email is registered, a reset link is on its way.');
+        setMode('login');
+      } else {
+        loginSchema.parse({ email, password });
+        const user = await auth.login(email, password);
+        // Block sign-in until the email is verified.
+        if (!user.email_confirmed_at) {
+          await auth.logout();
+          toast.error('Please verify your email before signing in. Check your inbox.');
           setLoading(false);
           return;
         }
-        loginSchema.parse({ email, password });
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin/dashboard`,
-          },
-        });
-        if (error) throw error;
-        toast.success('Account created! Check your email to verify, then log in.');
-        setMode('login');
-        setPassword('');
-      } else {
-        loginSchema.parse({ email, password });
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        // Block sign-in until the email is verified.
-        if (data.user && !data.user.email_confirmed_at) {
-          await supabase.auth.signOut();
-          toast.error('Please verify your email before signing in. Check your inbox.');
+        if (!user.roles.includes('admin')) {
+          await auth.logout();
+          toast.error('This account does not have admin access.');
           setLoading(false);
           return;
         }
@@ -92,10 +96,10 @@ const AdminLogin = () => {
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
-      } else if (error.message?.includes('Invalid login credentials')) {
+      } else if (error instanceof ApiError && error.status === 401) {
         toast.error('Invalid email or password');
-      } else if (error.message?.includes('User already registered')) {
-        toast.error('This email is already registered. Please log in.');
+      } else if (error instanceof ApiError && error.status === 429) {
+        toast.error(error.message);
       } else {
         toast.error(error.message || 'An error occurred');
       }
@@ -104,14 +108,17 @@ const AdminLogin = () => {
     }
   };
 
-  const title = mode === 'signup' ? 'Create Admin Account' : mode === 'reset' ? 'Reset Password' : 'Admin Login';
-  const description =
-    mode === 'signup'
-      ? 'Create your admin account to manage charging stations and blogs'
-      : mode === 'reset'
-      ? 'Enter your email and we will send you a password reset link'
-      : 'Sign in to access the admin dashboard';
-  const submitLabel = mode === 'signup' ? 'Sign Up' : mode === 'reset' ? 'Send Reset Link' : 'Sign In';
+  const title = resetToken ? 'Set a New Password' : mode === 'reset' ? 'Reset Password' : 'Admin Login';
+  const description = resetToken
+    ? 'Choose a new password for your admin account'
+    : mode === 'reset'
+    ? 'Enter your email and we will send you a password reset link'
+    : 'Sign in to access the admin dashboard';
+  const submitLabel = resetToken
+    ? 'Update Password'
+    : mode === 'reset'
+    ? 'Send Reset Link'
+    : 'Sign In';
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 p-4">
@@ -122,18 +129,33 @@ const AdminLogin = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            {mode !== 'reset' && (
+            {!resetToken && (
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            {resetToken && (
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            {!resetToken && mode !== 'reset' && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
@@ -160,20 +182,19 @@ const AdminLogin = () => {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Loading...' : submitLabel}
             </Button>
-            {mode === 'reset' ? (
-              <Button type="button" variant="ghost" className="w-full" onClick={() => setMode('login')}>
-                Back to Sign In
-              </Button>
-            ) : ALLOW_SIGNUP ? (
+            {(mode === 'reset' || resetToken) && (
               <Button
                 type="button"
                 variant="ghost"
                 className="w-full"
-                onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}
+                onClick={() => {
+                  setResetToken(null);
+                  setMode('login');
+                }}
               >
-                {mode === 'signup' ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+                Back to Sign In
               </Button>
-            ) : null}
+            )}
           </form>
         </CardContent>
       </Card>

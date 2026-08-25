@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { auth, enquiries } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -74,21 +74,14 @@ const AdminEnquiries = () => {
   }, []);
 
   const checkAuthAndFetch = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    const user = await auth.me();
+
+    if (!user) {
       navigate('/admin/login');
       return;
     }
 
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .eq('role', 'admin')
-      .single();
-
-    if (!roleData) {
+    if (!user.roles.includes('admin')) {
       toast.error('You do not have admin access');
       navigate('/');
       return;
@@ -100,66 +93,51 @@ const AdminEnquiries = () => {
   };
 
   const fetchPartnerEnquiries = async () => {
-    const { data, error } = await supabase
-      .from('partner_enquiries')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
-      setPartnerEnquiries(data);
+    try {
+      setPartnerEnquiries((await enquiries.list('partners')) as PartnerEnquiry[]);
+    } catch {
+      toast.error('Failed to load partner enquiries');
     }
   };
 
   const fetchInvestorEnquiries = async () => {
-    const { data, error } = await supabase
-      .from('investor_enquiries')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
-      setInvestorEnquiries(data);
+    try {
+      setInvestorEnquiries((await enquiries.list('investors')) as InvestorEnquiry[]);
+    } catch {
+      toast.error('Failed to load investor enquiries');
     }
   };
 
   const updatePartnerStatus = async (id: string, status: string) => {
-    const { error } = await supabase
-      .from('partner_enquiries')
-      .update({ status })
-      .eq('id', id);
-
-    if (error) {
-      toast.error('Failed to update status');
-    } else {
+    try {
+      await enquiries.updateStatus('partners', id, status);
       toast.success('Status updated');
       fetchPartnerEnquiries();
+    } catch {
+      toast.error('Failed to update status');
     }
   };
 
   const updateInvestorStatus = async (id: string, status: string) => {
-    const { error } = await supabase
-      .from('investor_enquiries')
-      .update({ status })
-      .eq('id', id);
-
-    if (error) {
-      toast.error('Failed to update status');
-    } else {
+    try {
+      await enquiries.updateStatus('investors', id, status);
       toast.success('Status updated');
       fetchInvestorEnquiries();
+    } catch {
+      toast.error('Failed to update status');
     }
   };
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    const table = pendingDelete.kind === 'partner' ? 'partner_enquiries' : 'investor_enquiries';
-    const { error } = await supabase.from(table).delete().eq('id', pendingDelete.id);
-
-    if (error) {
-      toast.error('Failed to delete');
-    } else {
+    const kind = pendingDelete.kind === 'partner' ? 'partners' : 'investors';
+    try {
+      await enquiries.remove(kind, pendingDelete.id);
       toast.success('Deleted successfully');
       if (pendingDelete.kind === 'partner') fetchPartnerEnquiries();
       else fetchInvestorEnquiries();
+    } catch {
+      toast.error('Failed to delete');
     }
     setPendingDelete(null);
   };

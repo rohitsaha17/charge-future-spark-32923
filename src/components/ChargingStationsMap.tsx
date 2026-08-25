@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { supabase } from '@/integrations/supabase/client';
+import { stations as stationsApi } from '@/lib/api';
 import { attachMapStyleFallback, SHARED_RASTER_MAP_STYLE } from '@/lib/mapStyles';
 import { Zap, MapPin, BatteryCharging } from 'lucide-react';
 
@@ -229,20 +229,13 @@ const ChargingStationsMap = ({ onStationSelect, selectedStationId }: ChargingSta
   };
 
   const fetchStations = async () => {
-    const { data, error } = await supabase
-      .from('charging_stations')
-      .select('*')
-      .eq('status', 'active')
-      .order('name');
-
-    if (error) {
+    try {
+      setStations(await stationsApi.listActive());
+    } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Error fetching stations:', error);
       }
-      return;
     }
-
-    setStations(data || []);
   };
 
   return (

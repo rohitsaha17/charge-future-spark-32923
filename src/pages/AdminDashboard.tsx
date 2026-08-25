@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { auth, siteSettings } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -21,28 +21,22 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+      // One call now covers both questions the old code asked separately:
+      // is there a session, and does it carry the admin role.
+      const user = await auth.me();
+
+      if (!user) {
         navigate('/admin/login');
         return;
       }
 
-      // Check if user has admin role
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', session.user.id)
-        .eq('role', 'admin')
-        .single();
-
-      if (!roleData) {
+      if (!user.roles.includes('admin')) {
         toast.error('You do not have admin access');
         navigate('/');
         return;
       }
 
-      // Load visibility settings from database
+      // Load visibility settings from the API
       await fetchVisibilitySettings();
 
       setIsAdmin(true);
@@ -54,24 +48,9 @@ const AdminDashboard = () => {
 
   const fetchVisibilitySettings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('setting_value')
-        .eq('setting_key', 'visibility')
-        .single();
-
-      if (error) {
-        if (import.meta.env.DEV) {
-          console.error('Error fetching visibility settings:', error);
-        }
-        return;
-      }
-
-      if (data?.setting_value) {
-        const settings = data.setting_value as unknown as VisibilitySettings;
-        setVisibility(settings);
-        setOriginalVisibility(settings);
-      }
+      const settings = (await siteSettings.get()) as unknown as VisibilitySettings;
+      setVisibility(settings);
+      setOriginalVisibility(settings);
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Error fetching visibility settings:', error);
@@ -80,7 +59,7 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await auth.logout();
     // Clear any cached app state (visibility settings, CMS drafts, anti-spam
     // throttle timers, etc.) so the next user on this machine doesn't
     // inherit anything belonging to the previous session.
@@ -118,12 +97,7 @@ const AdminDashboard = () => {
   const saveVisibilitySettings = async () => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('site_settings')
-        .update({ setting_value: visibility as any })
-        .eq('setting_key', 'visibility');
-
-      if (error) throw error;
+      await siteSettings.update(visibility as any);
 
       setOriginalVisibility(visibility);
       setHasChanges(false);

@@ -8,7 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Star, Quote } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { cms } from "@/lib/api";
 import { DEFAULT_TESTIMONIALS as SITE_DEFAULT_TESTIMONIALS } from "@/lib/siteDefaults";
 
 interface Testimonial {
@@ -34,12 +34,8 @@ const TestimonialsCarousel = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from('testimonials')
-        .select('*')
-        .eq('visible', true)
-        .order('sort_order');
-      if (data && data.length) {
+      const data = await cms.listVisible('testimonials').catch(() => []);
+      if (data.length) {
         setTestimonials(
           data.map((r: any) => ({
             name: r.name,

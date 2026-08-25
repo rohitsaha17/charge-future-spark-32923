@@ -1,7 +1,7 @@
 // Single source of truth for default (fallback) site content.
 // Used by:
 //   - Public pages (About, Services, TestimonialsCarousel) as the fallback
-//     when the Supabase tables are empty or unavailable.
+//     when the API returns no rows or is unavailable.
 //   - AdminContent CMS, which seeds these into the tables so the admin
 //     can edit the same content that's currently live.
 //
@@ -333,7 +333,7 @@ export const SERVICE_FALLBACKS: Record<string, string> = Object.fromEntries(
   DEFAULT_SERVICES.map((s) => [s.slug, s.fallbackImage])
 );
 
-/** Rows shaped for direct insert into Supabase tables. Image columns are
+/** Rows shaped for direct insert through POST /api/admin/:resource. Image columns are
  *  left null; admin can upload replacements through the CMS. */
 export const SEED_ROWS = {
   partners: DEFAULT_PARTNERS.map((p, i) => ({

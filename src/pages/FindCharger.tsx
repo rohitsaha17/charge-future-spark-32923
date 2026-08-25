@@ -3,7 +3,7 @@ import SEOHead from "@/components/SEOHead";
 import { Card } from "@/components/ui/card";
 import { MapPin, Zap, Clock, Battery, Filter, Search, Navigation, LocateFixed, Loader2 } from "lucide-react";
 import ChargingStationsMap from "@/components/ChargingStationsMap";
-import { supabase } from "@/integrations/supabase/client";
+import { stations as stationsApi } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,13 +23,13 @@ const FindCharger = () => {
   }, []);
 
   const fetchStations = async () => {
-    const { data, error } = await supabase
-      .from('charging_stations')
-      .select('*')
-      .eq('status', 'active')
-      .order('name');
-
-    if (!error && data) setStations(data);
+    try {
+      setStations(await stationsApi.listActive());
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Error fetching stations:', error);
+      }
+    }
   };
 
   const filteredStations = stations.filter(station => {

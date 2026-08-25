@@ -1,34 +1,14 @@
-import { supabase } from '@/integrations/supabase/client';
+// Image uploads, backed by the self-hosted API's S3-compatible storage.
+//
+// Previously this talked to Supabase Storage directly and had to create the
+// bucket on the fly from the browser. The bucket is now server-side config, so
+// all that's left is the client-side guard rails and one POST.
+//
+// The public shape (`uploadImage` -> `{ url, path }`) is unchanged, which is
+// why ImageUploadField, RichTextEditor and AdminBlogs needed no edits.
+import { ApiError, uploads } from '@/lib/api';
 
-const BUCKET = 'public-assets';
-
-let ensurePromise: Promise<boolean> | null = null;
-
-/** Ensure the public-assets bucket exists. Cached for the session. */
-export const ensureBucket = async (): Promise<boolean> => {
-  if (ensurePromise) return ensurePromise;
-  ensurePromise = (async () => {
-    try {
-      const { data, error } = await supabase.storage.getBucket(BUCKET);
-      if (data && !error) return true;
-    } catch {
-      // fall through to create
-    }
-    const { error: createError } = await supabase.storage.createBucket(BUCKET, {
-      public: true,
-      fileSizeLimit: 10 * 1024 * 1024,
-    });
-    if (createError) {
-      // Ignore "already exists" race (another caller created it)
-      if (!/already exists/i.test(createError.message || '')) {
-        ensurePromise = null;
-        return false;
-      }
-    }
-    return true;
-  })();
-  return ensurePromise;
-};
+const MAX_BYTES = 10 * 1024 * 1024;
 
 export interface UploadResult {
   url: string;
@@ -37,6 +17,8 @@ export interface UploadResult {
 
 // Image format magic bytes. Checked against the actual file content so an
 // attacker can't rename `shell.html` to `photo.png` to smuggle it past us.
+// The server repeats this check — this copy exists to fail fast and give the
+// admin a useful message before spending a round-trip on a 10MB body.
 const IMAGE_SIGNATURES: Array<{ ext: string; mime: string; match: (b: Uint8Array) => boolean }> = [
   { ext: 'png', mime: 'image/png', match: (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 },
   { ext: 'jpg', mime: 'image/jpeg', match: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
@@ -54,50 +36,34 @@ const detectImageType = async (file: File) => {
 };
 
 /**
- * Upload an image to the public-assets bucket. If the bucket doesn't exist
- * it's created on the fly. Rejects files that aren't actually images.
- * Returns the public URL.
+ * Upload an image and return its public URL. Rejects files that aren't
+ * actually images, whatever their extension says.
  */
 export const uploadImage = async (file: File, folder = 'uploads'): Promise<UploadResult> => {
-  if (file.size > 10 * 1024 * 1024) {
+  if (file.size > MAX_BYTES) {
     throw new Error('Image must be under 10MB');
   }
   if (file.size < 16) {
     throw new Error('File is too small to be a valid image');
   }
 
-  // Reject disguised files by checking magic bytes, not just the extension.
   const detected = await detectImageType(file);
   if (!detected) {
     throw new Error('File is not a valid image (png, jpg, gif, webp, avif).');
   }
 
-  const doUpload = async () => {
-    // Use the detected extension, not the user-supplied one.
-    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${detected.ext}`;
-    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-      cacheControl: '3600',
-      upsert: false,
-      contentType: detected.mime,
-    });
-    if (error) throw error;
-    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-    return { url: data.publicUrl, path };
-  };
-
   try {
-    return await doUpload();
-  } catch (err: any) {
-    const msg = err?.message || '';
-    if (/bucket not found/i.test(msg) || err?.statusCode === 404 || err?.status === 404) {
-      const ok = await ensureBucket();
-      if (!ok) {
-        throw new Error(
-          "Storage bucket missing. An admin must apply the latest Supabase migration, or enable bucket creation for authenticated users."
-        );
-      }
-      return await doUpload();
+    const { url, path } = await uploads.upload(file, folder);
+    return { url, path };
+  } catch (err) {
+    // 503 means the server has no bucket / bad credentials — that's an admin
+    // task, not something the person clicking Upload can fix by retrying.
+    if (err instanceof ApiError && err.status === 503) {
+      throw new Error(`${err.message} Paste an image URL instead for now.`);
     }
     throw err;
   }
 };
+
+/** Remove a previously uploaded object by the `path` from `uploadImage`. */
+export const deleteImage = (path: string): Promise<void> => uploads.remove(path);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import SEOHead from "@/components/SEOHead";
-import { supabase } from '@/integrations/supabase/client';
+import { blog as blogApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import {
   ArrowLeft,
@@ -44,26 +44,18 @@ const BlogPost = () => {
 
   const fetchBlog = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .single();
-
-    if (!error && data) {
-      setBlog(data);
-      // Related posts
-      const { data: rel } = await supabase
-        .from('blog_posts')
-        .select('id, slug, title, excerpt, featured_image, published_at, tags')
-        .eq('status', 'published')
-        .neq('id', data.id)
-        .order('published_at', { ascending: false })
-        .limit(3);
+    try {
+      // One request now returns the post and its related posts together.
+      const { post, related: rel } = await blogApi.getBySlug(slug!);
+      setBlog(post);
       setRelated(rel || []);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Error fetching blog post:', error);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // Attach click-to-zoom on inline images in the article

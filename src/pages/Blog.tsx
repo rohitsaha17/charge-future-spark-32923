@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { blog as blogApi } from '@/lib/api';
 import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -17,16 +17,15 @@ const Blog = () => {
   }, []);
 
   const fetchBlogs = async () => {
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('status', 'published')
-      .order('published_at', { ascending: false });
-
-    if (!error && data) {
-      setBlogs(data);
+    try {
+      setBlogs(await blogApi.listPublished());
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Error fetching blogs:', error);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (loading) {

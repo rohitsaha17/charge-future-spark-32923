@@ -11,7 +11,7 @@ import AnimatedCard from "@/components/AnimatedCard";
 import { TrendingUp, Award, Shield, Target, Users, Zap } from "lucide-react";
 import { toast } from "sonner";
 import energyFlow from "@/assets/energy-flow.jpg";
-import { supabase } from "@/integrations/supabase/client";
+import { ApiError, enquiries } from "@/lib/api";
 import { HONEYPOT_FIELD, isHoneypotTripped, isThrottled, markSubmission } from "@/lib/antiSpam";
 
 // Google Ads gtag type
@@ -67,19 +67,15 @@ const Invest = () => {
     const investmentRange = formData.get('investmentRange') as string;
 
     try {
-      const { error } = await supabase
-        .from('investor_enquiries')
-        .insert({
-          name,
-          phone,
-          email,
-          organization: organization || null,
-          city: city || null,
-          investor_type: investorType || null,
-          investment_range: investmentRange || null,
-        });
-
-      if (error) throw error;
+      await enquiries.submitInvestor({
+        name,
+        phone,
+        email,
+        organization: organization || null,
+        city: city || null,
+        investor_type: investorType || null,
+        investment_range: investmentRange || null,
+      });
       
       // Google Ads conversion tracking - Investor form submission
       if (typeof window.gtag !== 'undefined') {
@@ -97,7 +93,13 @@ const Invest = () => {
       if (import.meta.env.DEV) {
         console.error('Error submitting enquiry:', error);
       }
-      toast.error("Failed to submit enquiry. Please try again.");
+      // A 429 carries an actionable message ("3 submissions per hour"), so
+      // show it rather than the generic failure text.
+      toast.error(
+        error instanceof ApiError && error.status === 429
+          ? error.message
+          : "Failed to submit enquiry. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }

@@ -4,7 +4,7 @@ import {
   Trophy, Plane, MapPin, Car, Rocket, Target,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { cms } from "@/lib/api";
 import { DEFAULT_MILESTONES } from "@/lib/siteDefaults";
 
 // Map lucide icon names (stored in the DB as strings) to components.
@@ -30,14 +30,10 @@ export const JourneyTimeline = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await (supabase as any)
-        .from('journey_milestones')
-        .select('*')
-        .eq('visible', true)
-        .order('sort_order');
-      if (data && data.length) {
+      const data = await cms.listVisible('journey-milestones').catch(() => []);
+      if (data.length) {
         setTimelineEvents(
-          data.map((r: any) => ({
+          data.map((r) => ({
             year: r.year,
             title: r.title,
             description: r.description,

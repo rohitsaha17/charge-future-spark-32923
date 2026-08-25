@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Regenerate public/sitemap-blog.xml from the published blog posts in
- * Supabase. Run automatically before every production build via the
- * `prebuild` script in package.json — every Lovable deploy ships the
- * freshest blog URL list without anyone touching XML.
+ * Regenerate public/sitemap-blog.xml from the published blog posts served by
+ * the backend API. Run automatically before every production build via the
+ * `prebuild` script in package.json — every deploy ships the freshest blog URL
+ * list without anyone touching XML.
  *
- * Fails open: if Supabase env vars are missing or the request errors,
- * writes an empty (but valid) sitemap and exits 0. The page-level
- * sitemap and the rest of the build are unaffected.
+ * Fails open: if VITE_API_URL is unreachable or the request errors, writes an
+ * empty (but valid) sitemap and exits 0. The page-level sitemap and the rest
+ * of the build are unaffected — a sitemap is not worth failing a deploy over.
  *
  * To run manually: `node scripts/generate-blog-sitemap.mjs`
  */
@@ -76,37 +76,19 @@ const escapeXml = (s) =>
 
 const main = async () => {
   const env = loadEnv();
-  const SUPABASE_URL =
-    env.VITE_SUPABASE_URL || env.SUPABASE_URL || "";
-  const SUPABASE_KEY =
-    env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    env.SUPABASE_PUBLISHABLE_KEY ||
-    env.SUPABASE_ANON_KEY ||
-    "";
+  const API_URL = (env.VITE_API_URL || env.API_URL || "http://localhost:4000/api").replace(
+    /\/+$/,
+    ""
+  );
 
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.warn("[sitemap-blog] Supabase env not configured — writing empty sitemap.");
-    writeSitemap([]);
-    process.exit(0);
-  }
-
-  const url =
-    `${SUPABASE_URL}/rest/v1/blog_posts` +
-    `?status=eq.published` +
-    `&select=slug,title,updated_at,published_at,featured_image` +
-    `&order=published_at.desc`;
+  // GET /api/blog is public and already filtered to published posts ordered
+  // by published_at desc, so there is nothing to authenticate or sort here.
+  const url = `${API_URL}/blog`;
 
   try {
-    const res = await fetch(url, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-      },
-    });
+    const res = await fetch(url);
     if (!res.ok) {
-      console.warn(
-        `[sitemap-blog] Supabase responded ${res.status} — writing empty sitemap.`
-      );
+      console.warn(`[sitemap-blog] API responded ${res.status} — writing empty sitemap.`);
       writeSitemap([]);
       process.exit(0);
     }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import SEOHead from "@/components/SEOHead";
-import { supabase } from "@/integrations/supabase/client";
+import { cms } from "@/lib/api";
 import {
   DEFAULT_STATS,
   DEFAULT_PARTNERS,
@@ -60,26 +60,28 @@ const About = () => {
 
   useEffect(() => {
     (async () => {
+      // Each falls back to its bundled default independently, so one failing
+      // section doesn't blank out the other three.
       const [s, p, f, t] = await Promise.all([
-        supabase.from('statistics').select('*').eq('visible', true).order('sort_order'),
-        supabase.from('partners').select('*').eq('visible', true).order('sort_order'),
-        supabase.from('faqs').select('*').eq('visible', true).order('sort_order'),
-        supabase.from('team_members').select('*').eq('visible', true).order('sort_order'),
+        cms.listVisible('statistics').catch(() => []),
+        cms.listVisible('partners').catch(() => []),
+        cms.listVisible('faqs').catch(() => []),
+        cms.listVisible('team-members').catch(() => []),
       ]);
-      if (s.data && s.data.length) {
-        setStats(s.data.map((r: any) => ({
+      if (s.length) {
+        setStats(s.map((r: any) => ({
           value: Number(String(r.value).replace(/[^0-9.]/g, '')) || 0,
           label: r.label,
           suffix: r.suffix || '',
         })));
       }
-      if (p.data && p.data.length) {
+      if (p.length) {
         // Use uploaded logo if present, otherwise fall back to the bundled
         // default image keyed by partner name so the site still looks right.
         // Type falls back to the known default for well-known names so rows
         // from older seeds still land in the correct section.
         setPartners(
-          p.data.map((r: any) => ({
+          p.map((r: any) => ({
             name: r.name,
             logo_url: r.logo_url || PARTNER_FALLBACKS[r.name] || null,
             website_url: r.website_url,
@@ -87,10 +89,10 @@ const About = () => {
           }))
         );
       }
-      if (f.data && f.data.length) setFaqs(f.data as any);
-      if (t.data && t.data.length) {
+      if (f.length) setFaqs(f as any);
+      if (t.length) {
         setTeam(
-          t.data.map((r: any) => ({
+          t.map((r: any) => ({
             ...r,
             image_url: r.image_url || TEAM_FALLBACKS[r.name] || null,
           }))

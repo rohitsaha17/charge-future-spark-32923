@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, DollarSign, Clock, Zap, Shield, Headphones, TrendingDown, Award } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { ApiError, enquiries } from "@/lib/api";
 import { HONEYPOT_FIELD, isHoneypotTripped, isThrottled, markSubmission } from "@/lib/antiSpam";
 
 // Google Ads gtag type
@@ -178,20 +178,16 @@ const Partner = () => {
     const message = `Power Load: ${formData.get('powerLoad')}kW, Ownership Model: ${formData.get('ownershipModel')}, Pin Code: ${formData.get('pincode')}, Address: ${formData.get('address')}`;
 
     try {
-      const { error } = await supabase
-        .from('partner_enquiries')
-        .insert({
-          name,
-          phone,
-          email,
-          charger_type: chargerTypeForm,
-          message,
-          location_lat: selectedLocation.lat,
-          location_lng: selectedLocation.lng,
-          location_address: selectedLocation.address || null,
-        });
-
-      if (error) throw error;
+      await enquiries.submitPartner({
+        name,
+        phone,
+        email,
+        charger_type: chargerTypeForm,
+        message,
+        location_lat: selectedLocation.lat,
+        location_lng: selectedLocation.lng,
+        location_address: selectedLocation.address || null,
+      });
       
       // Google Ads conversion tracking - Partner form submission
       if (typeof window.gtag !== 'undefined') {
@@ -210,7 +206,13 @@ const Partner = () => {
       if (import.meta.env.DEV) {
         console.error('Error submitting enquiry:', error);
       }
-      toast.error("Failed to submit enquiry. Please try again.");
+      // A 429 carries an actionable message ("3 submissions per hour"), so
+      // show it rather than the generic failure text.
+      toast.error(
+        error instanceof ApiError && error.status === 429
+          ? error.message
+          : "Failed to submit enquiry. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }

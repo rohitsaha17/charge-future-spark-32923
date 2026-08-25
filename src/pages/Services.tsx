@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
-import { supabase } from "@/integrations/supabase/client";
+import { cms } from "@/lib/api";
 import { SERVICE_FALLBACKS } from "@/lib/siteDefaults";
 import GradientDivider from "@/components/GradientDivider";
 import StorytellingSection from "@/components/StorytellingSection";
@@ -110,12 +110,8 @@ const Services = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from('services_catalog')
-        .select('*')
-        .eq('visible', true)
-        .order('sort_order');
-      if (data && data.length) {
+      const data = await cms.listVisible('services').catch(() => []);
+      if (data.length) {
         setChargerTypes(
           data.map((r: any) => ({
             image: r.image_url || SERVICE_FALLBACKS[r.slug] || l1PlugPoint,

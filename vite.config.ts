@@ -5,17 +5,37 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 /**
- * Rewrites the `<!-- supabase-preconnect-placeholder -->` in index.html
- * to an actual <link rel="preconnect"> pointing at whatever Supabase
- * project VITE_SUPABASE_URL names. Keeps index.html provider-agnostic
- * so a fresh Supabase project just needs env vars — no source edits.
+ * Rewrites the `<!-- api-preconnect-placeholder -->` in index.html into a real
+ * <link rel="preconnect"> for whatever origin VITE_API_URL names, and widens
+ * the CSP's connect-src/img-src to allow it. index.html stays deployment-
+ * agnostic: pointing at a different API host is an env var, not a source edit.
  */
-const supabasePreconnect = (supabaseUrl: string | undefined): Plugin => ({
-  name: "supabase-preconnect",
+const apiOrigin = (apiUrl: string | undefined): string | undefined => {
+  if (!apiUrl) return undefined;
+  try {
+    return new URL(apiUrl).origin;
+  } catch {
+    return undefined;
+  }
+};
+
+const apiPreconnect = (apiUrl: string | undefined): Plugin => ({
+  name: "api-preconnect",
   transformIndexHtml(html) {
-    if (!supabaseUrl) return html;
-    const tag = `<link rel="preconnect" href="${supabaseUrl}" crossorigin>`;
-    return html.replace("<!-- supabase-preconnect-placeholder -->", tag);
+    const origin = apiOrigin(apiUrl);
+    if (!origin) return html;
+    const withPreconnect = html.replace(
+      "<!-- api-preconnect-placeholder -->",
+      `<link rel="preconnect" href="${origin}" crossorigin>`
+    );
+    // index.html already lists the dev default; only widen the CSP when the
+    // configured origin is something else, or it ends up listed twice.
+    if (withPreconnect.includes(`connect-src 'self' ${origin}`)) return withPreconnect;
+    // The API is both an XHR target and, when it serves uploaded images
+    // itself, an image source.
+    return withPreconnect
+      .replace("connect-src 'self'", `connect-src 'self' ${origin}`)
+      .replace("img-src 'self'", `img-src 'self' ${origin}`);
   },
 });
 
@@ -29,7 +49,7 @@ export default defineConfig(({ mode }) => {
   },
   plugins: [
     react(),
-    supabasePreconnect(env.VITE_SUPABASE_URL),
+    apiPreconnect(env.VITE_API_URL),
     mode === "development" && componentTagger(),
   ].filter(Boolean) as Plugin[],
   resolve: {
@@ -48,7 +68,6 @@ export default defineConfig(({ mode }) => {
           if (id.includes("maplibre-gl") || id.includes("mapbox-gl")) return "maps";
           if (id.includes("@react-google-maps")) return "maps";
           if (id.includes("framer-motion")) return "motion";
-          if (id.includes("@supabase")) return "supabase";
           if (id.includes("@tanstack/react-query")) return "query";
           if (id.includes("recharts") || id.includes("d3-")) return "charts";
           if (id.includes("embla-carousel") || id.includes("vaul") || id.includes("cmdk"))
