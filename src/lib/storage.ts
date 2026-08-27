@@ -75,14 +75,18 @@ export const uploadImage = async (file: File, folder = 'uploads'): Promise<Uploa
   const doUpload = async () => {
     // Use the detected extension, not the user-supplied one.
     const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${detected.ext}`;
-    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+    const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, {
       cacheControl: '3600',
       upsert: false,
       contentType: detected.mime,
     });
     if (error) throw error;
-    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-    return { url: data.publicUrl, path };
+    // The REST API returns the canonical URL directly in the upload
+    // response; fall back to getPublicUrl for the legacy Supabase path
+    // in case the shim is running against real Supabase.
+    const url =
+      data?.url ?? supabase.storage.from(BUCKET).getPublicUrl(data?.path ?? path).data.publicUrl;
+    return { url, path: data?.path ?? path };
   };
 
   try {

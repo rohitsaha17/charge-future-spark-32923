@@ -53,7 +53,7 @@
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data:;
       img-src 'self' data: blob: https:;
-      connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://maps.googleapis.com https://maps.gstatic.com https://server.arcgisonline.com https://*.basemaps.cartocdn.com https://photon.komoot.io https://nominatim.openstreetmap.org;
+      connect-src 'self' https://api.apluscharge.in https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://maps.googleapis.com https://maps.gstatic.com https://server.arcgisonline.com https://*.basemaps.cartocdn.com https://photon.komoot.io https://nominatim.openstreetmap.org;
       frame-src 'self' https://www.google.com https://www.youtube.com;
       object-src 'none';
       base-uri 'self';
@@ -73,6 +73,7 @@
          VITE_SUPABASE_URL from the env. That way this file stays
          provider-agnostic — swap the env vars and every host works. -->
     <!-- supabase-preconnect-placeholder -->
+    <link rel="preconnect" href="https://api.apluscharge.in" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://maps.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://maps.gstatic.com" crossorigin>
