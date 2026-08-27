@@ -552,12 +552,13 @@ const storage = {
   },
   // Bucket helpers were used by the legacy auto-create flow; the new API
   // has no bucket concept, so return success and let uploads flow.
-  async createBucket(): Promise<ApiResponse<{}>> {
+  async createBucket(_id?: string, _options?: Record<string, unknown>): Promise<ApiResponse<{}>> {
     return { data: {}, error: null };
   },
-  async getBucket(): Promise<ApiResponse<{ name: string }>> {
+  async getBucket(_id?: string): Promise<ApiResponse<{ name: string }>> {
     return { data: { name: 'public-assets' }, error: null };
   },
+
 };
 
 // -------------------------------------------------------------------- export
