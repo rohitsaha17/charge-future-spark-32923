@@ -81,12 +81,9 @@ export const uploadImage = async (file: File, folder = 'uploads'): Promise<Uploa
       contentType: detected.mime,
     });
     if (error) throw error;
-    // The REST API returns the canonical URL directly in the upload
-    // response; fall back to getPublicUrl for the legacy Supabase path
-    // in case the shim is running against real Supabase.
-    const url =
-      data?.url ?? supabase.storage.from(BUCKET).getPublicUrl(data?.path ?? path).data.publicUrl;
-    return { url, path: data?.path ?? path };
+    const uploadedPath = data?.path ?? path;
+    const url = supabase.storage.from(BUCKET).getPublicUrl(uploadedPath).data.publicUrl;
+    return { url, path: uploadedPath };
   };
 
   try {
