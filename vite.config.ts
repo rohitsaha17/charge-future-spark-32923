@@ -33,9 +33,16 @@ export default defineConfig(({ mode }) => {
     mode === "development" && componentTagger(),
   ].filter(Boolean) as Plugin[],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: [
+      {
+        find: "@/integrations/supabase/client",
+        replacement: path.resolve(__dirname, "./src/integrations/cloudClient.ts"),
+      },
+      {
+        find: "@",
+        replacement: path.resolve(__dirname, "./src"),
+      },
+    ],
   },
   build: {
     chunkSizeWarningLimit: 700,

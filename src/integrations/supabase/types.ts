@@ -212,6 +212,45 @@ export type Database = {
         }
         Relationships: []
       }
+      journey_milestones: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string
+          icon: string | null
+          id: string
+          sort_order: number
+          title: string
+          updated_at: string
+          visible: boolean
+          year: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+          visible?: boolean
+          year: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          visible?: boolean
+          year?: string
+        }
+        Relationships: []
+      }
       partner_enquiries: {
         Row: {
           charger_type: string | null
