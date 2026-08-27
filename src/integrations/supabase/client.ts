@@ -35,8 +35,14 @@
  */
 import type { Database } from './types';
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
-  'https://api.apluscharge.in';
+// Strip trailing slashes so `${API_BASE}/api/foo` doesn't emit a
+// double slash when the env var was written as `https://host/`.
+// Some backends 404 on the doubled path; others fold it silently — we
+// don't rely on either behaviour.
+const API_BASE = (
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
+  'https://api.apluscharge.in'
+).replace(/\/+$/, '');
 
 const KEY_ACCESS = 'apc_access_token';
 const KEY_REFRESH = 'apc_refresh_token';
