@@ -495,6 +495,41 @@ const auth = {
       },
     };
   },
+  // The following methods keep signatures compatible with the Supabase
+  // SDK so AdminLogin's Zod-validated forms don't blow up at click time.
+  // The new backend exposes /api/auth/forgot-password and no signup
+  // endpoint (admins are created out-of-band), so signUp returns an
+  // explanatory error and the AdminLogin flow already treats it as such.
+  async resetPasswordForEmail(
+    email: string,
+    _opts?: { redirectTo?: string },
+  ) {
+    const res = await doFetch('/api/auth/forgot-password', {
+      method: 'POST',
+      body: { email },
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok) return { data: null, error: mapError(json, res.status) };
+    return { data: json, error: null as ApiError | null };
+  },
+  async signUp(_args: { email: string; password: string; options?: unknown }) {
+    return {
+      data: null,
+      error: {
+        message:
+          'Self-serve signup is disabled — ask an existing admin to create the account.',
+      } as ApiError,
+    };
+  },
+  async updateUser(args: { password?: string; email?: string }) {
+    const res = await doFetch('/api/auth/reset-password', {
+      method: 'POST',
+      body: args,
+    }, true);
+    const json = await res.json().catch(() => null);
+    if (!res.ok) return { data: null, error: mapError(json, res.status) };
+    return { data: json, error: null as ApiError | null };
+  },
 };
 
 // -------------------------------------------------------------------- storage
