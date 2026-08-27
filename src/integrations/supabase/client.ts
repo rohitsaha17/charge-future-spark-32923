@@ -129,9 +129,11 @@ const mapError = (json: any, status: number): ApiError => {
   return { message: `HTTP ${status}` };
 };
 
+type FetchInit = Omit<RequestInit, 'body'> & { body?: unknown };
+
 const doFetch = async (
   path: string,
-  init: RequestInit = {},
+  init: FetchInit = {},
   authenticated = false,
   isRetry = false,
 ): Promise<Response> => {
@@ -146,8 +148,9 @@ const doFetch = async (
     const token = localStorage.getItem(KEY_ACCESS);
     if (token) headers.set('Authorization', `Bearer ${token}`);
   }
-  const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+  const res = await fetch(`${API_BASE}${path}`, { ...init, headers } as RequestInit);
   if (res.status === 401 && authenticated && !isRetry) {
+
     if (await tryRefresh()) {
       return doFetch(path, init, authenticated, true);
     }
@@ -443,6 +446,33 @@ const auth = {
     emitAuth('SIGNED_IN', session);
     return { data: { session, user }, error: null as ApiError | null };
   },
+  async signUp({
+    email,
+    password,
+    options,
+  }: {
+    email: string;
+    password: string;
+    options?: { emailRedirectTo?: string };
+  }) {
+    const res = await doFetch('/api/auth/signup', {
+      method: 'POST',
+      body: { email, password, redirectTo: options?.emailRedirectTo },
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok) return { data: null, error: mapError(json, res.status) };
+    return { data: json ?? {}, error: null as ApiError | null };
+  },
+  async resetPasswordForEmail(email: string, options?: { redirectTo?: string }) {
+    const res = await doFetch('/api/auth/password-reset', {
+      method: 'POST',
+      body: { email, redirectTo: options?.redirectTo },
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok) return { data: null, error: mapError(json, res.status) };
+    return { data: json ?? {}, error: null as ApiError | null };
+  },
+
   async signOut() {
     try {
       await doFetch('/api/auth/logout', { method: 'POST' }, true);
@@ -522,12 +552,13 @@ const storage = {
   },
   // Bucket helpers were used by the legacy auto-create flow; the new API
   // has no bucket concept, so return success and let uploads flow.
-  async createBucket(): Promise<ApiResponse<{}>> {
+  async createBucket(_id?: string, _options?: Record<string, unknown>): Promise<ApiResponse<{}>> {
     return { data: {}, error: null };
   },
-  async getBucket(): Promise<ApiResponse<{ name: string }>> {
+  async getBucket(_id?: string): Promise<ApiResponse<{ name: string }>> {
     return { data: { name: 'public-assets' }, error: null };
   },
+
 };
 
 // -------------------------------------------------------------------- export
