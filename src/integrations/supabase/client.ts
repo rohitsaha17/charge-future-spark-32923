@@ -446,6 +446,33 @@ const auth = {
     emitAuth('SIGNED_IN', session);
     return { data: { session, user }, error: null as ApiError | null };
   },
+  async signUp({
+    email,
+    password,
+    options,
+  }: {
+    email: string;
+    password: string;
+    options?: { emailRedirectTo?: string };
+  }) {
+    const res = await doFetch('/api/auth/signup', {
+      method: 'POST',
+      body: { email, password, redirectTo: options?.emailRedirectTo },
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok) return { data: null, error: mapError(json, res.status) };
+    return { data: json ?? {}, error: null as ApiError | null };
+  },
+  async resetPasswordForEmail(email: string, options?: { redirectTo?: string }) {
+    const res = await doFetch('/api/auth/password-reset', {
+      method: 'POST',
+      body: { email, redirectTo: options?.redirectTo },
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok) return { data: null, error: mapError(json, res.status) };
+    return { data: json ?? {}, error: null as ApiError | null };
+  },
+
   async signOut() {
     try {
       await doFetch('/api/auth/logout', { method: 'POST' }, true);
