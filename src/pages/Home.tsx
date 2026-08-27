@@ -554,7 +554,7 @@ const Home = () => {
                           <h3 className={`font-semibold leading-tight text-xs md:text-sm ${isActive ? 'text-white' : 'text-foreground'}`}>
                             {service.title}
                           </h3>
-                          <p className={`text-[11px] md:text-xs leading-snug mt-1 line-clamp-3 transition-opacity duration-300 ${
+                          <p className={`text-xs md:text-sm leading-snug mt-1 line-clamp-3 transition-opacity duration-300 ${
                             isActive ? 'text-white/90 opacity-100' : 'text-muted-foreground opacity-0'
                           }`}>
                             {service.description}

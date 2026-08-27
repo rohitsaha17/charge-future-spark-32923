@@ -242,7 +242,7 @@ const NetworkVisualization = () => {
                   <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" style={{ color: feature.color }} />
                 </div>
                 <h4 className="text-xs md:text-sm font-semibold text-white mb-1">{feature.title}</h4>
-                <p className="text-[10px] md:text-xs text-white/60 leading-snug">{feature.description}</p>
+                <p className="text-xs md:text-sm text-white/60 leading-snug">{feature.description}</p>
               </div>
             );
           })}
