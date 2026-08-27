@@ -129,9 +129,11 @@ const mapError = (json: any, status: number): ApiError => {
   return { message: `HTTP ${status}` };
 };
 
+type FetchInit = Omit<RequestInit, 'body'> & { body?: unknown };
+
 const doFetch = async (
   path: string,
-  init: RequestInit = {},
+  init: FetchInit = {},
   authenticated = false,
   isRetry = false,
 ): Promise<Response> => {
@@ -146,8 +148,9 @@ const doFetch = async (
     const token = localStorage.getItem(KEY_ACCESS);
     if (token) headers.set('Authorization', `Bearer ${token}`);
   }
-  const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+  const res = await fetch(`${API_BASE}${path}`, { ...init, headers } as RequestInit);
   if (res.status === 401 && authenticated && !isRetry) {
+
     if (await tryRefresh()) {
       return doFetch(path, init, authenticated, true);
     }
