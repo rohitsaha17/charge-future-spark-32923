@@ -33,16 +33,15 @@ export default defineConfig(({ mode }) => {
     mode === "development" && componentTagger(),
   ].filter(Boolean) as Plugin[],
   resolve: {
-    alias: [
-      {
-        find: "@/integrations/supabase/client",
-        replacement: path.resolve(__dirname, "./src/integrations/cloudClient.ts"),
-      },
-      {
-        find: "@",
-        replacement: path.resolve(__dirname, "./src"),
-      },
-    ],
+    // Only the `@` alias. The earlier `@/integrations/supabase/client`
+    // override redirected every SDK import to `cloudClient.ts`, which
+    // threw at module load when `VITE_SUPABASE_URL` was missing (i.e.
+    // on Vercel, where it should be) and bricked the whole bundle with
+    // a white screen. Real client lives in `src/integrations/supabase/client.ts`
+    // as the REST shim; nothing else should be aliased here.
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
   build: {
     chunkSizeWarningLimit: 700,

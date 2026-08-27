@@ -1,18 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './supabase/types';
-
-const cloudUrl = import.meta.env.VITE_SUPABASE_URL;
-const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-if (!cloudUrl || !publishableKey) {
-  throw new Error('Lovable Cloud connection is not configured.');
-}
-
-export const supabase = createClient<Database>(cloudUrl, publishableKey, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-});
+// Historical stub kept in place because Lovable's auto-sync sometimes
+// re-inserts a Vite alias that redirects `@/integrations/supabase/client`
+// here. Re-exporting the REST shim means the alias becomes harmless
+// instead of white-screening the site with an uncaught throw at boot.
+export * from './supabase/client';
+export { supabase } from './supabase/client';
