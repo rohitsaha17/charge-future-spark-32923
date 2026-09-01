@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Youtube, Linkedin, Twitter, Facebook } from "lucide-react";
+import { Mail, Phone, Youtube, Linkedin, Twitter, Facebook } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
@@ -46,15 +46,23 @@ const Footer = () => {
                   info@apluscharge.in
                 </a>
               </li>
-              <li className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Phone size={16} />
-                <a href="tel:+917099018180" className="hover:text-primary transition-colors">
-                  +91 70990 18180
-                </a>
+              <li className="flex items-start space-x-2 text-sm text-muted-foreground">
+                <Phone size={16} className="mt-0.5 shrink-0" />
+                <span>
+                  <span className="block text-xs uppercase tracking-wide">Customer Care</span>
+                  <a href="tel:+917099018180" className="hover:text-primary transition-colors">
+                    +91 70990 18180
+                  </a>
+                </span>
               </li>
-              <li className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <MapPin size={16} />
-                <span>ALTERNATEV SOLUTIONS PVT LTD<br />23, Rajat Kamal Path, RG Baruah Road,<br />Guwahati-781024</span>
+              <li className="flex items-start space-x-2 text-sm text-muted-foreground">
+                <Phone size={16} className="mt-0.5 shrink-0" />
+                <span>
+                  <span className="block text-xs uppercase tracking-wide">Business Enquiries</span>
+                  <a href="tel:+917099018181" className="hover:text-primary transition-colors">
+                    +91 70990 18181
+                  </a>
+                </span>
               </li>
             </ul>
             <div className="flex items-center gap-3 mt-4">
