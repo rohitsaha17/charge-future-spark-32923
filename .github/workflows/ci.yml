@@ -46,7 +46,6 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # Safe public anon key values; real secrets live in Lovable env.
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || 'placeholder' }}
-          VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID || 'placeholder' }}
+          # Only used to emit the API preconnect + widen the CSP at build
+          # time; no secret, and the build works without it.
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://api.apluscharge.in/api' }}

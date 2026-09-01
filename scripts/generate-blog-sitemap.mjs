@@ -5,9 +5,12 @@
  * `prebuild` script in package.json — every deploy ships the freshest blog URL
  * list without anyone touching XML.
  *
- * Fails open: if VITE_API_URL is unreachable or the request errors, writes an
- * empty (but valid) sitemap and exits 0. The page-level sitemap and the rest
- * of the build are unaffected — a sitemap is not worth failing a deploy over.
+ * Fails open: if the API is unreachable or the request errors, the existing
+ * sitemap is left exactly as it is and the build carries on — a sitemap is not
+ * worth failing a deploy over, and replacing a good one with an empty file is
+ * worse than shipping a slightly stale one. (It used to write the empty file,
+ * which is how a production build with no VITE_API_URL published a blog
+ * sitemap containing zero of the 40 posts.)
  *
  * To run manually: `node scripts/generate-blog-sitemap.mjs`
  */
@@ -19,6 +22,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const OUT_FILE = resolve(ROOT, "public/sitemap-blog.xml");
 const SITE_URL = "https://www.apluscharge.com";
+
+// Mirrors src/lib/apiUrl.ts, which the app and vite.config.ts share. This is a
+// plain .mjs build script and cannot import the TypeScript module, so the one
+// value is repeated here — keep the two in step.
+const PROD_API_URL = "https://api.apluscharge.in/api";
 
 const loadEnv = () => {
   const merged = { ...process.env };
@@ -74,12 +82,21 @@ const escapeXml = (s) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
 
+/** Leaves whatever is already on disk in place; only writes a valid empty file
+ *  when there is nothing to keep. */
+const keepExistingSitemap = (reason) => {
+  if (existsSync(OUT_FILE)) {
+    console.warn(`[sitemap-blog] ${reason} — keeping the existing sitemap.`);
+  } else {
+    console.warn(`[sitemap-blog] ${reason} — no sitemap on disk, writing an empty one.`);
+    writeSitemap([]);
+  }
+  process.exit(0);
+};
+
 const main = async () => {
   const env = loadEnv();
-  const API_URL = (env.VITE_API_URL || env.API_URL || "http://localhost:4000/api").replace(
-    /\/+$/,
-    ""
-  );
+  const API_URL = (env.VITE_API_URL || env.API_URL || PROD_API_URL).replace(/\/+$/, "");
 
   // GET /api/blog is public and already filtered to published posts ordered
   // by published_at desc, so there is nothing to authenticate or sort here.
@@ -87,11 +104,7 @@ const main = async () => {
 
   try {
     const res = await fetch(url);
-    if (!res.ok) {
-      console.warn(`[sitemap-blog] API responded ${res.status} — writing empty sitemap.`);
-      writeSitemap([]);
-      process.exit(0);
-    }
+    if (!res.ok) keepExistingSitemap(`API responded ${res.status}`);
     const rows = await res.json();
     const entries = (Array.isArray(rows) ? rows : []).filter((r) => r && r.slug);
     // Use published_at as lastmod if updated_at is missing
@@ -99,9 +112,7 @@ const main = async () => {
     writeSitemap(entries);
     console.log(`[sitemap-blog] Wrote ${entries.length} blog URLs to sitemap-blog.xml`);
   } catch (err) {
-    console.warn("[sitemap-blog] Fetch failed:", err.message);
-    writeSitemap([]);
-    process.exit(0);
+    keepExistingSitemap(`fetch failed: ${err.message}`);
   }
 };
 

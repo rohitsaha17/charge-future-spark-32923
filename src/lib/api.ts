@@ -5,9 +5,12 @@
 // expired access token before retrying the request. Everything else was just a
 // query builder over HTTP, which is what the typed methods at the bottom are.
 
-const API_URL = (
-  (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:4000/api'
-).replace(/\/+$/, '');
+import { resolveApiUrl } from './apiUrl';
+
+const API_URL = resolveApiUrl(
+  import.meta.env.VITE_API_URL as string | undefined,
+  import.meta.env.PROD
+);
 
 const ACCESS_TOKEN_KEY = 'apc_access_token';
 const REFRESH_TOKEN_KEY = 'apc_refresh_token';

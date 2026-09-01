@@ -3,6 +3,7 @@ import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { resolveApiUrl } from "./src/lib/apiUrl";
 
 /**
  * Rewrites the `<!-- api-preconnect-placeholder -->` in index.html into a real
@@ -42,6 +43,10 @@ const apiPreconnect = (apiUrl: string | undefined): Plugin => ({
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  // Same resolver the runtime client uses, so the CSP always allows exactly
+  // the origin the bundle calls. A production build with VITE_API_URL unset
+  // resolves to the live API instead of silently shipping localhost.
+  const apiUrl = resolveApiUrl(env.VITE_API_URL, mode === "production");
   return {
   server: {
     host: "::",
@@ -49,7 +54,7 @@ export default defineConfig(({ mode }) => {
   },
   plugins: [
     react(),
-    apiPreconnect(env.VITE_API_URL),
+    apiPreconnect(apiUrl),
     mode === "development" && componentTagger(),
   ].filter(Boolean) as Plugin[],
   resolve: {
