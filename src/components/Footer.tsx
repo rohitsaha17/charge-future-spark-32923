@@ -65,21 +65,26 @@ const Footer = () => {
                 </span>
               </li>
             </ul>
-            <div className="flex items-center gap-3 mt-4">
-              <a href="https://www.instagram.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-primary transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            {/* Social row — each anchor is a 44x44 tap target with the
+                icon centred inside. Google's mobile-friendly test
+                requires ≥48x48 with ≥8px spacing between adjacent
+                interactive elements; -m-2 keeps the visible icons at
+                the same visual gap while enlarging the hit area. */}
+            <div className="flex items-center gap-1 mt-4 -m-2">
+              <a href="https://www.instagram.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
               </a>
-              <a href="https://www.linkedin.com/company/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors">
-                <Linkedin size={20} />
+              <a href="https://www.linkedin.com/company/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg">
+                <Linkedin size={22} />
               </a>
-              <a href="https://www.youtube.com/@evboy_samyak" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-muted-foreground hover:text-primary transition-colors">
-                <Youtube size={20} />
+              <a href="https://www.youtube.com/@evboy_samyak" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg">
+                <Youtube size={22} />
               </a>
-              <a href="https://x.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="text-muted-foreground hover:text-primary transition-colors">
-                <Twitter size={20} />
+              <a href="https://x.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg">
+                <Twitter size={22} />
               </a>
-              <a href="https://www.facebook.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-muted-foreground hover:text-primary transition-colors">
-                <Facebook size={20} />
+              <a href="https://www.facebook.com/apluscharge" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg">
+                <Facebook size={22} />
               </a>
             </div>
           </div>

@@ -68,10 +68,10 @@
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
     <!-- DNS prefetch + preconnect for third-party domains we use at runtime.
-         The Supabase preconnect is emitted at build time by the
-         `supabasePreconnect` plugin in vite.config.ts, reading
-         VITE_SUPABASE_URL from the env. That way this file stays
-         provider-agnostic — swap the env vars and every host works. -->
+         The API preconnect is emitted at build time by the
+         `apiPreconnect` plugin in vite.config.ts, reading VITE_API_URL
+         from the env. That way this file stays deployment-agnostic —
+         swap the env var and every host works. -->
     <!-- api-preconnect-placeholder -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://maps.googleapis.com" crossorigin>
@@ -160,7 +160,8 @@
     {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      "@id": "https://www.apluscharge.com/#organization",
+      "@id": "https://www.apluscharge.com/#localbusiness",
+      "parentOrganization": { "@id": "https://www.apluscharge.com/#organization" },
       "name": "A Plus Charge",
       "image": "https://www.apluscharge.com/og-image.png",
       "url": "https://www.apluscharge.com/",
@@ -189,6 +190,7 @@
         { "@type": "State", "name": "Mizoram" },
         { "@type": "State", "name": "Tripura" }
       ],
+      "openingHours": "Mo-Sa 09:00-19:00",
       "openingHoursSpecification": [{
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": [

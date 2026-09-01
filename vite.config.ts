@@ -53,6 +53,12 @@ export default defineConfig(({ mode }) => {
     mode === "development" && componentTagger(),
   ].filter(Boolean) as Plugin[],
   resolve: {
+    // Only the `@` alias. An earlier `@/integrations/supabase/client`
+    // override redirected every SDK import to `cloudClient.ts`, which
+    // threw at module load when its env var was missing (i.e. on Vercel,
+    // where it should be) and bricked the whole bundle with a white
+    // screen. The data layer is now `src/lib/api.ts`, talking to
+    // VITE_API_URL directly; nothing else should be aliased here.
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
