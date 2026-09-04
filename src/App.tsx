@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import LoadingProgressBar from "./components/LoadingProgressBar";
 import PageSkeleton from "./components/PageSkeleton";
 import ErrorBoundary from "./components/ErrorBoundary";
+import FloatingContactInfo from "./components/FloatingContactInfo";
 import Home from "./pages/Home"; // Eager: first-paint critical
 
 // VideoIntro is only used on the very first `/` visit of a tab. Lazy-load
@@ -191,6 +192,7 @@ const AppContent = () => {
     <>
       <LoadingProgressBar isLoading={false} />
       <Navigation />
+      <FloatingContactInfo />
       <ErrorBoundary>
       <Suspense fallback={<PageSkeleton />}>
         <Routes location={location}>
