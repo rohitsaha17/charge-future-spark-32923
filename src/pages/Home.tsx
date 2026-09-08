@@ -34,7 +34,7 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AnimatedDownloadCounter from "@/components/AnimatedDownloadCounter";
 
-// Below-the-fold components split off so the ~1 MB maplibre chunk and
+// Below-the-fold components split off so the Google Maps SDK fetch and
 // the ~40 KB framer-motion chunk never block Home's LCP/TBT. Lighthouse
 // was timing out on the map init on slow-4G emulation; lazy + Suspense
 // lets the measured content render first and the map hydrate afterwards.

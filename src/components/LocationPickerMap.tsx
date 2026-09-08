@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
 import { MapPin, Search, Loader2, Crosshair, X, Check } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { attachMapStyleFallback, SHARED_RASTER_MAP_STYLE } from '@/lib/mapStyles';
+import { DEFAULT_MAP_CENTER, GOOGLE_MAPS_MAP_ID, isGoogleMapsConfigured, loadGoogleMaps } from '@/lib/googleMaps';
 
 interface LocationPickerMapProps {
   onLocationSelect: (lat: number, lng: number, address?: string) => void;
@@ -38,7 +36,7 @@ interface PhotonResponse {
   features?: PhotonFeature[];
 }
 
-const DEFAULT_CENTER = { lat: 26.1445, lng: 91.7362 };
+const DEFAULT_CENTER = DEFAULT_MAP_CENTER;
 const coordsLabel = (lat: number, lng: number) => `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
 const LocationPickerMap = ({
@@ -48,13 +46,14 @@ const LocationPickerMap = ({
 }: LocationPickerMapProps) => {
   const { toast } = useToast();
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<maplibregl.Map | null>(null);
+  const map = useRef<google.maps.Map | null>(null);
   const onLocationSelectRef = useRef(onLocationSelect);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
   const geocodeRequestRef = useRef(0);
 
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
   const [selectedLat, setSelectedLat] = useState<number | null>(null);
   const [selectedLng, setSelectedLng] = useState<number | null>(null);
   const [selectedAddress, setSelectedAddress] = useState('');
@@ -95,8 +94,9 @@ const LocationPickerMap = ({
       if (!map.current) return;
 
       const center = map.current.getCenter();
-      const lat = center.lat;
-      const lng = center.lng;
+      if (!center) return;
+      const lat = center.lat();
+      const lng = center.lng();
       const fallbackAddress = precomputedAddress || coordsLabel(lat, lng);
 
       commitLocation(lat, lng, fallbackAddress);
@@ -118,36 +118,59 @@ const LocationPickerMap = ({
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    const instance = new maplibregl.Map({
-      container: mapContainer.current,
-      style: SHARED_RASTER_MAP_STYLE,
-      center: [initialLng, initialLat],
-      zoom: 13,
-    });
+    let cancelled = false;
+    let listeners: google.maps.MapsEventListener[] = [];
 
-    const detachStyleFallback = attachMapStyleFallback(instance);
+    if (!isGoogleMapsConfigured()) {
+      setMapError('Map unavailable — VITE_GOOGLE_MAPS_API_KEY is not configured.');
+      return;
+    }
 
-    // Bottom-right keeps the +/- buttons clear of both the "Site location
-    // set" banner we overlay at top-3 and the gradient-radial layer that
-    // sits above the default top-right corner.
-    instance.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
+    loadGoogleMaps()
+      .then((maps) => {
+        if (cancelled || !mapContainer.current) return;
 
-    instance.on('load', () => {
-      setMapLoaded(true);
-      updateLocationFromCenter();
-    });
+        const instance = new maps.Map(mapContainer.current, {
+          center: { lat: initialLat, lng: initialLng },
+          zoom: 13,
+          mapId: GOOGLE_MAPS_MAP_ID,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          // Bottom-right keeps the +/- buttons clear of both the "Site location
+          // set" banner we overlay at top-3 and the gradient-radial layer that
+          // sits above the default top-right corner.
+          zoomControl: true,
+          zoomControlOptions: { position: maps.ControlPosition.RIGHT_BOTTOM },
+          clickableIcons: false,
+          gestureHandling: 'greedy',
+        });
 
-    instance.on('movestart', () => setIsDraggingMap(true));
-    instance.on('moveend', () => {
-      setIsDraggingMap(false);
-      updateLocationFromCenter();
-    });
+        map.current = instance;
 
-    map.current = instance;
+        listeners = [
+          instance.addListener('dragstart', () => setIsDraggingMap(true)),
+          instance.addListener('idle', () => {
+            setIsDraggingMap(false);
+            updateLocationFromCenter();
+          }),
+        ];
+
+        maps.event.addListenerOnce(instance, 'idle', () => {
+          if (!cancelled) setMapLoaded(true);
+        });
+      })
+      .catch((error: Error) => {
+        if (cancelled) return;
+        setMapError(error.message);
+        if (import.meta.env.DEV) {
+          console.error('Google Maps failed to load:', error);
+        }
+      });
 
     return () => {
-      detachStyleFallback();
-      instance.remove();
+      cancelled = true;
+      listeners.forEach((listener) => listener.remove());
       map.current = null;
       setMapLoaded(false);
     };
@@ -220,7 +243,8 @@ const LocationPickerMap = ({
       const lat = parseFloat(suggestion.lat);
       const lng = parseFloat(suggestion.lon);
 
-      map.current?.flyTo({ center: [lng, lat], zoom: 16, essential: true });
+      map.current?.panTo({ lat, lng });
+      map.current?.setZoom(16);
       commitLocation(lat, lng, suggestion.display_name);
       setSearchQuery(suggestion.display_name.split(',')[0]);
       setShowSuggestions(false);
@@ -243,7 +267,8 @@ const LocationPickerMap = ({
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        map.current?.flyTo({ center: [longitude, latitude], zoom: 17, essential: true });
+        map.current?.panTo({ lat: latitude, lng: longitude });
+        map.current?.setZoom(17);
         commitLocation(latitude, longitude, coordsLabel(latitude, longitude));
         setIsLocating(false);
       },
@@ -263,7 +288,8 @@ const LocationPickerMap = ({
     setSearchQuery('');
     setSuggestions([]);
     setShowSuggestions(false);
-    map.current?.flyTo({ center: [initialLng, initialLat], zoom: 13, essential: true });
+    map.current?.panTo({ lat: initialLat, lng: initialLng });
+    map.current?.setZoom(13);
     searchInputRef.current?.focus();
   }, [initialLat, initialLng]);
 
@@ -364,7 +390,13 @@ const LocationPickerMap = ({
       <div className={`location-picker-map ${mapBoxClass}`}>
         <div ref={mapContainer} className="h-full w-full" />
 
-        {!mapLoaded && (
+        {mapError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted px-6 text-center">
+            <p className="text-sm text-muted-foreground">{mapError}</p>
+          </div>
+        )}
+
+        {!mapLoaded && !mapError && (
           <div className="absolute inset-0 flex items-center justify-center bg-muted">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
@@ -429,18 +461,13 @@ const LocationPickerMap = ({
       <style>{`
         /* The map wrapper stacks a gradient-radial overlay at z-[5] and
            the "Site location set" banner at z-10, either of which can
-           visually obscure MapLibre's +/- zoom controls. Lift the
-           control container above both so the buttons are always
-           tappable. */
-        .location-picker-map .maplibregl-ctrl-bottom-right,
-        .location-picker-map .maplibregl-ctrl-top-right,
-        .location-picker-map .maplibregl-ctrl-bottom-left,
-        .location-picker-map .maplibregl-ctrl-top-left {
-          z-index: 20;
-        }
-        .location-picker-map .maplibregl-ctrl-group {
-          background: #fff;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+           visually obscure Google's +/- zoom controls. Lift the control
+           container above both so the buttons are always tappable. */
+        .location-picker-map .gm-style .gmnoprint,
+        .location-picker-map .gm-style .gm-bundled-control,
+        .location-picker-map .gm-style-cc,
+        .location-picker-map .gm-style a[href*="maps.google.com"] {
+          z-index: 20 !important;
         }
       `}</style>
     </div>

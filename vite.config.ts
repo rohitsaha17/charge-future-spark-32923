@@ -76,8 +76,6 @@ export default defineConfig(({ mode }) => {
           if (!id.includes("node_modules")) return;
           // Heavy libs split into their own chunks so they can be cached
           // independently and loaded only by the routes that need them.
-          if (id.includes("maplibre-gl") || id.includes("mapbox-gl")) return "maps";
-          if (id.includes("@react-google-maps")) return "maps";
           if (id.includes("framer-motion")) return "motion";
           if (id.includes("@tanstack/react-query")) return "query";
           if (id.includes("recharts") || id.includes("d3-")) return "charts";

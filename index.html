@@ -40,7 +40,7 @@
          sanitization. Allowlist every host this site actually loads.
          Notes:
          - `blob:` is required in script-src / worker-src so Lighthouse,
-           Maplibre, and DOMPurify can instantiate Blob workers. Without
+           Google Maps, and DOMPurify can instantiate Blob workers. Without
            it the PageSpeed audit aborts with "NO_FCP" and all metrics
            come back empty.
          - `frame-ancestors` only works as an HTTP header (browsers
@@ -53,7 +53,7 @@
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data:;
       img-src 'self' http://localhost:4000 data: blob: https:;
-      connect-src 'self' http://localhost:4000 https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://maps.googleapis.com https://maps.gstatic.com https://server.arcgisonline.com https://*.basemaps.cartocdn.com https://photon.komoot.io https://nominatim.openstreetmap.org;
+      connect-src 'self' http://localhost:4000 https://www.googletagmanager.com https://www.google-analytics.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://photon.komoot.io https://nominatim.openstreetmap.org;
       frame-src 'self' https://www.google.com https://www.youtube.com;
       object-src 'none';
       base-uri 'self';
