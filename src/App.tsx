@@ -9,7 +9,8 @@ import Footer from "./components/Footer";
 import LoadingProgressBar from "./components/LoadingProgressBar";
 import PageSkeleton from "./components/PageSkeleton";
 import ErrorBoundary from "./components/ErrorBoundary";
-import FloatingContactInfo from "./components/FloatingContactInfo";
+import ContactInfoCard from "./components/ContactInfoCard";
+import NewsletterCTA from "./components/NewsletterCTA";
 import Home from "./pages/Home"; // Eager: first-paint critical
 
 // VideoIntro is only used on the very first `/` visit of a tab. Lazy-load
@@ -106,6 +107,7 @@ const queryClient = new QueryClient({
 
 const AppContent = () => {
   const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
   const [showIntro, setShowIntro] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -192,7 +194,6 @@ const AppContent = () => {
     <>
       <LoadingProgressBar isLoading={false} />
       <Navigation />
-      <FloatingContactInfo />
       <ErrorBoundary>
       <Suspense fallback={<PageSkeleton />}>
         <Routes location={location}>
@@ -219,6 +220,16 @@ const AppContent = () => {
         </Routes>
       </Suspense>
       </ErrorBoundary>
+      {/* Shared bottom-of-page sections. Rendered once here so every
+          public route gets them without duplicating markup per page.
+          The admin console keeps its own bare chrome. */}
+      {!isAdminRoute && (
+        <>
+          {/* pb-0 lets the footer's own top margin provide the gap. */}
+          <ContactInfoCard className="pb-0 md:pb-0" />
+          <NewsletterCTA className="pb-0 md:pb-0" />
+        </>
+      )}
       <Footer />
     </>
   );

@@ -30,6 +30,7 @@ import BenefitsSection from "@/components/BenefitsSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import ChatBot from "@/components/ChatBot";
 import FloatingFindCharger from "@/components/FloatingFindCharger";
+import HeroContactCard from "@/components/HeroContactCard";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AnimatedDownloadCounter from "@/components/AnimatedDownloadCounter";
@@ -251,7 +252,10 @@ const Home = () => {
           }
         `}</style>
 
-        <div className="relative z-10 w-full py-12 md:py-16">
+        {/* md:pt-32 clears the fixed nav, which overlays the hero: the
+            content column is vertically centred in min-h-[80vh], so on
+            short desktop viewports it would otherwise ride up under it. */}
+        <div className="relative z-10 w-full py-12 md:py-16 md:pt-32">
           <div className="container mx-auto px-6 md:px-8">
             <div className="relative flex flex-col md:flex-row items-center min-h-[85vh] md:min-h-[80vh]">
               {/* Left - Content */}
@@ -333,6 +337,9 @@ const Home = () => {
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                 </div>
+
+                {/* Contact details, directly under the Find a Charger CTA. */}
+                <HeroContactCard style={{ animation: "slideUp 0.6s ease-out 0.5s both" }} />
               </div>
 
               {/* Right - Illustration - Much Larger, aligned with hero text */}
