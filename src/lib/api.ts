@@ -301,6 +301,176 @@ export const enquiries = {
     request<void>(`/admin/enquiries/${kind}/${id}`, { method: 'DELETE', auth: true }),
 };
 
+export interface SubscribeResult {
+  status: 'subscribed';
+  /** The address was already on the list; nothing new was created. */
+  already_subscribed: boolean;
+  /** The API pushed it to the external list provider on this request. */
+  provider_synced: boolean;
+}
+
+export type SubscriberStatus = 'subscribed' | 'unsubscribed';
+
+export const newsletter = {
+  /** `source` records which form the sign-up came from (slug, not free text). */
+  subscribe: (email: string, source = 'site-footer') =>
+    request<SubscribeResult>('/newsletter/subscribe', {
+      method: 'POST',
+      body: { email, source },
+    }),
+  list: (status?: SubscriberStatus) =>
+    request<Row[]>(`/admin/newsletter/subscribers${status ? `?status=${status}` : ''}`, {
+      auth: true,
+    }),
+  setStatus: (id: string, status: SubscriberStatus) =>
+    request<Row>(`/admin/newsletter/subscribers/${id}`, {
+      method: 'PATCH',
+      body: { status },
+      auth: true,
+    }),
+  remove: (id: string) =>
+    request<void>(`/admin/newsletter/subscribers/${id}`, { method: 'DELETE', auth: true }),
+  /** Replays rows the list provider never accepted. */
+  resync: () =>
+    request<{ attempted: number; succeeded: number; failed: number }>(
+      '/admin/newsletter/resync',
+      { method: 'POST', auth: true }
+    ),
+};
+
+// --- newsletter campaigns --------------------------------------------------
+// Mailchimp-backed. Every one of these answers 503 unless the API has
+// NEWSLETTER_PROVIDER=mailchimp configured, so screens must handle that as a
+// normal state rather than an error.
+
+export type CampaignStatus =
+  | 'save'
+  | 'paused'
+  | 'schedule'
+  | 'sending'
+  | 'sent'
+  | 'canceled'
+  | 'canceling';
+
+export interface CampaignSettings {
+  subject_line: string;
+  preview_text?: string | null;
+  /** Internal label for the campaign list; recipients never see it. */
+  title?: string | null;
+  from_name?: string;
+  reply_to?: string;
+  to_name?: string | null;
+}
+
+export interface Campaign {
+  id: string;
+  web_id: number | null;
+  status: CampaignStatus;
+  subject_line: string | null;
+  preview_text: string | null;
+  title: string | null;
+  from_name: string | null;
+  reply_to: string | null;
+  audience_id: string | null;
+  segment_id: number | null;
+  /** Audience size — the number shown before sending. */
+  recipient_count: number;
+  emails_sent: number;
+  created_at: string | null;
+  /** Set once scheduled, and again to the actual time once sent. ISO UTC. */
+  send_time: string | null;
+  archive_url: string | null;
+}
+
+/** `get` bundles the body, so reopening a draft is a single request. */
+export interface CampaignDetail extends Campaign {
+  content: { html: string | null; plain_text: string | null };
+}
+
+export interface CampaignReport {
+  id: string;
+  subject_line: string | null;
+  send_time: string | null;
+  emails_sent: number;
+  opens: { total: number; unique: number; rate: number };
+  clicks: { total: number; unique: number; rate: number };
+  bounces: { hard: number; soft: number; syntax: number };
+  unsubscribed: number;
+  abuse_reports: number;
+}
+
+export interface CampaignSegment {
+  id: number;
+  name: string;
+  member_count: number;
+}
+
+export const campaigns = {
+  list: (status?: CampaignStatus) =>
+    request<{ items: Campaign[]; total: number }>(
+      `/admin/newsletter/campaigns${status ? `?status=${status}` : ''}`,
+      { auth: true }
+    ),
+  get: (id: string) =>
+    request<CampaignDetail>(`/admin/newsletter/campaigns/${id}`, { auth: true }),
+  create: (data: CampaignSettings & { html?: string | null; segment_id?: number | null }) =>
+    request<Campaign>('/admin/newsletter/campaigns', {
+      method: 'POST',
+      body: data,
+      auth: true,
+    }),
+  update: (id: string, data: Partial<CampaignSettings>) =>
+    request<Campaign>(`/admin/newsletter/campaigns/${id}`, {
+      method: 'PATCH',
+      body: data,
+      auth: true,
+    }),
+  remove: (id: string) =>
+    request<void>(`/admin/newsletter/campaigns/${id}`, { method: 'DELETE', auth: true }),
+  setContent: (id: string, html: string) =>
+    request<{ html: string | null; plain_text: string | null }>(
+      `/admin/newsletter/campaigns/${id}/content`,
+      { method: 'PUT', body: { html }, auth: true }
+    ),
+  /** At most 5 addresses. Never gated on the server's send switch. */
+  sendTest: (id: string, emails: string[]) =>
+    request<{ sent_to: string[] }>(`/admin/newsletter/campaigns/${id}/test`, {
+      method: 'POST',
+      body: { emails },
+      auth: true,
+    }),
+  /**
+   * Irreversible. `confirm` must equal the campaign's own subject line — the
+   * server checks it, so the guard cannot be skipped by calling this directly.
+   */
+  send: (id: string, confirm: string) =>
+    request<Campaign>(`/admin/newsletter/campaigns/${id}/send`, {
+      method: 'POST',
+      body: { confirm },
+      auth: true,
+    }),
+  /** `scheduleTime` must be ISO with an offset, on a :00/:15/:30/:45 UTC slot. */
+  schedule: (id: string, scheduleTime: string, confirm: string) =>
+    request<Campaign>(`/admin/newsletter/campaigns/${id}/schedule`, {
+      method: 'POST',
+      body: { confirm, schedule_time: scheduleTime },
+      auth: true,
+    }),
+  unschedule: (id: string) =>
+    request<Campaign>(`/admin/newsletter/campaigns/${id}/unschedule`, {
+      method: 'POST',
+      auth: true,
+    }),
+  cancel: (id: string) =>
+    request<Campaign>(`/admin/newsletter/campaigns/${id}/cancel`, {
+      method: 'POST',
+      auth: true,
+    }),
+  report: (id: string) =>
+    request<CampaignReport>(`/admin/newsletter/campaigns/${id}/report`, { auth: true }),
+  segments: () => request<CampaignSegment[]>('/admin/newsletter/segments', { auth: true }),
+};
+
 export interface VisibilityPayload {
   pages: Record<string, boolean>;
   sections: Record<string, boolean>;
@@ -344,6 +514,17 @@ export const uploads = {
 
 export const health = () => request<{ status: string }>('/health');
 
-export const api = { auth, blog, stations, cms, enquiries, siteSettings, uploads, health };
+export const api = {
+  auth,
+  blog,
+  stations,
+  cms,
+  enquiries,
+  newsletter,
+  campaigns,
+  siteSettings,
+  uploads,
+  health,
+};
 export { API_URL };
 export default api;

@@ -36,6 +36,8 @@ const loaders = {
   adminBlogs: () => import("./pages/AdminBlogs"),
   adminEnquiries: () => import("./pages/AdminEnquiries"),
   adminContent: () => import("./pages/AdminContent"),
+  adminNewsletter: () => import("./pages/AdminNewsletter"),
+  adminCampaign: () => import("./pages/AdminCampaign"),
   terms: () => import("./pages/TermsAndConditions"),
   privacy: () => import("./pages/PrivacyPolicy"),
   notFound: () => import("./pages/NotFound"),
@@ -54,6 +56,8 @@ const AdminChargingStations = lazy(loaders.adminChargingStations);
 const AdminBlogs = lazy(loaders.adminBlogs);
 const AdminEnquiries = lazy(loaders.adminEnquiries);
 const AdminContent = lazy(loaders.adminContent);
+const AdminNewsletter = lazy(loaders.adminNewsletter);
+const AdminCampaign = lazy(loaders.adminCampaign);
 const TermsAndConditions = lazy(loaders.terms);
 const PrivacyPolicy = lazy(loaders.privacy);
 const NotFound = lazy(loaders.notFound);
@@ -73,6 +77,8 @@ const pathLoaders: Array<[RegExp, () => Promise<unknown>]> = [
   [/^\/admin\/blogs/, loaders.adminBlogs],
   [/^\/admin\/enquiries/, loaders.adminEnquiries],
   [/^\/admin\/content/, loaders.adminContent],
+  [/^\/admin\/newsletter\/[^/]+/, loaders.adminCampaign],
+  [/^\/admin\/newsletter/, loaders.adminNewsletter],
   [/^\/terms/, loaders.terms],
   [/^\/privacy/, loaders.privacy],
 ];
@@ -214,6 +220,8 @@ const AppContent = () => {
           <Route path="/admin/blogs" element={<AdminBlogs />} />
           <Route path="/admin/enquiries" element={<AdminEnquiries />} />
           <Route path="/admin/content" element={<AdminContent />} />
+          <Route path="/admin/newsletter" element={<AdminNewsletter />} />
+          <Route path="/admin/newsletter/:id" element={<AdminCampaign />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFound />} />

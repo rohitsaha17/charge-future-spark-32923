@@ -1,11 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { auth, enquiries } from '@/lib/api';
+import { auth, enquiries, newsletter } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, Eye, CheckCircle, Clock, XCircle, Loader2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Trash2,
+  Eye,
+  CheckCircle,
+  Clock,
+  XCircle,
+  Loader2,
+  Download,
+  RefreshCw,
+  AlertTriangle,
+  Mail,
+} from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
@@ -59,6 +71,35 @@ interface InvestorEnquiry {
   created_at: string;
 }
 
+interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  source: string | null;
+  status: 'subscribed' | 'unsubscribed';
+  provider: string | null;
+  provider_synced_at: string | null;
+  provider_error: string | null;
+  created_at: string;
+}
+
+/** Quotes every field so a comma or quote in a value can't shift a column. */
+const toCsv = (rows: NewsletterSubscriber[]) => {
+  const header = ['email', 'status', 'source', 'subscribed_at', 'synced_to_provider'];
+  const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+  const lines = rows.map((r) =>
+    [
+      r.email,
+      r.status,
+      r.source ?? '',
+      new Date(r.created_at).toISOString(),
+      r.provider_synced_at ? 'yes' : 'no',
+    ]
+      .map(escape)
+      .join(',')
+  );
+  return [header.join(','), ...lines].join('\r\n');
+};
+
 const AdminEnquiries = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -67,7 +108,12 @@ const AdminEnquiries = () => {
   const [investorEnquiries, setInvestorEnquiries] = useState<InvestorEnquiry[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<PartnerEnquiry | null>(null);
   const [selectedInvestor, setSelectedInvestor] = useState<InvestorEnquiry | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<{ id: string; kind: 'partner' | 'investor' } | null>(null);
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
+  const [isResyncing, setIsResyncing] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    kind: 'partner' | 'investor' | 'subscriber';
+  } | null>(null);
 
   useEffect(() => {
     checkAuthAndFetch();
@@ -87,7 +133,7 @@ const AdminEnquiries = () => {
       return;
     }
 
-    await Promise.all([fetchPartnerEnquiries(), fetchInvestorEnquiries()]);
+    await Promise.all([fetchPartnerEnquiries(), fetchInvestorEnquiries(), fetchSubscribers()]);
     setIsAdmin(true);
     setLoading(false);
   };
@@ -106,6 +152,62 @@ const AdminEnquiries = () => {
     } catch {
       toast.error('Failed to load investor enquiries');
     }
+  };
+
+  const fetchSubscribers = async () => {
+    try {
+      setSubscribers((await newsletter.list()) as unknown as NewsletterSubscriber[]);
+    } catch {
+      toast.error('Failed to load newsletter subscribers');
+    }
+  };
+
+  const toggleSubscriber = async (id: string, status: 'subscribed' | 'unsubscribed') => {
+    try {
+      await newsletter.setStatus(id, status);
+      toast.success(status === 'subscribed' ? 'Re-subscribed' : 'Unsubscribed');
+      fetchSubscribers();
+    } catch {
+      toast.error('Failed to update subscriber');
+    }
+  };
+
+  /**
+   * Pushes the rows the list provider never accepted — everyone collected
+   * before a provider was configured, plus anything that failed while it was
+   * down. No-op when NEWSLETTER_PROVIDER is unset on the API.
+   */
+  const resyncSubscribers = async () => {
+    setIsResyncing(true);
+    try {
+      const { attempted, succeeded, failed } = await newsletter.resync();
+      if (attempted === 0) {
+        toast.success('Nothing pending — every subscriber is already synced.');
+      } else {
+        toast.success(`Synced ${succeeded} of ${attempted} subscriber(s)`, {
+          description: failed > 0 ? `${failed} still failing — hover a row to see why.` : undefined,
+        });
+      }
+      fetchSubscribers();
+    } catch {
+      toast.error('Resync failed. Check the newsletter provider settings on the API.');
+    } finally {
+      setIsResyncing(false);
+    }
+  };
+
+  const exportSubscribers = () => {
+    if (subscribers.length === 0) {
+      toast.error('No subscribers to export');
+      return;
+    }
+    const blob = new Blob([toCsv(subscribers)], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `newsletter-subscribers-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const updatePartnerStatus = async (id: string, status: string) => {
@@ -130,12 +232,18 @@ const AdminEnquiries = () => {
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    const kind = pendingDelete.kind === 'partner' ? 'partners' : 'investors';
     try {
-      await enquiries.remove(kind, pendingDelete.id);
-      toast.success('Deleted successfully');
-      if (pendingDelete.kind === 'partner') fetchPartnerEnquiries();
-      else fetchInvestorEnquiries();
+      if (pendingDelete.kind === 'subscriber') {
+        await newsletter.remove(pendingDelete.id);
+        toast.success('Deleted successfully');
+        fetchSubscribers();
+      } else {
+        const kind = pendingDelete.kind === 'partner' ? 'partners' : 'investors';
+        await enquiries.remove(kind, pendingDelete.id);
+        toast.success('Deleted successfully');
+        if (pendingDelete.kind === 'partner') fetchPartnerEnquiries();
+        else fetchInvestorEnquiries();
+      }
     } catch {
       toast.error('Failed to delete');
     }
@@ -183,9 +291,10 @@ const AdminEnquiries = () => {
         </div>
 
         <Tabs defaultValue="partner" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
-            <TabsTrigger value="partner">Partner Enquiries ({partnerEnquiries.length})</TabsTrigger>
-            <TabsTrigger value="investor">Investor Enquiries ({investorEnquiries.length})</TabsTrigger>
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-6">
+            <TabsTrigger value="partner">Partner ({partnerEnquiries.length})</TabsTrigger>
+            <TabsTrigger value="investor">Investor ({investorEnquiries.length})</TabsTrigger>
+            <TabsTrigger value="newsletter">Newsletter ({subscribers.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="partner">
@@ -321,6 +430,103 @@ const AdminEnquiries = () => {
               )}
             </div>
           </TabsContent>
+
+          <TabsContent value="newsletter">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <p className="text-sm text-muted-foreground">
+                Everyone who signed up through the "Join Our Newsletter" form.
+              </p>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={resyncSubscribers} disabled={isResyncing}>
+                  {isResyncing ? (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4 mr-1" />
+                  )}
+                  Sync to provider
+                </Button>
+                <Button size="sm" variant="outline" onClick={exportSubscribers}>
+                  <Download className="w-4 h-4 mr-1" />
+                  Export CSV
+                </Button>
+                {/* Composing and sending lives on its own screen so the
+                    rich-text editor stays out of this page's bundle. */}
+                <Button size="sm" asChild>
+                  <Link to="/admin/newsletter">
+                    <Mail className="w-4 h-4 mr-1" />
+                    Compose a campaign
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              {subscribers.length === 0 ? (
+                <Card className="p-8 text-center text-muted-foreground">
+                  No newsletter subscribers yet
+                </Card>
+              ) : (
+                subscribers.map((subscriber) => (
+                  <Card key={subscriber.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+                      <div className="min-w-0">
+                        <p className="font-medium break-all">{subscriber.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(subscriber.created_at).toLocaleDateString()}
+                          {subscriber.source ? ` | ${subscriber.source}` : ''}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {subscriber.status === 'subscribed' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-500">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Subscribed
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground">
+                            <XCircle className="w-3 h-3 mr-1" />
+                            Unsubscribed
+                          </Badge>
+                        )}
+                        {/* Only shown when the provider push failed — the
+                            address is still stored and "Sync to provider"
+                            retries it. */}
+                        {subscriber.provider_error && (
+                          <Badge
+                            variant="outline"
+                            className="text-amber-600 border-amber-500"
+                            title={subscriber.provider_error}
+                          >
+                            <AlertTriangle className="w-3 h-3 mr-1" />
+                            Not synced
+                          </Badge>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            toggleSubscriber(
+                              subscriber.id,
+                              subscriber.status === 'subscribed' ? 'unsubscribed' : 'subscribed'
+                            )
+                          }
+                        >
+                          {subscriber.status === 'subscribed' ? 'Unsubscribe' : 'Re-subscribe'}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => setPendingDelete({ id: subscriber.id, kind: 'subscriber' })}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
@@ -381,7 +587,11 @@ const AdminEnquiries = () => {
       <AlertDialog open={!!pendingDelete} onOpenChange={(open) => !open && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this enquiry?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {pendingDelete?.kind === 'subscriber'
+                ? 'Delete this subscriber?'
+                : 'Delete this enquiry?'}
+            </AlertDialogTitle>
             <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

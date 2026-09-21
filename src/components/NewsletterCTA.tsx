@@ -1,53 +1,87 @@
 import { FormEvent, useId, useState } from "react";
-import { Mail, Send } from "lucide-react";
+import { Check, Loader2, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  NEWSLETTER_EMAIL_FIELD_NAME,
-  NEWSLETTER_EMBED_CODE,
-  NEWSLETTER_FORM_ACTION,
-  NEWSLETTER_HIDDEN_FIELDS,
-} from "@/lib/newsletterConfig";
+import { ApiError, newsletter } from "@/lib/api";
+import { HONEYPOT_FIELD, isHoneypotTripped } from "@/lib/antiSpam";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 interface NewsletterCTAProps {
   className?: string;
+  /** Which form the sign-up came from; stored with the subscriber. */
+  source?: string;
 }
 
 /**
  * Site-wide newsletter call to action. Rendered once from <App /> so it
  * appears immediately above the footer on every public page.
  *
- * The provider endpoint lives in `@/lib/newsletterConfig` — see that file
- * for where to paste the real embed code. Until it's filled in the form
- * validates and responds honestly instead of faking a subscription.
+ * Sign-ups POST to the API's `/newsletter/subscribe`, which stores the address
+ * and mirrors it into the configured list provider (see NEWSLETTER_PROVIDER in
+ * the backend's .env.example). Going through our own API rather than posting
+ * straight at the provider keeps the provider's API key off the client, lets
+ * the list survive a change of provider, and means a provider outage doesn't
+ * lose the sign-up.
  */
-const NewsletterCTA = ({ className }: NewsletterCTAProps) => {
+const NewsletterCTA = ({ className, source = "site-footer" }: NewsletterCTAProps) => {
   const inputId = useId();
   const errorId = `${inputId}-error`;
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDone, setIsDone] = useState(false);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const form = e.currentTarget;
+
+    // A bot that fills every field gets the same confirmation a person does,
+    // so it has no signal that the submission went nowhere.
+    if (isHoneypotTripped(new FormData(form).get(HONEYPOT_FIELD))) {
+      setIsDone(true);
+      setEmail("");
+      return;
+    }
+
     const value = email.trim();
-
     if (!EMAIL_RE.test(value)) {
-      e.preventDefault();
       setError("Please enter a valid email address.");
       return;
     }
     setError(null);
+    setIsSubmitting(true);
 
-    // With a real provider endpoint configured, let the browser post the
-    // form straight to it — no fetch/CORS dance needed.
-    if (NEWSLETTER_FORM_ACTION) return;
-
-    e.preventDefault();
-    toast.info("Newsletter sign-ups aren't live yet", {
-      description: "We're finishing the setup — please check back shortly.",
-    });
+    try {
+      const result = await newsletter.subscribe(value, source);
+      setIsDone(true);
+      setEmail("");
+      toast.success(
+        result.already_subscribed
+          ? "You're already on the list"
+          : "You're subscribed — thanks!",
+        {
+          description: result.already_subscribed
+            ? "This address is already subscribed to our newsletter."
+            : "We'll send updates on new stations and EV news.",
+        }
+      );
+    } catch (err) {
+      if (import.meta.env.DEV) console.error("Newsletter subscribe failed:", err);
+      // A 429 carries an actionable message ("try again later"); anything else
+      // is ours to apologise for.
+      const message =
+        err instanceof ApiError && (err.status === 429 || err.status === 400)
+          ? err.message
+          : "Couldn't sign you up just now. Please try again in a moment.";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -72,24 +106,28 @@ const NewsletterCTA = ({ className }: NewsletterCTAProps) => {
               Get the latest updates on new charging stations, EV news, and exclusive announcements.
             </p>
 
-            {NEWSLETTER_EMBED_CODE ? (
-              /* Provider markup pasted into newsletterConfig.ts. */
+            {isDone ? (
               <div
-                className="newsletter-embed mt-8 text-left"
-                dangerouslySetInnerHTML={{ __html: NEWSLETTER_EMBED_CODE }}
-              />
-            ) : (
-              <form
-                className="mx-auto mt-8 w-full max-w-lg"
-                onSubmit={handleSubmit}
-                action={NEWSLETTER_FORM_ACTION ?? undefined}
-                method={NEWSLETTER_FORM_ACTION ? "post" : undefined}
-                target={NEWSLETTER_FORM_ACTION ? "_blank" : undefined}
-                noValidate
+                className="mx-auto mt-8 flex w-full max-w-lg items-center justify-center gap-3 rounded-xl bg-white/15 px-5 py-4 backdrop-blur-sm"
+                role="status"
               >
-                {Object.entries(NEWSLETTER_HIDDEN_FIELDS).map(([name, value]) => (
-                  <input key={name} type="hidden" name={name} defaultValue={value} />
-                ))}
+                <Check className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <p className="text-sm font-medium">
+                  You're on the list. Watch your inbox for our next update.
+                </p>
+              </div>
+            ) : (
+              <form className="mx-auto mt-8 w-full max-w-lg" onSubmit={handleSubmit} noValidate>
+                {/* Honeypot: off-screen and hidden from assistive tech, so only
+                    a form-filling bot ever puts anything in it. */}
+                <input
+                  type="text"
+                  name={HONEYPOT_FIELD}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute left-[-9999px] h-0 w-0 opacity-0"
+                />
 
                 <label htmlFor={inputId} className="sr-only">
                   Email address
@@ -98,11 +136,12 @@ const NewsletterCTA = ({ className }: NewsletterCTAProps) => {
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <input
                     id={inputId}
-                    name={NEWSLETTER_EMAIL_FIELD_NAME}
+                    name="email"
                     type="email"
                     inputMode="email"
                     autoComplete="email"
                     required
+                    disabled={isSubmitting}
                     placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => {
@@ -111,15 +150,25 @@ const NewsletterCTA = ({ className }: NewsletterCTAProps) => {
                     }}
                     aria-invalid={error ? true : undefined}
                     aria-describedby={error ? errorId : undefined}
-                    className="h-12 w-full flex-1 rounded-xl border border-white/25 bg-white/95 px-4 text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#2674EC]"
+                    className="h-12 w-full flex-1 rounded-xl border border-white/25 bg-white/95 px-4 text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#2674EC] disabled:opacity-70"
                   />
                   <Button
                     type="submit"
                     size="lg"
+                    disabled={isSubmitting}
                     className="h-12 shrink-0 rounded-xl bg-white px-8 text-primary hover:bg-white/90 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#2674EC]"
                   >
-                    Subscribe
-                    <Send className="h-4 w-4" aria-hidden="true" />
+                    {isSubmitting ? (
+                      <>
+                        Subscribing
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                      </>
+                    ) : (
+                      <>
+                        Subscribe
+                        <Send className="h-4 w-4" aria-hidden="true" />
+                      </>
+                    )}
                   </Button>
                 </div>
 

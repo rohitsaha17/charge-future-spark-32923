@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { MapPin, FileText, LogOut, MessageSquare, Settings, Eye, EyeOff, Save, Loader2, LayoutGrid } from 'lucide-react';
+import { MapPin, FileText, LogOut, Mail, MessageSquare, Settings, Eye, EyeOff, Save, Loader2, LayoutGrid } from 'lucide-react';
 import { VisibilitySettings, DEFAULT_VISIBILITY } from '@/hooks/useSiteSettings';
 
 const AdminDashboard = () => {
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
           </Card>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Link to="/admin/charging-stations">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full hover:-translate-y-1 duration-300">
               <CardHeader>
@@ -330,6 +330,21 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <Button className="w-full">Manage Enquiries</Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/admin/newsletter">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full hover:-translate-y-1 duration-300">
+              <CardHeader>
+                <Mail className="w-12 h-12 text-cyan-600 mb-4" />
+                <CardTitle>Newsletters</CardTitle>
+                <CardDescription>
+                  Write, test and send campaigns to your subscriber list
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full">Manage Newsletters</Button>
               </CardContent>
             </Card>
           </Link>
