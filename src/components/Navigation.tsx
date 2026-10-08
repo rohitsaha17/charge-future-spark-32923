@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import TopContactBar from "@/components/TopContactBar";
 
 /**
  * Top navigation. Originally used Framer Motion for nav-link enter/exit
@@ -16,6 +17,16 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { isPageVisible } = useSiteSettings();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // The contact strip only shows at the top of the page; once the user
+  // scrolls it folds away and the nav card moves up into its place.
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // All possible nav links with their visibility keys
   const allNavLinks = [
@@ -38,6 +49,7 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 animate-slide-down">
+      <TopContactBar hidden={isScrolled} />
       <div className="container mx-auto px-4 py-4">
         <div className="nav-glass rounded-2xl px-6 py-4 flex items-center justify-between">
           <Link
